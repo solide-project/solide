@@ -163,6 +163,7 @@ const generateError = (message: string, type?: string): SolcError => {
 async function resolve(importPath: any): Promise<ContractDependency> {
     const resolver = Resolver();
     const filePath = await resolver.resolve(importPath);
+    console.log(filePath)
     const fileContents = fs.readFileSync(filePath).toString();
     return { fileContents, filePath };
 }
