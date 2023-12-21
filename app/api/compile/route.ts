@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server"
 var solc = require("solc");
 // const Resolver = require("@resolver-engine/imports-fs").ImportsFsEngine;
 import { ResolverEngine } from "@resolver-engine/core";
-import { parsers, resolvers } from "@resolver-engine/imports-fs";
+import { ImportsFsEngine, parsers, resolvers } from "@resolver-engine/imports-fs";
 const fs = require("fs");
 const path = require("path");
 
@@ -163,10 +163,7 @@ const generateError = (message: string, type?: string): SolcError => {
 }
 
 async function resolve(importPath: any): Promise<ContractDependency> {
-    const resolver = new ResolverEngine<string>()
-        .addResolver(resolvers.FsResolver())
-        .addResolver(resolvers.NodeResolver())
-        .addParser(parsers.FsParser());
+    const resolver = ImportsFsEngine()
 
     console.log(importPath)
     const filePath = await resolver.resolve(importPath);
