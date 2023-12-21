@@ -6,8 +6,10 @@ var solc = require("solc");
 // const Resolver = require("@resolver-engine/imports-fs").ImportsFsEngine;
 import { ResolverEngine } from "@resolver-engine/core";
 import { ImportsFsEngine, parsers, resolvers } from "@resolver-engine/imports-fs";
-const fs = require("fs");
-const path = require("path");
+// const fs = require("fs");
+import fs from "fs";
+import path from "path";
+// const path = require("path");
 
 export async function POST(request: NextRequest) {
 
@@ -201,6 +203,8 @@ async function extractImports(content: any, mainPath: any = ""): Promise<Contrac
     while ((match = regex.exec(content)) !== null) {
         const [, aliasList, filePathWithAlias, filePathWithoutAlias] = match;
         const filePath = getNormalizedDependencyPath(filePathWithAlias || filePathWithoutAlias, mainPath);
+        const absoluteFilePath = path.join(process.cwd(), 'node_modules', filePath);
+        console.log(absoluteFilePath)
         const resolved = await resolve(filePath);
         // console.log(filePath)
 
