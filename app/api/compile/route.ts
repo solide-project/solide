@@ -162,10 +162,15 @@ const generateError = (message: string, type?: string): SolcError => {
 
 async function resolve(importPath: any): Promise<ContractDependency> {
     const resolver = Resolver();
-    const filePath = await resolver.resolve(importPath);
-    console.log(filePath)
-    const fileContents = fs.readFileSync(filePath).toString();
-    return { fileContents, filePath };
+    try {
+        console.log(importPath)
+        const filePath = await resolver.resolve(importPath);
+        console.log(filePath)
+        const fileContents = fs.readFileSync(filePath).toString();
+        return { fileContents, filePath };
+    } catch (error) {
+        throw new Error(`File not found: ${importPath}`);
+    }
 }
 
 /**
