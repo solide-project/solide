@@ -3,7 +3,9 @@ import { solcVersion } from "@/lib/utils";
 import { compilerVersions } from "@/lib/versions";
 import { NextRequest, NextResponse } from "next/server"
 var solc = require("solc");
-const Resolver = require("@resolver-engine/imports-fs").ImportsFsEngine;
+// const Resolver = require("@resolver-engine/imports-fs").ImportsFsEngine;
+import { ResolverEngine } from "@resolver-engine/core";
+import { parsers, resolvers } from "@resolver-engine/imports-fs";
 const fs = require("fs");
 const path = require("path");
 
@@ -37,13 +39,13 @@ export async function POST(request: NextRequest) {
         console.log("Using Solc Version", solcSnapshot.version())
         // var output = JSON.parse(solc.compile(JSON.stringify(input)));
         var output = JSON.parse(solcSnapshot.compile(JSON.stringify(input2)));
-    
+
         if (output.errors) {
             // For demo we don't care about warnings
             output.errors = output.errors.filter((error: SolcError) => {
                 return error.type !== "Warning";
             });
-    
+
             if (output.errors.length > 0) {
                 return NextResponse.json({
                     details: output.errors
@@ -161,16 +163,27 @@ const generateError = (message: string, type?: string): SolcError => {
 }
 
 async function resolve(importPath: any): Promise<ContractDependency> {
-    const resolver = Resolver();
-    try {
-        console.log(importPath)
-        const filePath = await resolver.resolve(importPath);
-        console.log(filePath)
-        const fileContents = fs.readFileSync(filePath).toString();
-        return { fileContents, filePath };
-    } catch (error) {
-        throw new Error(`File not found: ${importPath}`);
-    }
+    const resolver = new ResolverEngine<string>()
+        .addResolver(resolvers.FsResolver())
+        .addResolver(resolvers.NodeResolver())
+        .addParser(parsers.FsParser());
+
+    console.log(importPath)
+    const filePath = await resolver.resolve(importPath);
+    console.log(filePath)
+    const fileContents = fs.readFileSync(filePath).toString();
+    return { fileContents, filePath };
+
+    // const resolver = Resolver();
+    // try {
+    //     console.log(importPath)
+    //     const filePath = await resolver.resolve(importPath);
+    //     console.log(filePath)
+    //     const fileContents = fs.readFileSync(filePath).toString();
+    //     return { fileContents, filePath };
+    // } catch (error) {
+    //     throw new Error(`File not found: ${importPath}`);
+    // }
 }
 
 /**
