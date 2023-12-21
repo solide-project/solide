@@ -163,11 +163,12 @@ const generateError = (message: string, type?: string): SolcError => {
 }
 
 async function resolve(importPath: any): Promise<ContractDependency> {
-    const resolver = ImportsFsEngine()
-
     console.log(importPath)
+    const absoluteFilePath = path.join(process.cwd(), 'node_modules', importPath);
+    const resolver = ImportsFsEngine()
     const filePath = await resolver.resolve(importPath);
     console.log(filePath)
+    console.log( absoluteFilePath)
     const fileContents = fs.readFileSync(filePath).toString();
     return { fileContents, filePath };
 
