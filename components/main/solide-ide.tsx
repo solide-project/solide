@@ -21,14 +21,15 @@ import { EditorLoading } from '@/components/main/compile/loading';
 interface SolideIDEProps
   extends React.HTMLAttributes<HTMLDivElement> {
   url?: string;
+  title?: string;
   content?: string;
   version?: string;
 }
 
-export function SolideIDE({ url, content, version }: SolideIDEProps) {
+export function SolideIDE({ url, title = "contract", content, version }: SolideIDEProps) {
   const { theme } = useTheme()
-  const [value, setValue] = useState<string>("")
-  const [filename, setFilename] = useState<string>("contract.sol")
+  const [value, setValue] = useState<string>(title)
+  const [filename, setFilename] = useState<string>(`${title}.sol`)
   const [compileInfo, setCompileInfo] = useState<CompileResult | undefined>()
 
   useEffect(() => {
@@ -62,7 +63,6 @@ export function SolideIDE({ url, content, version }: SolideIDEProps) {
 
   const onChange = async (newValue: string | undefined, event: any) => {
     // Could compile on change but it might have performance issue
-
     if (newValue === undefined) return;
     setValue(newValue || "");
   }
@@ -82,7 +82,12 @@ export function SolideIDE({ url, content, version }: SolideIDEProps) {
     const blob = new Blob([value], { type: 'text/plain' });
     formData.append('file', blob, filename);
 
-    const response = await fetch(`/api/compile?version=${encodeURIComponent(compilerVersion)}`, {
+    let uri = `/api/compile?version=${encodeURIComponent(compilerVersion)}`
+    if (title) {
+      uri += `&title=${encodeURIComponent(title)}`
+    }
+    console.log(uri)
+    const response = await fetch(uri, {
       method: 'POST',
       body: formData,
     })

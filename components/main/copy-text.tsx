@@ -19,7 +19,6 @@ export function CopyText({ title, payload }: CopyTextProps) {
 
     function copyText(entryText: string) {
         setText("Copied!");
-        console.log(entryText);
         navigator.clipboard.writeText(entryText);
         setTimeout(() => {
             setText(title);
