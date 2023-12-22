@@ -11,6 +11,7 @@ const nextConfig = {
     })
     return config
   },
+  transpilePackages: ['@chainlink/contracts'],
 }
 
 export default nextConfig

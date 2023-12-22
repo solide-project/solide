@@ -165,12 +165,13 @@ const generateError = (message: string, type?: string): SolcError => {
 }
 
 async function resolve(importPath: any): Promise<ContractDependency> {
-    console.log(importPath)
-    const absoluteFilePath = path.join(process.cwd(), 'node_modules', importPath);
-    const resolver = ImportsFsEngine()
-    const filePath = await resolver.resolve(importPath);
+    // console.log(importPath)
+    // const absoluteFilePath = path.join(process.cwd(), 'node_modules', importPath);
+    // console.log(absoluteFilePath)
+    // const resolver = ImportsFsEngine()
+    // const filePath = await resolver.resolve(importPath);
+    const filePath = path.resolve('./public', importPath);
     console.log(filePath)
-    console.log( absoluteFilePath)
     const fileContents = fs.readFileSync(filePath).toString();
     return { fileContents, filePath };
 
@@ -203,8 +204,6 @@ async function extractImports(content: any, mainPath: any = ""): Promise<Contrac
     while ((match = regex.exec(content)) !== null) {
         const [, aliasList, filePathWithAlias, filePathWithoutAlias] = match;
         const filePath = getNormalizedDependencyPath(filePathWithAlias || filePathWithoutAlias, mainPath);
-        const absoluteFilePath = path.join(process.cwd(), 'node_modules', filePath);
-        console.log(absoluteFilePath)
         const resolved = await resolve(filePath);
         // console.log(filePath)
 

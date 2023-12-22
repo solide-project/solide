@@ -35,10 +35,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "node_modules/@chainlink/**/*"
   ],
   "exclude": [
     "node_modules",
-    "!node_modules/@chainlink/**/*"
   ]
 }
