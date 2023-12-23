@@ -108,11 +108,11 @@ export async function POST(request: NextRequest) {
                     "*": ["*"]
                 }
             },
-            viaIR: true,
-            optimizer: {
-                enabled: true,
-                runs: 200,
-            }
+            // viaIR: true,
+            // optimizer: {
+            //     enabled: true,
+            //     runs: 200,
+            // }
         }
     };
 
