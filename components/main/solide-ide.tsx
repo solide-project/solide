@@ -17,6 +17,8 @@ import { ContractMetadata } from '@/components/main/contract/contract-metadata';
 import { ContentLink } from '@/components/main/footer/content-link';
 import { CompileErrors } from '@/components/main/compile/errors';
 import { EditorLoading } from '@/components/main/compile/loading';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Checkbox } from '../ui/checkbox';
 
 interface SolideIDEProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -67,6 +69,13 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     setValue(newValue || "");
   }
 
+  const [compilerRun, setCompilerRun] = useState<number>(200)
+  const [compileOptimiser, setCompileOptimiser] = useState<boolean>(false)
+  const handleCompileOptimiser = (e: any) => {
+    const val = compileOptimiser;
+    setCompileOptimiser(!val)
+  }
+
   const [compilerVersion, setCompilerVersion] = useState<string>(solcVersion)
   const [compiling, setCompiling] = useState<boolean>(false)
   const [compileError, setCompileError] = useState<CompileError | undefined>();
@@ -83,9 +92,14 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     formData.append('file', blob, url);
 
     let uri = `/api/compile?version=${encodeURIComponent(compilerVersion)}`
+
+    if (compileOptimiser) {
+      uri += `&optimizer=${encodeURIComponent(compileOptimiser)}&runs=${encodeURIComponent(compilerRun)}`
+    }
     if (title) {
       uri += `&title=${encodeURIComponent(title)}`
     }
+
     console.log(uri)
     const response = await fetch(uri, {
       method: 'POST',
@@ -100,13 +114,25 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
       return;
     }
     const data = await response.json();
-    console.log(data);
+    const constructors: any[] = data.data.abi.filter((m: any)=> m.type === "constructor");
+
+    if (constructors.length > 0) {
+      const contractConstructor = constructors.pop();
+      setConstructorABI(contractConstructor)
+    }
     setContractAddress("");
     setCompileInfo(data);
     setCompiling(false);
   }
 
   const [contractAddress, setContractAddress] = useState<string>("");
+  const [constructorArgs, setConstructorArgs] = useState<any[]>([]);
+  const [constructorABI, setConstructorABI] = useState<{ 
+    inputs: any[];
+  }>({
+    inputs: [],
+  } as any);
+
   const [contract, setContract] = useState<ethers.Contract | undefined>();
   const [contractKey, setContractKey] = useState<number>(0);
   const deploy = async () => {
@@ -118,9 +144,10 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner() as Signer;
 
-    if (!contractAddress) {
+    console.log(constructorArgs, constructorABI, constructorArgs.length, (constructorABI.inputs || []).length);
+    if (!ethers.utils.isAddress(contractAddress)) {
       const factory = new ethers.ContractFactory(compileInfo.data.abi, compileInfo.data.evm.bytecode.object, signer);
-      const contract = await factory.deploy([]);
+      const contract = await factory.deploy(...constructorArgs);
       setContractAddress(contract.address);
       setContractKey(contractKey + 1);
       setContract(contract);
@@ -136,7 +163,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     <div>
       {width < 768
         ? <Tabs defaultValue="code">
-          <TabsList>
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="code">Code</TabsTrigger>
             <TabsTrigger value="contract">Contract</TabsTrigger>
           </TabsList>
@@ -154,7 +181,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
           <TabsContent value="contract">
             {compileError && compileError.details &&
               <CompileErrors errors={compileError.details} />}
-              
+
             {compileInfo
               ? <div>
                 <ContractMetadata items={[
@@ -162,9 +189,13 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
                   { title: "Bytecode", payload: compileInfo.data.evm.bytecode.object },
                   { title: "Flatten", payload: compileInfo.flattenContract },
                 ]} />
-                <ContractInvoke key={contractKey} contract={contract} abi={compileInfo?.data.abi || []} />
+                <ContractInvoke
+                  setConstructorArgs={setConstructorArgs}
+                  key={contractKey}
+                  contract={contract}
+                  abi={compileInfo?.data.abi || []} />
               </div>
-              : <>Compile Contract</>}
+              : <div className="text-center py-8">Compile Contract</div>}
           </TabsContent>
         </Tabs>
         : <div className="grid grid-cols-12">
@@ -190,9 +221,13 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
                   { title: "Bytecode", payload: compileInfo.data.evm.bytecode.object },
                   { title: "Flatten", payload: compileInfo.flattenContract },
                 ]} />
-                <ContractInvoke key={contractKey} contract={contract} abi={compileInfo?.data.abi || []} />
+                <ContractInvoke
+                  setConstructorArgs={setConstructorArgs}
+                  key={contractKey}
+                  contract={contract}
+                  abi={compileInfo?.data.abi || []} />
               </div>
-              : <>Compile Contract</>}
+              : <div className="text-center py-8">Compile Contract</div>}
           </div>
         </div>}
 
@@ -200,7 +235,8 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
         <div className="flex items-center justify-between">
           <div className="flex space-x-2">
             <Button size="sm" onClick={compile} disabled={compiling}>{compiling ? "Compiling ..." : "Compile"}</Button>
-            <Button size="sm" onClick={deploy} disabled={compileInfo ? false : true}>Deploy</Button>
+            <Button size="sm" onClick={deploy} disabled={ethers.utils.isAddress(contractAddress) || constructorArgs.length === (constructorABI.inputs || []).length
+               ? false : true}>Deploy</Button>
             <Input className="h-9 rounded-md px-3" placeholder="Contract Address"
               value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} />
           </div>
@@ -208,6 +244,30 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
           <div className="flex items-center space-x-2">
             {url && <ContentLink url={url} />}
             <ThemeToggle />
+            <Popover>
+              <PopoverTrigger>Settings</PopoverTrigger>
+              <PopoverContent>
+                <Input type="number" max={1300} min={200}
+                  value={compilerRun}
+                  onChange={(e: any) => setCompilerRun(parseInt(e.target.value))} />
+                <div className="flex items-center space-x-2 py-4">
+                  <Checkbox id="optimizer" checked={compileOptimiser} onClick={handleCompileOptimiser} />
+                  <label htmlFor="optimizer"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Enable optimization (Note enable may timeout on large contracts)
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2 py-4">
+                  <Checkbox id="viaIR" disabled={true} />
+                  <label htmlFor="viaIR"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Use CLI
+                  </label>
+                </div>
+              </PopoverContent>
+            </Popover>
             <SolVersion setVersion={setCompilerVersion} version={version} />
             <SelectedChain />
           </div>
