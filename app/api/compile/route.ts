@@ -17,7 +17,22 @@ export async function POST(request: NextRequest) {
 
     const compilerVersion: string = decodeURI(request.nextUrl.searchParams.get("version") || solcVersion);
     const solcSnapshot = await getSolcByVersion(compilerVersion);
+    const viaIR: boolean = request.nextUrl.searchParams.get("viaIR") === "1" || false;
+    const enabled: boolean = request.nextUrl.searchParams.get("optimizer") === "1" || false;
+    const runs: number = parseInt(request.nextUrl.searchParams.get("optimizer") || "-1") || -1;
+
+    let optimizer = {}
+    if (enabled && runs > 0) {
+        optimizer = {
+            enabled,
+            runs,
+        };
+    }
+
     console.log("Using Solc Version", solcSnapshot.version())
+    console.log("Run using CLI", viaIR)
+    console.log("Optimizer", optimizer)
+
 
     // const contractAddress: string = request.nextUrl.searchParams.get("version") || "";
     // if (contractAddress && !ethers.utils.isAddress(contractAddress)) {
@@ -108,11 +123,8 @@ export async function POST(request: NextRequest) {
                     "*": ["*"]
                 }
             },
-            // viaIR: true,
-            // optimizer: {
-            //     enabled: true,
-            //     runs: 200,
-            // }
+            viaIR: viaIR,
+            optimizer: optimizer
         }
     };
 

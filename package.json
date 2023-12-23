@@ -16,6 +16,7 @@
   "dependencies": {
     "@chainlink/contracts": "^0.8.0",
     "@monaco-editor/react": "^4.6.0",
+    "@oceanprotocol/contracts": "^2.0.3",
     "@openzeppelin/contracts": "^4.9.5",
     "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@radix-ui/react-dialog": "^1.0.5",
