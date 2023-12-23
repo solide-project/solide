@@ -80,7 +80,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
 
     const formData = new FormData();
     const blob = new Blob([value], { type: 'text/plain' });
-    formData.append('file', blob, filename);
+    formData.append('file', blob, url);
 
     let uri = `/api/compile?version=${encodeURIComponent(compilerVersion)}`
     if (title) {
@@ -94,15 +94,16 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
 
     if (!response.ok) {
       const data = await response.json() as CompileError;
+      console.log(data);
       setCompileError(data);
       setCompiling(false);
       return;
     }
     const data = await response.json();
+    console.log(data);
     setContractAddress("");
     setCompileInfo(data);
     setCompiling(false);
-    console.log(data);
   }
 
   const [contractAddress, setContractAddress] = useState<string>("");

@@ -1,7 +1,9 @@
+import { ContractPaths } from "./solide/contract-paths";
+
 export interface ContractDependency {
-    filePath: string;
     fileContents: string;
     originalContents?: string;
+    paths: ContractPaths;
 }
 
 export interface CompileResponse {

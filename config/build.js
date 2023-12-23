@@ -30,7 +30,13 @@ function copyFolderRecursiveSync(sourcePath, destinationPath) {
 // Example usage
 const library = [
     "@chainlink/contracts",
-    "@openzeppelin",
+    "@openzeppelin/contracts",
+    "@openzeppelin/contracts-upgradeable",
+    "@uniswap/v3-core",
+    "@uniswap/v3-periphery",
+    "solmate",
+    "@tableland/evm/contracts",
+    "erc721a-upgradeable",
 ];
 
 library.forEach((lib) => {

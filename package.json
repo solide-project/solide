@@ -1,6 +1,6 @@
 {
   "name": "solide",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,7 +16,8 @@
   "dependencies": {
     "@chainlink/contracts": "^0.8.0",
     "@monaco-editor/react": "^4.6.0",
-    "@openzeppelin/contracts": "^5.0.1",
+    "@openzeppelin/contracts": "^4.9.5",
+    "@openzeppelin/contracts-upgradeable": "^4.9.3",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-scroll-area": "^1.0.5",
@@ -24,10 +25,14 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@resolver-engine/imports-fs": "^0.3.3",
     "@solidity-parser/parser": "^0.16.2",
+    "@tableland/evm": "^4.5.0",
+    "@uniswap/v3-core": "^1.0.1",
+    "@uniswap/v3-periphery": "^1.4.4",
     "ace-builds": "^1.32.1",
     "class-variance-authority": "^0.4.0",
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
+    "erc721a-upgradeable": "^4.2.3",
     "ethers": "^5.7.2",
     "lucide-react": "0.105.0-alpha.4",
     "next": "^13.4.8",
@@ -36,6 +41,7 @@
     "react-dom": "^18.2.0",
     "sharp": "^0.31.3",
     "solc": "^0.7.6",
+    "solmate": "^6.2.0",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6"
   },

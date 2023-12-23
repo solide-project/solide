@@ -1,11 +1,12 @@
 import { ContractDependency, SolcError } from "@/lib/interfaces";
-import { solcVersion } from "@/lib/utils";
+import { getSolidityContract, solcVersion } from "@/lib/utils";
 import { compilerVersions } from "@/lib/versions";
 import { NextRequest, NextResponse } from "next/server"
 var solc = require("solc");
 import { ImportsFsEngine, parsers, resolvers } from "@resolver-engine/imports-fs";
 import fs from "fs";
 import path from "path";
+import { ContractPaths } from "@/lib/solide/contract-paths";
 
 export async function POST(request: NextRequest) {
 
@@ -29,7 +30,9 @@ export async function POST(request: NextRequest) {
     const data: FormData = await request.formData();
     const contract = data.get("file") as File;
 
-    let name: string = contract.name;
+    const filePath: string = contract.name;
+    let name = path.basename(filePath);
+    // console.log(name);
     const content: string = await contract.text();
 
     // Check if the content is a (Solidity Standard Json-Input format)
@@ -56,9 +59,9 @@ export async function POST(request: NextRequest) {
         let dependencies: ContractDependency[] = [];
         Object.keys(solidityInput.sources).forEach((contractSource) => {
             dependencies.push({
-                filePath: contractSource,
+                paths: new ContractPaths(contractSource, ""),
                 fileContents: removeHeadersAndImports(solidityInput.sources[contractSource].content),
-                originalContents: solidityInput.sources[contractSource].content
+                originalContents: solidityInput.sources[contractSource].content,
             })
         });
 
@@ -74,7 +77,7 @@ export async function POST(request: NextRequest) {
     // Get all dependencies contracts (imports) and remove dups
     let dependencies: ContractDependency[] = [];
     try {
-        dependencies = await extractImports(content)
+        dependencies = await extractImports(content, filePath)
         dependencies = removeDuplicatesPreserveOrder(dependencies)
     } catch (error: any) {
         return NextResponse.json({
@@ -88,30 +91,38 @@ export async function POST(request: NextRequest) {
         includeSource: true
     });
 
+    const sourceName = filePath.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "");
+
     var input = {
         language: "Solidity",
         sources: {
             ...sources,
-            [name]: {
+            [sourceName]: {
                 content: content
             }
         },
         settings: {
+            // remappings: [ ":g=/dir" ],
             outputSelection: {
                 "*": {
                     "*": ["*"]
                 }
+            },
+            viaIR: true,
+            optimizer: {
+                enabled: true,
+                runs: 200,
             }
         }
     };
 
+    // console.log(Object.keys(input.sources))
     var output = JSON.parse(solcSnapshot.compile(JSON.stringify(input)));
-
     if (output.errors) {
         // For demo we don't care about warnings
         output.errors = output.errors.filter((error: SolcError) => error.type !== "Warning");
         if (output.errors.length > 0) {
-            return NextResponseSolcError(output.errors);
+            return NextResponseSolcError(...output.errors);
         }
     }
 
@@ -131,6 +142,14 @@ const NextResponseSolcError = (...details: SolcError[]) => NextResponse.json({
     details: details
 }, { status: 400 });
 
+
+const normaliseSource = (originalPath: string) => {
+    // replace .. with .
+    originalPath = originalPath.replace(/(\.\.)/g, '.');
+    originalPath = originalPath.replace(/\\/g, "/")
+    return path.normalize(originalPath);
+}
+
 const flattenContracts = ({
     dependencies,
     content = "",
@@ -143,10 +162,34 @@ const flattenContracts = ({
     let flattenContract: string = "";
     const sources: any = {};
     dependencies.reverse().forEach((dependency) => {
-        const { filePath, originalContents, fileContents } = dependency;
+        const { paths, originalContents, fileContents } = dependency;
 
         if (includeSource) {
-            sources[filePath] = { content: originalContents };
+            if (paths.isHttp()) {
+                // if (paths.filePath.includes("IAllowanceTransfer")) {
+                //     // path.join(paths.folderPath)
+                //     sources["interfaces/IAllowanceTransfer.sol"] = { content: originalContents };
+                // }
+                // if (paths.filePath.includes("IERC1271")) {
+                //     // path.join(paths.folderPath)
+                //     sources["interfaces/IERC1271.sol"] = { content: originalContents };
+                // }
+
+                // if (paths.originalFilePath.startsWith("./")) {
+                //     const pathWithoutDot = path.normalize(paths.originalFilePath).replace(/\\/g, "/");
+                //     console.log("Adding .", pathWithoutDot, paths.folderPath)
+                //     sources[pathWithoutDot] = { content: originalContents };
+                //     sources[paths.folderPath] = { content: originalContents };
+                // } else if (paths.originalFilePath.startsWith("../")) {
+                //     const compilePath = getNormalizedDependencyPath(paths.originalFilePath, paths.folderPath)
+                //     console.log("Adding ..", compilePath.filePath)
+                //     console.log(paths.originalFilePath, paths.folderPath)
+                //     sources[compilePath.filePath] = { content: originalContents };
+                // }
+                sources[paths.folderPath] = { content: originalContents };
+            } else {
+                sources[paths.filePath] = { content: originalContents };
+            }
         }
 
         const cleanedContent = removeHeadersAndImports(fileContents);
@@ -160,15 +203,22 @@ const flattenContracts = ({
     return { flattenContract, sources };
 }
 
+function getFileNameWithoutExtension(filename: string) {
+    return filename.replace(/\.[^/.]+$/, "");
+}
+
 async function getEntryDetails(output: any, entry: string) {
+    entry = getFileNameWithoutExtension(entry);
     return new Promise((resolve, reject) => {
         Object.keys(output.contracts).forEach((contractSource) => {
+            // console.log(contractSource, entry)
             if (contractSource === entry) {
                 for (var contractName in output.contracts[entry]) {
                     resolve(output.contracts[contractSource][contractName]);
                 }
             }
             Object.keys(output.contracts[contractSource]).forEach((contractName) => {
+                // console.log(contractName, entry)
                 if (contractName === entry) {
                     resolve(output.contracts[contractSource][entry]);
                 }
@@ -209,16 +259,20 @@ const generateError = (message: string, type?: string): SolcError => {
     }
 }
 
-async function resolve(importPath: any): Promise<ContractDependency> {
+async function resolve(importPath: string, isRelative: boolean = false): Promise<any> {
     // console.log(importPath)
     // const absoluteFilePath = path.join(process.cwd(), 'node_modules', importPath);
     // console.log(absoluteFilePath)
     // const resolver = ImportsFsEngine()
     // const filePath = await resolver.resolve(importPath);
+    if (importPath.startsWith("http")) {
+        const fileContents = await getSolidityContract(importPath);
+        return { fileContents };
+    }
     const filePath = path.resolve('./public', importPath);
     // console.log(filePath)
     const fileContents = fs.readFileSync(filePath).toString();
-    return { fileContents, filePath };
+    return { fileContents };
 }
 
 /**
@@ -231,15 +285,16 @@ async function resolve(importPath: any): Promise<ContractDependency> {
  */
 async function extractImports(content: any, mainPath: any = ""): Promise<ContractDependency[]> {
     // Regular expression to match import statements
-    const regex = /import\s+{([^}]+)}\s+from\s+[""]([^""]+)[""]|import\s+[""]([^""]+)[""];/g;
+    // const regex = /import\s+{([^}]+)}\s+from\s+[""]([^""]+)[""]|import\s+[""]([^""]+)[""];/g;
+    const regex = /import\s+{([^}]+)}\s+from\s+[""'']([^""'']+)[""'']|import\s+[""'']([^""'']+)[""''];/g;
 
     const matches: ContractDependency[] = [];
     let match;
     while ((match = regex.exec(content)) !== null) {
         const [, aliasList, filePathWithAlias, filePathWithoutAlias] = match;
-        const filePath = getNormalizedDependencyPath(filePathWithAlias || filePathWithoutAlias, mainPath);
-        const resolved = await resolve(filePath);
-        // console.log(filePath)
+        const contractPath = new ContractPaths(filePathWithAlias || filePathWithoutAlias, mainPath);
+        // console.log(contractPath)
+        const resolved = await resolve(contractPath.filePath, contractPath.isRelative);
 
         let codeContent = resolved.fileContents;
         if (aliasList) {
@@ -253,8 +308,13 @@ async function extractImports(content: any, mainPath: any = ""): Promise<Contrac
             });
         }
 
-        matches.push({ filePath, fileContents: codeContent, originalContents: resolved.fileContents });
-        matches.push(...(await extractImports(resolved.fileContents, filePath)));
+        // console.log("compiled", contractPath.originalFilePath, contractPath.filePath, "from", mainPath)
+        matches.push({
+            paths: contractPath,
+            fileContents: codeContent,
+            originalContents: resolved.fileContents,
+        });
+        matches.push(...(await extractImports(resolved.fileContents, contractPath.filePath)));
     }
 
     return matches;
@@ -266,13 +326,34 @@ function getDirPath(filePath: any) {
     return filePath.substring(0, Math.max(index1, index2));
 }
 
-function getNormalizedDependencyPath(dependency: any, filePath: any) {
+/**
+ * isRelative is true means that dependency path is relative to source (not in node_modules)
+ * Note the isRelative will break (not work) if the dependency is in node_modules is using relative paths in import
+ * Also note implementation will ruin the https:// as normalising // will result in /
+ * @param dependency 
+ * @param filePath 
+ * @returns 
+ */
+function getNormalizedDependencyPath(dependency: string, filePath: string) {
+    // We assume that if the dependency starts with ./ or ../ it is a relative path
     if (dependency.startsWith("./") || dependency.startsWith("../")) {
+        if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+            // remove the http:// or https://   
+            const rawPath = filePath.substring(filePath.indexOf("//") + 2);
+            dependency = path.join(getDirPath(rawPath), dependency);
+            dependency = path.normalize(dependency);
+
+            // Add back the http:// or https://
+            dependency = filePath.substring(0, filePath.indexOf("//") + 2) + dependency;
+            return { filePath: dependency.replace(/\\/g, "/"), isRelative: true };
+        }
+
         dependency = path.join(getDirPath(filePath), dependency);
         dependency = path.normalize(dependency);
+        return { filePath: dependency.replace(/\\/g, "/"), isRelative: false };
     }
 
-    return dependency.replace(/\\/g, "/");
+    return { filePath: dependency, isRelative: false };
 }
 
 function removeDuplicatesPreserveOrder(files: ContractDependency[]): ContractDependency[] {
@@ -281,9 +362,10 @@ function removeDuplicatesPreserveOrder(files: ContractDependency[]): ContractDep
 
     for (let i = files.length - 1; i >= 0; i--) {
         const file = files[i];
-        if (!seenPaths.has(file.filePath)) {
+        // console.log(path.basename(file.paths.originalFilePath));
+        if (!seenPaths.has(file.paths.originalFilePath)) {
             result.unshift(file); // Add to the beginning of the array
-            seenPaths.add(file.filePath);
+            seenPaths.add(path.basename(file.paths.originalFilePath));
         }
     }
 

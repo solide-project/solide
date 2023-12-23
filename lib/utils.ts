@@ -12,4 +12,14 @@ export const minify = (str: string) => {
   return minifiedString;
 }
 
+export const getSolidityContract = async (url: string) => {
+  if (!url) return "";
+  if (!url.startsWith("https://raw.githubusercontent.com")) return "";
+  if (!url.endsWith(".sol")) return "";
+
+  const response = await fetch(url);
+  if (!response.ok) return "ERror";
+  return await response.text();
+}
+
 export const solcVersion = "v0.8.23+commit.f704f362";
