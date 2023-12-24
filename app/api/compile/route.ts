@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
     console.log("Run using CLI", viaIR)
     console.log("Optimizer", optimizer)
 
-
     // const contractAddress: string = request.nextUrl.searchParams.get("version") || "";
     // if (contractAddress && !ethers.utils.isAddress(contractAddress)) {
     //     // https://api.etherscan.io/api?module=contract&action=getsourcecode&address=0xBB9bc244D798123fDe783fCc1C72d3Bb8C189413&apikey=YourApiKeyToken
@@ -46,6 +45,8 @@ export async function POST(request: NextRequest) {
     const contract = data.get("file") as File;
 
     const filePath: string = contract.name;
+    console.log("filePath", filePath)
+
     let name = path.basename(filePath);
     // console.log(name);
     const content: string = await contract.text();
@@ -95,9 +96,7 @@ export async function POST(request: NextRequest) {
         dependencies = await extractImports(content, filePath)
         dependencies = removeDuplicatesPreserveOrder(dependencies)
     } catch (error: any) {
-        return NextResponse.json({
-            details: [generateError(error.message, "ImportError")]
-        }, { status: 400, })
+        return NextResponseError(error.message);
     }
 
     const { flattenContract, sources } = flattenContracts({

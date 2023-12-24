@@ -90,6 +90,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     const formData = new FormData();
     const blob = new Blob([value], { type: 'text/plain' });
     formData.append('file', blob, url);
+    console.log("filename", url)
 
     let uri = `/api/compile?version=${encodeURIComponent(compilerVersion)}`
 
