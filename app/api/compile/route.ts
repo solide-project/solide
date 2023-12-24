@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const solcSnapshot = await getSolcByVersion(compilerVersion);
     const viaIR: boolean = request.nextUrl.searchParams.get("viaIR") === "1" || false;
     const enabled: boolean = request.nextUrl.searchParams.get("optimizer") === "1" || false;
-    const runs: number = parseInt(request.nextUrl.searchParams.get("optimizer") || "-1") || -1;
+    const runs: number = parseInt(request.nextUrl.searchParams.get("runs") || "-1") || -1;
 
     let optimizer = {}
     if (enabled && runs > 0) {
@@ -43,8 +43,7 @@ export async function POST(request: NextRequest) {
     // From here we are compiling a contract
     const data: FormData = await request.formData();
     const contract = data.get("file") as File;
-
-    const filePath: string = contract.name;
+    const filePath: string = data.get("source") as string || "";
     console.log("filePath", filePath)
 
     let name = path.basename(filePath);
@@ -58,8 +57,8 @@ export async function POST(request: NextRequest) {
          * Update the name of the contract to the first contract in the input
          * Note: We can use the etherscan api to get the contract name, but for now we will use query param for now
          */
-        name = request.nextUrl.searchParams.get("title") || "";
-        if (!name) {
+        const title = data.get("title") || "";
+        if (!title) {
             return NextResponseError("Missing Entry Title");
         }
 

@@ -90,15 +90,15 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     const formData = new FormData();
     const blob = new Blob([value], { type: 'text/plain' });
     formData.append('file', blob, url);
-    console.log("filename", url)
+    formData.append('source', url || encodeURIComponent(title));
+    if (title) {
+      formData.append('title', title);
+    }
 
     let uri = `/api/compile?version=${encodeURIComponent(compilerVersion)}`
 
     if (compileOptimiser) {
       uri += `&optimizer=${encodeURIComponent(compileOptimiser)}&runs=${encodeURIComponent(compilerRun)}`
-    }
-    if (title) {
-      uri += `&title=${encodeURIComponent(title)}`
     }
 
     console.log(uri)
