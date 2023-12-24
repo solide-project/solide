@@ -17,8 +17,8 @@ export async function POST(request: NextRequest) {
 
     const compilerVersion: string = decodeURI(request.nextUrl.searchParams.get("version") || solcVersion);
     const solcSnapshot = await getSolcByVersion(compilerVersion);
-    const viaIR: boolean = request.nextUrl.searchParams.get("viaIR") === "1" || false;
-    const enabled: boolean = request.nextUrl.searchParams.get("optimizer") === "1" || false;
+    const viaIR: boolean = request.nextUrl.searchParams.get("viaIR") === "true";
+    const enabled: boolean = request.nextUrl.searchParams.get("optimizer") === "true";
     const runs: number = parseInt(request.nextUrl.searchParams.get("runs") || "-1") || -1;
 
     let optimizer = {}
@@ -44,10 +44,7 @@ export async function POST(request: NextRequest) {
     const data: FormData = await request.formData();
     const contract = data.get("file") as File;
     const filePath: string = data.get("source") as string || "";
-    console.log("filePath", filePath)
-
     let name = path.basename(filePath);
-    // console.log(name);
     const content: string = await contract.text();
 
     // Check if the content is a (Solidity Standard Json-Input format)

@@ -69,11 +69,16 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     setValue(newValue || "");
   }
 
+  const [viaIR, setViaIR] = useState<boolean>(false)
   const [compilerRun, setCompilerRun] = useState<number>(200)
   const [compileOptimiser, setCompileOptimiser] = useState<boolean>(false)
   const handleCompileOptimiser = (e: any) => {
     const val = compileOptimiser;
     setCompileOptimiser(!val)
+  }
+  const handleViaIR = (e: any) => {
+    const val = viaIR;
+    setViaIR(!val)
   }
 
   const [compilerVersion, setCompilerVersion] = useState<string>(solcVersion)
@@ -99,6 +104,10 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
 
     if (compileOptimiser) {
       uri += `&optimizer=${encodeURIComponent(compileOptimiser)}&runs=${encodeURIComponent(compilerRun)}`
+    }
+
+    if (viaIR) {
+      uri += `&viaIR=${encodeURIComponent(viaIR)}`
     }
 
     console.log(uri)
@@ -260,7 +269,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
                   </label>
                 </div>
                 <div className="flex items-center space-x-2 py-4">
-                  <Checkbox id="viaIR" disabled={true} />
+                <Checkbox id="viaIR" checked={viaIR} onClick={handleViaIR} />
                   <label htmlFor="viaIR"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
