@@ -2,13 +2,13 @@
 
 import Editor from '@monaco-editor/react';
 import { useTheme } from "next-themes"
-import { solcVersion } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { GetSolidityJsonInputFormat, getEntryDetails, solcVersion } from '@/lib/utils';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { SolVersion } from '@/components/main/footer/sol-version';
 import { Signer, ethers } from 'ethers';
 import { SelectedChain } from '@/components/main/footer/selected-chain';
-import { CompileError, CompileResult } from '@/lib/interfaces';
+import { CompileError, CompileResult, SolcError } from '@/lib/interfaces';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,54 +19,158 @@ import { CompileErrors } from '@/components/main/compile/errors';
 import { EditorLoading } from '@/components/main/compile/loading';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Checkbox } from '../ui/checkbox';
+import { getCompilerVersions, solidityCompiler } from '@/public/_solc-worker/solc-custom';
+import { GithubResolver } from '@resolver-engine/imports/build/resolvers/githubresolver';
+import path from 'path';
 
 interface SolideIDEProps
   extends React.HTMLAttributes<HTMLDivElement> {
   url?: string;
   title?: string;
-  content?: string;
+  content: string;
   version?: string;
 }
 
-export function SolideIDE({ url, title = "contract", content, version }: SolideIDEProps) {
+interface CompileInput {
+  language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper";
+  settings: {
+    outputSelection: any;
+    optimizer: any;
+    evmVersion: string;
+    metadata: any;
+    libraries: any;
+    remappings: any;
+    metadataHash: string;
+  }
+  sources: {
+    [key: string]: CompileSource;
+  };
+}
+
+interface CompileSource {
+  content: string;
+}
+
+
+export function SolideIDE({ url, content, version,
+  title = "contract",
+}: SolideIDEProps) {
   const { theme } = useTheme()
-  const [value, setValue] = useState<string>(title)
+
+  // These variables are used to store the contract input if it is JSON format content
+  const [sourceKey, setSourceKey] = useState<string>("")
+  const [contractInput, setContractInput] = useState<CompileInput | undefined>(undefined)
+
+  // This is the main smart contract content
+  const [value, setValue] = useState<string>(content)
   const [filename, setFilename] = useState<string>(`${title}.sol`)
   const [compileInfo, setCompileInfo] = useState<CompileResult | undefined>()
 
   useEffect(() => {
-    if (content) {
-      setValue(content);
+    setValue(content);
+
+    //#region Check if the smart contract is JSON format
+    const input: CompileInput = GetSolidityJsonInputFormat(content);
+    console.log(input)
+    if (input) {
+      setContractInput(input);
+      const onChainEntry = Object.entries(input.sources).find(
+        ([_, val]) => val.content.includes(`contract ${title}`));
+
+      if (onChainEntry) {
+        const [key, onChainContent] = onChainEntry;
+        // Now, key is the key, and onChainContent is the value
+        setValue(onChainContent.content);
+        setSourceKey(key)
+      }
     }
+    //#endregion
   }, [content]);
 
-  const [width, setWidth] = useState<number>(1024);
-  const [editorFontSize, setEditorFontSize] = useState<number>(16);
-  useEffect(() => {
-    const handleWindowResize = () => {
-      let fontSize = 12;
+  //#region Compiling on client using web worker
+  // const compileOffLine = async () => {
+  //   if (compiling) return;
+  //   setCompiling(true);
 
-      if (window.innerWidth > 1024) {
-        fontSize = 16;
-      } else if (window.innerWidth > 768) {
-        fontSize = 14;
-      }
+  //   const formData = new FormData();
+  //   const blob = new Blob([value], { type: 'text/plain' });
+  //   formData.append('file', blob, url);
+  //   formData.append('source', url || encodeURIComponent(title));
+  //   if (title) {
+  //     formData.append('title', title);
+  //   }
 
-      setWidth(window.innerWidth);
-      setEditorFontSize(fontSize);
-    };
+  //   let uri = `/api/source?version=${encodeURIComponent(compilerVersion)}`
 
-    handleWindowResize(); // Initialize size
-    window.addEventListener('resize', handleWindowResize);
-    return () => {
-      window.removeEventListener('resize', handleWindowResize);
-    };
-  }, []);
+  //   if (compileOptimiser) {
+  //     uri += `&optimizer=${encodeURIComponent(compileOptimiser)}&runs=${encodeURIComponent(compilerRun)}`
+  //   }
 
+  //   if (viaIR) {
+  //     uri += `&viaIR=${encodeURIComponent(viaIR)}`
+  //   }
+
+  //   console.log(uri)
+  //   const response = await fetch(uri, {
+  //     method: 'POST',
+  //     body: formData,
+  //   })
+
+  //   if (!response.ok) {
+  //     const data = await response.json() as CompileError;
+  //     console.log(data);
+  //     return;
+  //   }
+  //   const data = await response.json();
+  //   console.log(`https://binaries.soliditylang.org/bin/soljson-${compilerVersion}.js`)
+
+  //   try {
+  //     const output: any = await solidityCompiler({
+  //       version: `https://binaries.soliditylang.org/bin/soljson-${compilerVersion}.js`,
+  //       sources: data.sources
+  //     })
+  //     if (output.errors) {
+  //       // For demo we don't care about warnings
+  //       output.errors = output.errors.filter((error: SolcError) => error.type !== "Warning");
+  //       if (output.errors.length > 0) {
+  //         setCompileError({ details: output.errors } as CompileError);
+  //         setCompiling(false);
+  //         return;
+  //       }
+  //     }
+  //     let name = path.basename(url || encodeURIComponent(title));
+  //     const compiled: any = await getEntryDetails(output, name);
+  //     if (compiled) {
+  //       const constructors: any[] = compiled.abi.filter((m: any) => m.type === "constructor");
+
+  //       if (constructors.length > 0) {
+  //         const contractConstructor = constructors.pop();
+  //         setConstructorABI(contractConstructor)
+  //       }
+  //       setContractAddress("");
+  //       setCompileInfo({ data: compiled, flattenContract: data.flattenContract });
+  //       setCompiling(false);
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //     setCompileError(undefined);
+  //     setCompiling(false);
+  //     return;
+  //   }
+  // }
+  //#endregion
+  
   const onChange = async (newValue: string | undefined, event: any) => {
-    // Could compile on change but it might have performance issue
-    if (newValue === undefined) return;
-    setValue(newValue || "");
+    if (!newValue) return;
+
+    // If the contract is JSON format, we need to update the content as well
+    if (contractInput) {
+      const input = contractInput;
+      input.sources[sourceKey].content = newValue;
+      setContractInput(input);
+    }
+
+    setValue(newValue);
   }
 
   const [viaIR, setViaIR] = useState<boolean>(false)
@@ -93,8 +197,16 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     setContract(undefined);
 
     const formData = new FormData();
-    const blob = new Blob([value], { type: 'text/plain' });
-    formData.append('file', blob, url);
+
+    // override the content with the json format if it exists
+
+    if (contractInput) {
+      const blob = new Blob([JSON.stringify(contractInput)], { type: 'text/plain' });
+      formData.append('file', blob, url);
+    } else {
+      const blob = new Blob([content], { type: 'text/plain' });
+      formData.append('file', blob, url);
+    }
     formData.append('source', url || encodeURIComponent(title));
     if (title) {
       formData.append('title', title);
@@ -114,7 +226,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     const response = await fetch(uri, {
       method: 'POST',
       body: formData,
-    })
+    });
 
     if (!response.ok) {
       const data = await response.json() as CompileError;
@@ -124,7 +236,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
       return;
     }
     const data = await response.json();
-    const constructors: any[] = data.data.abi.filter((m: any)=> m.type === "constructor");
+    const constructors: any[] = data.data.abi.filter((m: any) => m.type === "constructor");
 
     if (constructors.length > 0) {
       const contractConstructor = constructors.pop();
@@ -137,7 +249,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
 
   const [contractAddress, setContractAddress] = useState<string>("");
   const [constructorArgs, setConstructorArgs] = useState<any[]>([]);
-  const [constructorABI, setConstructorABI] = useState<{ 
+  const [constructorABI, setConstructorABI] = useState<{
     inputs: any[];
   }>({
     inputs: [],
@@ -169,6 +281,31 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
     }
   }
 
+  //#region Set width, fontsize of the editor
+  const [width, setWidth] = useState<number>(1024);
+  const [editorFontSize, setEditorFontSize] = useState<number>(16);
+  useEffect(() => {
+    const handleWindowResize = () => {
+      let fontSize = 12;
+
+      if (window.innerWidth > 1024) {
+        fontSize = 16;
+      } else if (window.innerWidth > 768) {
+        fontSize = 14;
+      }
+
+      setWidth(window.innerWidth);
+      setEditorFontSize(fontSize);
+    };
+
+    handleWindowResize(); // Initialize size
+    window.addEventListener('resize', handleWindowResize);
+    return () => {
+      window.removeEventListener('resize', handleWindowResize);
+    };
+  }, []);
+  //#endregion
+
   return (
     <div>
       {width < 768
@@ -195,8 +332,8 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
             {compileInfo
               ? <div>
                 <ContractMetadata items={[
-                  { title: "ABI", payload: JSON.stringify(compileInfo.data.abi) },
-                  { title: "Bytecode", payload: compileInfo.data.evm.bytecode.object },
+                  { title: "ABI", payload: JSON.stringify(compileInfo.data?.abi || "{}") },
+                  { title: "Bytecode", payload: compileInfo.data?.evm?.bytecode?.object || "" },
                   { title: "Flatten", payload: compileInfo.flattenContract },
                 ]} />
                 <ContractInvoke
@@ -227,8 +364,8 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
             {compileInfo
               ? <div>
                 <ContractMetadata items={[
-                  { title: "ABI", payload: JSON.stringify(compileInfo.data.abi) },
-                  { title: "Bytecode", payload: compileInfo.data.evm.bytecode.object },
+                  { title: "ABI", payload: JSON.stringify(compileInfo.data?.abi || "{}") },
+                  { title: "Bytecode", payload: compileInfo.data?.evm?.bytecode?.object || "" },
                   { title: "Flatten", payload: compileInfo.flattenContract },
                 ]} />
                 <ContractInvoke
@@ -246,7 +383,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
           <div className="flex space-x-2">
             <Button size="sm" onClick={compile} disabled={compiling}>{compiling ? "Compiling ..." : "Compile"}</Button>
             <Button size="sm" onClick={deploy} disabled={ethers.utils.isAddress(contractAddress) || constructorArgs.length === (constructorABI.inputs || []).length
-               ? false : true}>Deploy</Button>
+              ? false : true}>Deploy</Button>
             <Input className="h-9 rounded-md px-3" placeholder="Contract Address"
               value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} />
           </div>
@@ -269,7 +406,7 @@ export function SolideIDE({ url, title = "contract", content, version }: SolideI
                   </label>
                 </div>
                 <div className="flex items-center space-x-2 py-4">
-                <Checkbox id="viaIR" checked={viaIR} onClick={handleViaIR} />
+                  <Checkbox id="viaIR" checked={viaIR} onClick={handleViaIR} />
                   <label htmlFor="viaIR"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
