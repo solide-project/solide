@@ -51,6 +51,15 @@ export async function POST(request: NextRequest) {
             return NextResponseError("Missing Entry Title");
         }
 
+        if (solidityInput.language !== "Solidity") {
+            return NextResponseError("Invalid language");
+        }
+        
+
+        // Since our backend doesn't have CLI and will timeout for large files, will disable for now but looking to implementation
+        if (solidityInput.settings && solidityInput.settings.viaIR) {
+            delete solidityInput.settings.viaIR;
+        }
         var output = JSON.parse(solcSnapshot.compile(JSON.stringify(solidityInput)));
         if (output.errors) {
             // For demo we don't care about warnings
@@ -110,7 +119,7 @@ export async function POST(request: NextRequest) {
                     "*": ["*"]
                 }
             },
-            viaIR: viaIR,
+            // viaIR: viaIR,
             optimizer: optimizer
         }
     };

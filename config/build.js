@@ -38,6 +38,10 @@ const library = [
     "@tableland/evm/contracts",
     "erc721a-upgradeable",
     "@arbitrum/nitro-contracts",
+    "@balancer-labs/v2-vault",
+    "@balancer-labs/v2-interfaces",
+    "@balancer-labs/v2-solidity-utils",
+    "@balancer-labs/v2-pool-utils",
     // "@oceanprotocol/contracts",
 ];
 

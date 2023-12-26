@@ -26,6 +26,7 @@ import path from 'path';
 interface SolideIDEProps
   extends React.HTMLAttributes<HTMLDivElement> {
   url?: string;
+  chainId?: string;
   title?: string;
   content: string;
   version?: string;
@@ -52,7 +53,11 @@ interface CompileSource {
 }
 
 
-export function SolideIDE({ url, content, version,
+export function SolideIDE({
+  url,
+  content,
+  version,
+  chainId,
   title = "contract",
 }: SolideIDEProps) {
   const { theme } = useTheme()
@@ -159,7 +164,7 @@ export function SolideIDE({ url, content, version,
   //   }
   // }
   //#endregion
-  
+
   const onChange = async (newValue: string | undefined, event: any) => {
     if (!newValue) return;
 
@@ -236,6 +241,7 @@ export function SolideIDE({ url, content, version,
       return;
     }
     const data = await response.json();
+    console.log(data)
     const constructors: any[] = data.data.abi.filter((m: any) => m.type === "constructor");
 
     if (constructors.length > 0) {
@@ -389,7 +395,7 @@ export function SolideIDE({ url, content, version,
           </div>
 
           <div className="flex items-center space-x-2">
-            {url && <ContentLink url={url} />}
+            {url && <ContentLink url={url} chainId={chainId} />}
             <ThemeToggle />
             <Popover>
               <PopoverTrigger>Settings</PopoverTrigger>
@@ -406,11 +412,11 @@ export function SolideIDE({ url, content, version,
                   </label>
                 </div>
                 <div className="flex items-center space-x-2 py-4">
-                  <Checkbox id="viaIR" checked={viaIR} onClick={handleViaIR} />
+                  <Checkbox id="viaIR" disabled={true} checked={viaIR} onClick={handleViaIR} />
                   <label htmlFor="viaIR"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    Use CLI
+                    Use CLI (Coming Soon)
                   </label>
                 </div>
               </PopoverContent>

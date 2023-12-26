@@ -15,6 +15,9 @@
   },
   "dependencies": {
     "@arbitrum/nitro-contracts": "^1.1.0",
+    "@balancer-labs/v2-pool-utils": "^4.1.1",
+    "@balancer-labs/v2-solidity-utils": "^4.0.0",
+    "@balancer-labs/v2-vault": "^3.0.1",
     "@chainlink/contracts": "^0.8.0",
     "@monaco-editor/react": "^4.6.0",
     "@oceanprotocol/contracts": "^2.0.3",

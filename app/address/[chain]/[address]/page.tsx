@@ -11,6 +11,7 @@ export default async function Page({ params }: { params: { chain: string, addres
 
     return <SolideIDE
         url={params.address}
+        chainId={params.chain}
         title={data.result[0].ContractName}
         content={data.result[0].SourceCode}
         version={data.result[0].CompilerVersion}
