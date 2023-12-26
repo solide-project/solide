@@ -37,6 +37,7 @@ const library = [
     "solmate",
     "@tableland/evm/contracts",
     "erc721a-upgradeable",
+    "@arbitrum/nitro-contracts",
     // "@oceanprotocol/contracts",
 ];
 
