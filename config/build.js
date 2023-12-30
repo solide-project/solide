@@ -22,7 +22,28 @@ function copyFolderRecursiveSync(sourcePath, destinationPath) {
             copyFolderRecursiveSync(sourceFile, destinationFile);
         } else {
             // Copy the file
+            // if (path.extname(file).toLowerCase() === '.sol') {
             fs.copyFileSync(sourceFile, destinationFile);
+            // }
+        }
+    });
+}
+
+function deleteNonSolidityFiles(directory) {
+    const files = fs.readdirSync(directory);
+
+    files.forEach((file) => {
+        const filePath = path.join(directory, file);
+
+        if (fs.statSync(filePath).isDirectory()) {
+            // Recursively delete files in subdirectories
+            deleteNonSolidityFiles(filePath);
+        } else {
+            // Check if the file is a Solidity file (ends with ".sol")
+            if (path.extname(filePath).toLowerCase() !== '.sol') {
+                console.log(`Deleting: ${filePath}`);
+                fs.unlinkSync(filePath);
+            }
         }
     });
 }
@@ -30,6 +51,7 @@ function copyFolderRecursiveSync(sourcePath, destinationPath) {
 // Example usage
 const library = [
     "@chainlink/contracts",
+    "@chainlink/contracts-ccip",
     "@openzeppelin/contracts",
     "@openzeppelin/contracts-upgradeable",
     "@uniswap/v3-core",
@@ -42,16 +64,28 @@ const library = [
     "@balancer-labs/v2-interfaces",
     "@balancer-labs/v2-solidity-utils",
     "@balancer-labs/v2-pool-utils",
-    // "@oceanprotocol/contracts",
+    "cross-not-official",
+    "@aave/periphery-v3",
+    "@aave/core-v3",
 ];
 
+// library.forEach((lib) => {
+//     const sourceFolder = `node_modules/${lib}`;
+//     const destinationFolder = `public/${lib}`;
+
+//     // Create destination folder if it doesn't exist
+//     fs.mkdirSync(destinationFolder, { recursive: true });
+
+//     copyFolderRecursiveSync(sourceFolder, destinationFolder);
+//     console.log(`Folder copied from '${sourceFolder}' to '${destinationFolder}' successfully.`);
+// });
+
 library.forEach((lib) => {
-    const sourceFolder = `node_modules/${lib}`;
     const destinationFolder = `public/${lib}`;
-
-    // Create destination folder if it doesn't exist
-    fs.mkdirSync(destinationFolder, { recursive: true });
-
-    copyFolderRecursiveSync(sourceFolder, destinationFolder);
-    console.log(`Folder copied from '${sourceFolder}' to '${destinationFolder}' successfully.`);
+    try {
+        deleteNonSolidityFiles(destinationFolder);
+        console.log(`Finished cleaning ${destinationFolder}`);
+    } catch (error) {
+        console.error(`Error cleaning ${destinationFolder}: ${error.message}`);
+    }
 });

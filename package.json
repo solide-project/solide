@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && node config/build.js",
-    "start": "next start",
+    "start": "next start -p 8000",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
@@ -14,11 +14,14 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache"
   },
   "dependencies": {
+    "@aave/core-v3": "^1.18.0",
+    "@aave/periphery-v3": "^2.5.0",
     "@arbitrum/nitro-contracts": "^1.1.0",
     "@balancer-labs/v2-pool-utils": "^4.1.1",
     "@balancer-labs/v2-solidity-utils": "^4.0.0",
     "@balancer-labs/v2-vault": "^3.0.1",
     "@chainlink/contracts": "^0.8.0",
+    "@chainlink/contracts-ccip": "^1.2.1",
     "@monaco-editor/react": "^4.6.0",
     "@oceanprotocol/contracts": "^2.0.3",
     "@openzeppelin/contracts": "^4.9.5",
@@ -39,6 +42,7 @@
     "class-variance-authority": "^0.4.0",
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
+    "cross-not-official": "^1.0.0",
     "erc721a-upgradeable": "^4.2.3",
     "ethers": "^5.7.2",
     "lucide-react": "0.105.0-alpha.4",

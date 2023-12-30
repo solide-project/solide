@@ -10,4 +10,6 @@ export enum ChainID {
     OPTIMISM_SEPOLIA = '420',
     FANTOM_MAINNET = '250',
     FANTOM_TESTNET = '4002',
+    METIS_ANDROMEDA = '1088',
+    METIS_SEPOLIA = '59901',
 }

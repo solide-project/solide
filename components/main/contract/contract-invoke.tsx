@@ -49,7 +49,7 @@ export function ContractInvoke({
             if (methodInfo.outputs && methodInfo.outputs.length > 0) {
                 result = await contractMethod();
 
-                if (methodInfo.outputs[0].type === "uint256") {
+                if (methodInfo.outputs[0].type.includes("int")) {
                     result = result.toString() as BigNumber;
                 } else {
                     result = result as string;

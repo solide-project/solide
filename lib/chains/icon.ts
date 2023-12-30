@@ -18,6 +18,9 @@ export const getIconByChainId = (chainId: string): string => {
         case ChainID.FANTOM_MAINNET:
         case ChainID.FANTOM_TESTNET:
             return "https://www.ankr.com/rpc/static/media/ftm.c92e9c29.svg";
+        case ChainID.METIS_ANDROMEDA:
+        case ChainID.METIS_SEPOLIA:
+            return "https://www.ankr.com/rpc/static/media/metis.77fe8764.svg";
         default:
             return "";
     }

@@ -7,6 +7,7 @@ import { ImportsFsEngine, parsers, resolvers } from "@resolver-engine/imports-fs
 import fs from "fs";
 import path from "path";
 import { ContractPaths } from "@/lib/solide/contract-paths";
+import { ethers } from "ethers";
 
 export async function POST(request: NextRequest) {
     if (request.nextUrl.searchParams.get("version") &&
@@ -54,12 +55,22 @@ export async function POST(request: NextRequest) {
         if (solidityInput.language !== "Solidity") {
             return NextResponseError("Invalid language");
         }
-        
 
-        // Since our backend doesn't have CLI and will timeout for large files, will disable for now but looking to implementation
-        if (solidityInput.settings && solidityInput.settings.viaIR) {
-            delete solidityInput.settings.viaIR;
+
+        if (!solidityInput.settings) {
+            solidityInput.settings = {
+                outputSelection: {
+                    "*": {
+                        "*": ["*"]
+                    }
+                },
+            };
         }
+        // Since our backend doesn't have CLI and will timeout for large files, will disable for now but looking to implementation
+        // if (solidityInput.settings && solidityInput.settings.viaIR) {
+        //     delete solidityInput.settings.viaIR;
+        // }
+
         var output = JSON.parse(solcSnapshot.compile(JSON.stringify(solidityInput)));
         if (output.errors) {
             // For demo we don't care about warnings
@@ -102,9 +113,14 @@ export async function POST(request: NextRequest) {
         includeSource: true
     });
 
-    const sourceName = filePath.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "");
+    let sourceName = filePath.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "");
+    const title: string = data.get("title") as string || "";
+    if (title && ethers.utils.isAddress(sourceName)) {
+        sourceName = `${title}.sol`;
+        name = title;
+    }
 
-    var input = {
+    var input: any = {
         language: "Solidity",
         sources: {
             ...sources,
@@ -120,11 +136,17 @@ export async function POST(request: NextRequest) {
                 }
             },
             // viaIR: viaIR,
-            optimizer: optimizer
+            // optimizer: optimizer
         }
     };
 
-    // console.log(Object.keys(input.sources))
+    if (viaIR) {
+        input.settings.viaIR = true;
+    }
+    if (optimizer) {
+        input.settings.optimizer = optimizer;
+    }
+
     var output = JSON.parse(solcSnapshot.compile(JSON.stringify(input)));
     if (output.errors) {
         // For demo we don't care about warnings
@@ -134,6 +156,7 @@ export async function POST(request: NextRequest) {
         }
     }
 
+    // console.log("Output", output)
     const compiled = await getEntryDetails(output, name);
     if (compiled) {
         return NextResponse.json({ data: compiled, flattenContract });
@@ -174,26 +197,6 @@ const flattenContracts = ({
 
         if (includeSource) {
             if (paths.isHttp()) {
-                // if (paths.filePath.includes("IAllowanceTransfer")) {
-                //     // path.join(paths.folderPath)
-                //     sources["interfaces/IAllowanceTransfer.sol"] = { content: originalContents };
-                // }
-                // if (paths.filePath.includes("IERC1271")) {
-                //     // path.join(paths.folderPath)
-                //     sources["interfaces/IERC1271.sol"] = { content: originalContents };
-                // }
-
-                // if (paths.originalFilePath.startsWith("./")) {
-                //     const pathWithoutDot = path.normalize(paths.originalFilePath).replace(/\\/g, "/");
-                //     console.log("Adding .", pathWithoutDot, paths.folderPath)
-                //     sources[pathWithoutDot] = { content: originalContents };
-                //     sources[paths.folderPath] = { content: originalContents };
-                // } else if (paths.originalFilePath.startsWith("../")) {
-                //     const compilePath = getNormalizedDependencyPath(paths.originalFilePath, paths.folderPath)
-                //     console.log("Adding ..", compilePath.filePath)
-                //     console.log(paths.originalFilePath, paths.folderPath)
-                //     sources[compilePath.filePath] = { content: originalContents };
-                // }
                 sources[paths.folderPath] = { content: originalContents };
             } else {
                 sources[paths.filePath] = { content: originalContents };

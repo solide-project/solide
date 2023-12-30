@@ -32,14 +32,12 @@ export async function getEntryDetails(output: any, entry: string) {
   entry = getFileNameWithoutExtension(entry);
   return new Promise((resolve, reject) => {
     Object.keys(output.contracts).forEach((contractSource) => {
-      // console.log(contractSource, entry)
       if (contractSource === entry) {
         for (var contractName in output.contracts[entry]) {
           resolve(output.contracts[contractSource][contractName]);
         }
       }
       Object.keys(output.contracts[contractSource]).forEach((contractName) => {
-        // console.log(contractName, entry)
         if (contractName === entry) {
           resolve(output.contracts[contractSource][entry]);
         }

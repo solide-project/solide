@@ -2,13 +2,13 @@
 
 import Editor from '@monaco-editor/react';
 import { useTheme } from "next-themes"
-import { GetSolidityJsonInputFormat, getEntryDetails, solcVersion } from '@/lib/utils';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { GetSolidityJsonInputFormat, solcVersion } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { SolVersion } from '@/components/main/footer/sol-version';
 import { Signer, ethers } from 'ethers';
 import { SelectedChain } from '@/components/main/footer/selected-chain';
-import { CompileError, CompileResult, SolcError } from '@/lib/interfaces';
+import { CompileError, CompileResult } from '@/lib/interfaces';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,9 +19,6 @@ import { CompileErrors } from '@/components/main/compile/errors';
 import { EditorLoading } from '@/components/main/compile/loading';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Checkbox } from '../ui/checkbox';
-import { getCompilerVersions, solidityCompiler } from '@/public/_solc-worker/solc-custom';
-import { GithubResolver } from '@resolver-engine/imports/build/resolvers/githubresolver';
-import path from 'path';
 
 interface SolideIDEProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -209,10 +206,12 @@ export function SolideIDE({
       const blob = new Blob([JSON.stringify(contractInput)], { type: 'text/plain' });
       formData.append('file', blob, url);
     } else {
-      const blob = new Blob([content], { type: 'text/plain' });
+      const blob = new Blob([value], { type: 'text/plain' });
       formData.append('file', blob, url);
     }
+
     formData.append('source', url || encodeURIComponent(title));
+
     if (title) {
       formData.append('title', title);
     }
@@ -227,7 +226,6 @@ export function SolideIDE({
       uri += `&viaIR=${encodeURIComponent(viaIR)}`
     }
 
-    console.log(uri)
     const response = await fetch(uri, {
       method: 'POST',
       body: formData,
@@ -412,7 +410,7 @@ export function SolideIDE({
                   </label>
                 </div>
                 <div className="flex items-center space-x-2 py-4">
-                  <Checkbox id="viaIR" disabled={true} checked={viaIR} onClick={handleViaIR} />
+                  <Checkbox id="viaIR" checked={viaIR} onClick={handleViaIR} />
                   <label htmlFor="viaIR"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
