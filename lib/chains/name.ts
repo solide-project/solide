@@ -28,6 +28,12 @@ export const getNetworkNameFromChainID = (chainId: string) => {
             return "Metis Andormeda";
         case ChainID.METIS_SEPOLIA:
             return "Metis Seoplia";
+        case ChainID.ARBITRUM_NOVA:
+            return "Arbitrum Nova";
+        case ChainID.ARBITRUM_ONE:
+            return "Arbitrum One";
+        case ChainID.ARBITRUM_GOERLI:
+            return "Arbitrum Goerli";
         default:
             return "";
     }

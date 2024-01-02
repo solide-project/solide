@@ -41,7 +41,7 @@ function deleteNonSolidityFiles(directory) {
         } else {
             // Check if the file is a Solidity file (ends with ".sol")
             if (path.extname(filePath).toLowerCase() !== '.sol') {
-                console.log(`Deleting: ${filePath}`);
+                // console.log(`Deleting: ${filePath}`);
                 fs.unlinkSync(filePath);
             }
         }
@@ -60,6 +60,7 @@ const library = [
     "@tableland/evm/contracts",
     "erc721a-upgradeable",
     "@arbitrum/nitro-contracts",
+    "@arbitrum/token-bridge-contracts",
     "@balancer-labs/v2-vault",
     "@balancer-labs/v2-interfaces",
     "@balancer-labs/v2-solidity-utils",
@@ -67,18 +68,19 @@ const library = [
     "cross-not-official",
     "@aave/periphery-v3",
     "@aave/core-v3",
+    "arb-bridge-eth",
 ];
 
-// library.forEach((lib) => {
-//     const sourceFolder = `node_modules/${lib}`;
-//     const destinationFolder = `public/${lib}`;
+library.forEach((lib) => {
+    const sourceFolder = `node_modules/${lib}`;
+    const destinationFolder = `public/${lib}`;
 
-//     // Create destination folder if it doesn't exist
-//     fs.mkdirSync(destinationFolder, { recursive: true });
+    // Create destination folder if it doesn't exist
+    fs.mkdirSync(destinationFolder, { recursive: true });
 
-//     copyFolderRecursiveSync(sourceFolder, destinationFolder);
-//     console.log(`Folder copied from '${sourceFolder}' to '${destinationFolder}' successfully.`);
-// });
+    copyFolderRecursiveSync(sourceFolder, destinationFolder);
+    console.log(`Folder copied from '${sourceFolder}' to '${destinationFolder}' successfully.`);
+});
 
 library.forEach((lib) => {
     const destinationFolder = `public/${lib}`;

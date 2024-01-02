@@ -21,6 +21,11 @@ export const getIconByChainId = (chainId: string): string => {
         case ChainID.METIS_ANDROMEDA:
         case ChainID.METIS_SEPOLIA:
             return "https://www.ankr.com/rpc/static/media/metis.77fe8764.svg";
+        case ChainID.ARBITRUM_ONE:
+        case ChainID.ARBITRUM_GOERLI:
+            return "https://www.ankr.com/rpc/static/media/arbitrum.5e332f88.svg";
+        case ChainID.ARBITRUM_NOVA:
+            return "https://www.ankr.com/rpc/static/media/arbitrum-nova.b93b7dfa.svg";
         default:
             return "";
     }

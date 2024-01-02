@@ -28,6 +28,12 @@ export const getExplorer = (network: string): string => {
             return Explorer.METIS_ANDROMEDA;
         case ChainID.METIS_SEPOLIA:
             return Explorer.METIS_SEPOLIA;
+        case ChainID.ARBITRUM_GOERLI:
+            return Explorer.ARBITRUM_GOERLI;
+        case ChainID.ARBITRUM_ONE:
+            return Explorer.ARBITRUM_ONE;
+        case ChainID.ARBITRUM_NOVA:
+            return Explorer.ARBITRUM_NOVA;
         default:
             return Explorer.ETHEREUM_MAINNET;
     }
@@ -37,6 +43,12 @@ enum Explorer {
     ETHEREUM_MAINNET = 'https://etherscan.io',
     ETHEREUM_GOERLI = 'https://goerli.etherscan.io',
     ETHEREUM_SEPOLIA = 'https://sepolia.etherscan.io',
+    METIS_ANDROMEDA = 'https://andromeda-explorer.metis.io',
+    METIS_SEPOLIA = 'https://sepolia.explorer.metisdevops.link',
+    ARBITRUM_ONE = 'https://arbiscan.io',
+    ARBITRUM_GOERLI = 'https://goerli.arbiscan.io',
+    ARBITRUM_NOVA = 'https://nova.arbiscan.io',
+
     POLYGON_MAINNET = 'https://polygonscan.com',
     POLYGON_MUMBAI = 'https://mumbai.polygonscan.com',
     AVALANCHE_MAINNET = 'https://snowtrace.io',
@@ -45,7 +57,5 @@ enum Explorer {
     OPTIMISM_SEPOLIA = 'https://sepolia-optimism.etherscan.io',
     FANTOM_MAINNET = 'https://ftmscan.com',
     FANTOM_TESTNET = 'https://testnet.ftmscan.com',
-    METIS_ANDROMEDA = 'https://andromeda-explorer.metis.io',
-    METIS_SEPOLIA = 'https://sepolia.explorer.metisdevops.link',
 }
 
