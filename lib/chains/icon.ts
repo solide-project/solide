@@ -48,7 +48,7 @@ export const getIconByChainId = (chainId: string): string => {
         case ChainID.MOONBASE_ALPHA:
             return "https://www.ankr.com/rpc/static/media/moonbeam.3983fccc.svg";
         case ChainID.MOONRIVER_MAINNET:
-            return "/icons/moonriver.jpg";
+            return "/icons/moonriver.svg";
         case ChainID.CELO_MAINNET:
         case ChainID.CELO_ALFAJORES:
             return "https://www.ankr.com/rpc/static/media/celo.11c5d71f.svg";
@@ -88,10 +88,32 @@ export const getIconByChainId = (chainId: string): string => {
         case ChainID.WEMIX_TESTNET:
             return "/icons/wemix.svg";
         case ChainID.ASTAR_MAINNET:
+        case ChainID.SHUBIYA_TESTNET:
             return "/icons/astar.svg";
+        case ChainID.SHIDEN_MAINNET:
+            return "/icons/shiden.svg";
         case ChainID.ZETACHAIN_MAINNET:
         case ChainID.ZETACHAIN_TESTNET:
             return "https://www.ankr.com/rpc/static/media/zetachain.380fd8f3.svg";
+        case ChainID.FLARE_MAINNET:
+        case ChainID.FLARE_COSTON:
+        case ChainID.FLARE_COSTON2:
+            return "https://www.ankr.com/rpc/static/media/flare.f8cd041e.svg";
+        case ChainID.FUSE_MAINNET:
+        case ChainID.FUSE_SPARK:
+            return "/icons/fuse.svg";
+        case ChainID.SHIBARIUM_MAINNET:
+        case ChainID.PUPPYNET_TESTNET:
+            return "/icons/shibarium.svg";
+        case ChainID.CONFLUX_MAINNET:
+        case ChainID.CONFLUX_TESTNET:
+            return "/icons/conflux.svg";
+        case ChainID.FILECOIN_MAINNET:
+        case ChainID.FILECOIN_CALIBRATION:
+            return "https://www.ankr.com/rpc/static/media/filecoin.f71f157a.svg";
+        case ChainID.ENERGY_WEB_CHAIN:
+        case ChainID.ENERGY_WEB_CHAIN_TESTNET:
+            return "/icons/energyweb.svg";
         default:
             return "";
     }

@@ -31,7 +31,7 @@ export const getNetworkNameFromChainID = (chainId: string) => {
         case ChainID.OASIS_SAPPHIRE_TESTNET:
             return "Oasis Sapphire Testnet";
         case ChainID.IMMUTABLE_MAINNET:
-            return "Immutable";
+            return "Immutable Mainnet";
         case ChainID.IMMUTABLE_TESTNET:
             return "Immutable Testnet";
 
@@ -66,15 +66,15 @@ export const getNetworkNameFromChainID = (chainId: string) => {
         case ChainID.MOONRIVER_MAINNET:
             return "Moonriver";
         case ChainID.CELO_MAINNET:
-            return "Celo";
+            return "Celo Mainnet";
         case ChainID.CELO_ALFAJORES:
             return "Celo Alfajores Testnet";
         case ChainID.GNOSIS_MAINNET:
-            return "Gnosis";
+            return "Gnosis Mainnet";
         case ChainID.CRONOS_MAINNET:
-            return "Cronos";
+            return "Cronos Mainnet";
         case ChainID.SCROLL_MAINNET:
-            return "Scroll";
+            return "Scroll Mainnet";
         case ChainID.SCROLL_SEPOLIA:
             return "Scroll Seoplia";
         case ChainID.MANTLE_MAINNET:
@@ -82,17 +82,17 @@ export const getNetworkNameFromChainID = (chainId: string) => {
         case ChainID.MANTLE_TESTNET:
             return "Mantle Testnet";
         case ChainID.BITTORRENT_MAINNET:
-            return "BitTorrent";
+            return "BitTorrent Mainnet";
         case ChainID.BITTORRENT_TESTNET:
             return "Donau Testnet";
         case ChainID.XDC_MAINNET:
             return "XDC Network";
         case ChainID.CANTO_MAINNET:
-            return "Canto";
+            return "Canto Mainnet";
         case ChainID.CANTO_TESTNET:
             return "Canto Testnet";
         case ChainID.KAVA_MAINNET:
-            return "Kava";
+            return "Kava Mainnet";
         case ChainID.KAVA_TESTNET:
             return "Kava Testnet";
         case ChainID.ROLLUX_MAINNET:
@@ -100,13 +100,13 @@ export const getNetworkNameFromChainID = (chainId: string) => {
         case ChainID.ROLLUX_TESTNET:
             return "Rollux Tanenbaum Testnet";
         case ChainID.SYSCOIN_MAINNET:
-            return "Syscoin";
+            return "Syscoin Mainnet";
         case ChainID.SYSCOIN_TESTNET:
             return "Syscoin Tanenbaum Testnet";
         case ChainID.BOBA_ETHEREUM:
             return "Boba Mainnet";
         case ChainID.MANTA_PACIFIC:
-            return "Manta Pacific";
+            return "Manta Pacific Mainnet";
         case ChainID.MANTA_TESTNET:
             return "Manta Pacific Testnet";
         case ChainID.WEMIX_MAINNET:
@@ -115,10 +115,40 @@ export const getNetworkNameFromChainID = (chainId: string) => {
             return "Wemix3.0 Testnet";
         case ChainID.ASTAR_MAINNET:
             return "Astar";
+        case ChainID.SHIDEN_MAINNET:
+            return "Shiden";
+        case ChainID.SHUBIYA_TESTNET:
+            return "Shubiya";
         case ChainID.ZETACHAIN_MAINNET:
-            return "ZetaChain";
+            return "ZetaChain Mainnet";
         case ChainID.ZETACHAIN_TESTNET:
             return "ZetaChain Athena 3 Testnet";
+        case ChainID.FLARE_MAINNET:
+            return "Flare Mainnet";
+        case ChainID.FLARE_COSTON:
+            return "Flare Coston Testnet";
+        case ChainID.FLARE_COSTON2:
+            return "Flare Coston 2 Testnet";
+        case ChainID.FUSE_MAINNET:
+            return "Fuse Mainnet";
+        case ChainID.FUSE_SPARK:
+            return "Fuse Spark Tesnet";
+        case ChainID.SHIBARIUM_MAINNET:
+            return "Shibarium Mainnet";
+        case ChainID.PUPPYNET_TESTNET:
+            return "Puppynet Testnet";
+        case ChainID.CONFLUX_MAINNET:
+            return "Conflux eSpace Mainnet";
+        case ChainID.CONFLUX_TESTNET:
+            return "Conflux eSpace Testnet";
+        case ChainID.FILECOIN_MAINNET:
+            return "Filecoin Mainnet";
+        case ChainID.FILECOIN_CALIBRATION:
+            return "Filecoin Calibration Testnet";
+        case ChainID.ENERGY_WEB_CHAIN:
+            return "Energy Web Mainnet";
+        case ChainID.ENERGY_WEB_CHAIN_TESTNET:
+            return "Energy Web Volta Testnet";
         default:
             return "";
     }

@@ -93,6 +93,8 @@ export function SolideIDE({
 
       //#region Check if the smart contract is JSON format
       const input: CompileInput = GetSolidityJsonInputFormat(content);
+      console.log(input)
+
       if (input) {
         setSolidityInput(input);
         let fileSystem: any = {};

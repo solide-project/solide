@@ -106,11 +106,41 @@ export const getAPI = (network: string): string => {
         case ChainID.WEMIX_TESTNET:
             return "https://api-testnet.wemixscan.com";
         case ChainID.ASTAR_MAINNET:
-            return "https://blockscout.com/astar";
+            return "https://blockscout.com/astar"; // No API Support yet... "https://astar.blockscout.com";
+        case ChainID.SHIDEN_MAINNET:
+            return ""; // No API Support yet... "https://shiden.blockscout.com";
+        case ChainID.SHUBIYA_TESTNET:
+            return ""; // No API Support yet... "https://shibuya.blockscout.com";
         case ChainID.ZETACHAIN_MAINNET:
             return "";
         case ChainID.ZETACHAIN_TESTNET:
             return "https://zetachain-athens-3.blockscout.com";
+        case ChainID.FLARE_MAINNET:
+            return "https://flare-explorer.flare.network";
+        case ChainID.FLARE_COSTON:
+            return "https://coston-explorer.flare.network";
+        case ChainID.FLARE_COSTON2:
+            return "https://coston2-explorer.flare.network";
+        case ChainID.FUSE_MAINNET:
+            return "https://explorer.fuse.io";
+        case ChainID.FUSE_SPARK:
+            return "https://explorer.fusespark.io"
+        case ChainID.SHIBARIUM_MAINNET:
+            return "https://www.shibariumscan.io";
+        case ChainID.PUPPYNET_TESTNET:
+            return "https://puppyscan.shib.io";
+        case ChainID.CONFLUX_MAINNET:
+            return "https://evmapi.confluxscan.io";
+        case ChainID.CONFLUX_TESTNET:
+            return "https://evmapi-testnet.confluxscan.net";
+        case ChainID.FILECOIN_MAINNET:
+            return "https://fvm-api.starboard.ventures";
+        case ChainID.FILECOIN_CALIBRATION:
+            return "https://fvm-calibration-api.starboard.ventures";
+        case ChainID.ENERGY_WEB_CHAIN:
+            return "https://explorer.energyweb.org";
+        case ChainID.ENERGY_WEB_CHAIN_TESTNET:
+            return "https://explorer.testnet.energyweb.org";
         default:
             return "";
     }

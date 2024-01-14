@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         // Note we don't handle case where github url filename is a contract address
         let sourceName = path.basename(filePath); // filePath.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "");
         let title: string = data.get("title") as string || "";
-        // console.log("Title", title, sourceName)
+        console.log("Title", title, sourceName)
         // Since we integrate xdc 
         if (!ethers.utils.isAddress(sourceName) && !isXDCAddress(sourceName)) {
             title = sourceName;

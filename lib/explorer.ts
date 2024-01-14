@@ -5,6 +5,8 @@ import { getAPI } from "./chains/api";
 import { convert as cantoConvert } from "./explorer/canto";
 import { convert as immuntableConvert } from "./explorer/immutable";
 import { convert as xdcConvert } from "./explorer/xdc";
+import { convert as confluxConvert } from "./explorer/conflux";
+import { convert as filecoinConvert } from "./explorer/filecoin";
 
 export interface GetSourceCodeSchema {
     status: string;
@@ -36,22 +38,38 @@ const getEndPoint = (chain: string, address: string): string => {
         case ChainID.MANTA_PACIFIC:
         case ChainID.MANTA_TESTNET:
         case ChainID.ZETACHAIN_TESTNET:
+        case ChainID.FUSE_MAINNET:
+        case ChainID.FUSE_SPARK:
+            // case ChainID.ASTAR_MAINNET:
+            // case ChainID.SHIDEN_MAINNET:
+            // case ChainID.SHUBIYA_TESTNET:
             return `api/v2/smart-contracts/${address}`;
         case ChainID.XDC_MAINNET:
             return `api/contracts/${address}`;
+        case ChainID.FILECOIN_MAINNET:
+        case ChainID.FILECOIN_CALIBRATION:
+            return `api/v1/contract/${address}`
         default:
             return `api?module=contract&action=getsourcecode&address=${address}`;
     }
 }
 
 export const getSourceCode = async (chain: string, address: string): Promise<GetSourceCodeSchema> => {
-    let uri = `${getAPI(chain)}/${getEndPoint(chain, address)}`;
+    const endpoint: string = getAPI(chain);
+    if (!endpoint) {
+        return {
+            status: "0",
+            message: "NOTOK",
+            result: "Invalid chain or chain not supported"
+        };
+    }
+    let uri = `${endpoint}/${getEndPoint(chain, address)}`;
     const apiKey = getAPIKey(chain);
     if (apiKey) {
         uri = uri.concat(`&apikey=${apiKey}`)
     }
 
-    console.log(uri)
+    // console.log(uri)
     try {
         const response = await fetch(uri)
 
@@ -112,10 +130,17 @@ export const getSourceCode = async (chain: string, address: string): Promise<Get
             case ChainID.MANTA_PACIFIC:
             case ChainID.MANTA_TESTNET:
             case ChainID.ZETACHAIN_TESTNET:
+            case ChainID.FUSE_MAINNET:
+            case ChainID.FUSE_SPARK:
+                // case ChainID.ASTAR_MAINNET:
+                // case ChainID.SHIDEN_MAINNET:
+                // case ChainID.SHUBIYA_TESTNET:
                 return await cantoConvert(await response.json(), address, chain);
             case ChainID.XDC_MAINNET:
                 return xdcConvert(await response.json());
-
+            case ChainID.FILECOIN_MAINNET:
+            case ChainID.FILECOIN_CALIBRATION:
+                return filecoinConvert(await response.json());
         }
         let data = await response.json() as GetSourceCodeSchema;
         // console.log(uri)

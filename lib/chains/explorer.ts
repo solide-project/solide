@@ -119,8 +119,34 @@ export const getExplorer = (network: string): string => {
             return Explorer.ZETACHAIN_MAINNET;
         case ChainID.ZETACHAIN_TESTNET:
             return Explorer.ZETACHAIN_TESTNET;
+        case ChainID.FLARE_MAINNET:
+            return Explorer.FLARE_MAINNET;
+        case ChainID.FLARE_COSTON:
+            return Explorer.FLARE_COSTON;
+        case ChainID.FLARE_COSTON2:
+            return Explorer.FLARE_COSTON2;
+        case ChainID.FUSE_MAINNET:
+            return Explorer.FUSE_MAINNET;
+        case ChainID.FUSE_SPARK:
+            return Explorer.FUSE_SPARK;
+        case ChainID.SHIBARIUM_MAINNET:
+            return Explorer.SHIBARIUM_MAINNET;
+        case ChainID.PUPPYNET_TESTNET:
+            return Explorer.PUPPYNET_TESTNET;
+        case ChainID.CONFLUX_MAINNET:
+            return Explorer.CONFLUX_MAINNET;
+        case ChainID.CONFLUX_TESTNET:
+            return Explorer.CONFLUX_TESTNET;
+        case ChainID.FILECOIN_MAINNET:
+            return Explorer.FILECOIN_MAINNET;
+        case ChainID.FILECOIN_CALIBRATION:
+            return Explorer.FILECOIN_CALIBRATION;
+        case ChainID.ENERGY_WEB_CHAIN:
+            return Explorer.ENERGY_WEB_CHAIN;
+        case ChainID.ENERGY_WEB_CHAIN_TESTNET:
+            return Explorer.ENERGY_WEB_CHAIN_TESTNET;
         default:
-            return Explorer.ETHEREUM_MAINNET;
+            return "";
     }
 }
 
@@ -181,8 +207,22 @@ enum Explorer {
     MANTA_TESTNET = 'https://pacific-explorer.testnet.manta.network',
     WEMIX_MAINNET = 'https://wemixscan.com',
     WEMIX_TESTNET = 'https://testnet.wemixscan.com',
-    ASTAR_MAINNET = 'https://blockscout.com/astar',
+    ASTAR_MAINNET = 'https://astar.blockscout.com',  // "https://blockscout.com/astar",
+    SHIDEN_MAINNET = 'https://shiden.blockscout.com',
+    SHUBIYA_TESTNET = 'https://shibuya.blockscout.com',
     ZETACHAIN_MAINNET = '',
     ZETACHAIN_TESTNET = 'https://zetachain-athens-3.blockscout.com',
+    FLARE_MAINNET = 'https://flare-explorer.flare.network',
+    FLARE_COSTON = 'https://coston-explorer.flare.network',
+    FLARE_COSTON2 = 'https://coston2-explorer.flare.network',
+    FUSE_MAINNET = 'https://explorer.fuse.io',
+    FUSE_SPARK = 'https://explorer.fusespark.io',
+    SHIBARIUM_MAINNET = 'https://www.shibariumscan.io',
+    PUPPYNET_TESTNET = 'https://puppyscan.shib.io',
+    CONFLUX_MAINNET = 'https://evm.confluxscan.io',
+    CONFLUX_TESTNET = 'https://evmtestnet.confluxscan.net',
+    FILECOIN_MAINNET = 'https://fvm.starboard.ventures/explorer',
+    FILECOIN_CALIBRATION = 'https://fvm.starboard.ventures/calibration/explorer',
+    ENERGY_WEB_CHAIN = 'https://explorer.energyweb.org',
+    ENERGY_WEB_CHAIN_TESTNET = 'https://explorer.testnet.energyweb.org',
 }
-

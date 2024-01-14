@@ -92,7 +92,7 @@ export const convert = async (
                 const fetchData = (url: string) => {
                     return fetch(url)
                         .then(response => response.text())
-                        .then(() => console.log(`${url} success`))
+                        // .then(() => console.log(`${url} success`))
                         .then(content => [url, content])
                         .catch(error => console.error('Error fetching data:', error));
                 };
@@ -137,4 +137,7 @@ export const convert = async (
             SwarmSource: "",
         }]
     };
+}
+
+export const sourcesFromIPFS = async (ipfsHash: string): Promise<any> => {
 }
