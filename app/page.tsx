@@ -1,6 +1,7 @@
 import { InvalidMessage } from "@/components/invalid-message";
 import { SolideIDE } from "@/components/main/solide-ide";
-import { getSolidityContract, solcVersion } from "@/lib/utils";
+import { getSolidityContract } from "@/lib/server/source-loader";
+import { solcVersion } from "@/lib/utils";
 import { compilerVersions } from "@/lib/versions";
 
 interface SearchParams {
@@ -18,12 +19,13 @@ export default async function IndexPage({
         && (version = searchParams?.version);
 
     const data = await getSolidityContract(url);
-    if (!data) {
-        return <InvalidMessage>Invalid URL</InvalidMessage>
+    if (typeof data === "string") {
+        return <InvalidMessage>{data}</InvalidMessage>
     }
 
     return <SolideIDE
         url={url}
-        content={data}
-        version={version} />
+        content={JSON.stringify(data)}
+        version={version}
+        title={url.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "")} />
 }

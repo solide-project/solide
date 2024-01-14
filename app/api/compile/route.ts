@@ -1,13 +1,14 @@
 import { ContractDependency, SolcError } from "@/lib/interfaces";
-import { GetSolidityJsonInputFormat, JSONParse, getEntryDetails, getSolidityContract, solcVersion } from "@/lib/utils";
+import { getEntryDetails, getSolidityContract } from "@/lib/server/source-loader";
+import { JSONParse, solcVersion } from "@/lib/utils";
 import { compilerVersions } from "@/lib/versions";
 import { NextRequest, NextResponse } from "next/server"
 var solc = require("solc");
-import { ImportsFsEngine, parsers, resolvers } from "@resolver-engine/imports-fs";
 import fs from "fs";
 import path from "path";
 import { ContractPaths } from "@/lib/solide/contract-paths";
 import { ethers } from "ethers";
+const Module = module.constructor as any;
 
 export async function POST(request: NextRequest) {
     if (request.nextUrl.searchParams.get("version") &&
@@ -16,7 +17,14 @@ export async function POST(request: NextRequest) {
     }
 
     const compilerVersion: string = decodeURI(request.nextUrl.searchParams.get("version") || solcVersion);
-    const solcSnapshot = await getSolcByVersion(compilerVersion);
+    console.log("Compiler Version", compilerVersion)
+    let solcSnapshot = solc;
+    try {
+        solcSnapshot = await getSolcByVersion(compilerVersion);
+    } catch (error) {
+        console.log(error)
+        return NextResponseError("Invalid compiler version");
+    }
     const viaIR: boolean = request.nextUrl.searchParams.get("viaIR") === "true";
     const enabled: boolean = request.nextUrl.searchParams.get("optimizer") === "true";
     const runs: number = parseInt(request.nextUrl.searchParams.get("runs") || "-1") || -1;
@@ -37,7 +45,6 @@ export async function POST(request: NextRequest) {
     const data: FormData = await request.formData();
     const contract = data.get("file") as File;
     const filePath: string = data.get("source") as string || "";
-    let name = path.basename(filePath);
     const content: string = await contract.text();
 
     // Check if the content is a (Solidity Standard Json-Input format)
@@ -47,36 +54,58 @@ export async function POST(request: NextRequest) {
          * Update the name of the contract to the first contract in the input
          * Note: We can use the etherscan api to get the contract name, but for now we will use query param for now
          */
-        const title: string = data.get("title") as string || "";
-        if (!title) {
-            return NextResponseError("Missing Entry Title");
+        if (!solidityInput.sources) {
+            return NextResponseError("Input sources is missing");
         }
 
-        if (solidityInput.language !== "Solidity") {
-            return NextResponseError("Invalid language");
+        // Title: the contract path
+        // filePath: the source, either a github url or a contract address
+        // Note we don't handle case where github url filename is a contract address
+        let sourceName = path.basename(filePath); // filePath.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "");
+        let title: string = data.get("title") as string || "";
+        // console.log("Title", title, sourceName)
+        // Since we integrate xdc 
+        if (!ethers.utils.isAddress(sourceName) && !isXDCAddress(sourceName)) {
+            title = sourceName;
         }
 
+        if (!solidityInput.language) {
+            solidityInput.language = "Solidity";
+        }
 
         if (!solidityInput.settings) {
-            solidityInput.settings = {
-                outputSelection: {
-                    "*": {
-                        "*": ["*"]
-                    }
-                },
-            };
+            solidityInput.settings = {};
+        }
+
+        if (!solidityInput.settings.outputSelection) {
+            solidityInput.settings.outputSelection = {
+                "*": {
+                    "*": ["*"]
+                }
+            }
+        }
+
+        if (!solidityInput.settings.compilationTarget) {
+            delete solidityInput.settings.compilationTarget;
+        }
+
+        if (viaIR) {
+            solidityInput.settings.viaIR = true;
+        }
+        if (optimizer) {
+            solidityInput.settings.optimizer = optimizer;
         }
         // Since our backend doesn't have CLI and will timeout for large files, will disable for now but looking to implementation
-        // if (solidityInput.settings && solidityInput.settings.viaIR) {
-        //     delete solidityInput.settings.viaIR;
-        // }
+        if (solidityInput.settings && solidityInput.settings.viaIR) {
+            delete solidityInput.settings.viaIR;
+        }
 
         var output = JSON.parse(solcSnapshot.compile(JSON.stringify(solidityInput)));
         if (output.errors) {
             // For demo we don't care about warnings
             output.errors = output.errors.filter((error: SolcError) => error.type !== "Warning");
             if (output.errors.length > 0) {
-                return NextResponseSolcError(output.errors);
+                return NextResponse.json({ details: output.errors }, { status: 400 });
             }
         }
 
@@ -98,70 +127,6 @@ export async function POST(request: NextRequest) {
         return NextResponseError("No contract found");
     }
 
-    // Get all dependencies contracts (imports) and remove dups
-    let dependencies: ContractDependency[] = [];
-    try {
-        dependencies = await extractImports(content, filePath)
-        dependencies = removeDuplicatesPreserveOrder(dependencies)
-    } catch (error: any) {
-        return NextResponseError(error.message);
-    }
-
-    const { flattenContract, sources } = flattenContracts({
-        dependencies,
-        content,
-        includeSource: true
-    });
-
-    let sourceName = filePath.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "");
-    const title: string = data.get("title") as string || "";
-    if (title && ethers.utils.isAddress(sourceName)) {
-        sourceName = `${title}.sol`;
-        name = title;
-    }
-
-    var input: any = {
-        language: "Solidity",
-        sources: {
-            ...sources,
-            [sourceName]: {
-                content: content
-            }
-        },
-        settings: {
-            // remappings: [ ":g=/dir" ],
-            outputSelection: {
-                "*": {
-                    "*": ["*"]
-                }
-            },
-            // viaIR: viaIR,
-            // optimizer: optimizer
-        }
-    };
-
-    if (viaIR) {
-        input.settings.viaIR = true;
-    }
-    if (optimizer) {
-        input.settings.optimizer = optimizer;
-    }
-
-    var output = JSON.parse(solcSnapshot.compile(JSON.stringify(input)));
-    if (output.errors) {
-        // For demo we don't care about warnings
-        output.errors = output.errors.filter((error: SolcError) => error.type !== "Warning");
-        if (output.errors.length > 0) {
-            return NextResponseSolcError(...output.errors);
-        }
-    }
-
-    // console.log("Output", output)
-    const compiled = await getEntryDetails(output, name);
-    if (compiled) {
-        return NextResponse.json({ data: compiled, flattenContract });
-    }
-
     return NextResponseError("No contract found");
 }
 
@@ -169,18 +134,9 @@ const NextResponseError = (...messages: string[]) => NextResponse.json({
     details: messages.map((msg) => generateError(msg))
 }, { status: 400 });
 
-const NextResponseSolcError = (...details: SolcError[]) => NextResponse.json({
-    details: details
-}, { status: 400 });
-
-
-const normaliseSource = (originalPath: string) => {
-    // replace .. with .
-    originalPath = originalPath.replace(/(\.\.)/g, '.');
-    originalPath = originalPath.replace(/\\/g, "/")
-    return path.normalize(originalPath);
+const isXDCAddress = (address: string) => {
+    return address.startsWith("xdc") && address.length === 43;
 }
-
 const flattenContracts = ({
     dependencies,
     content = "",
@@ -267,19 +223,23 @@ async function resolve(importPath: string, isRelative: boolean = false): Promise
  * @param mainPath 
  * @returns 
  */
-async function extractImports(content: any, mainPath: any = ""): Promise<ContractDependency[]> {
+async function extractImports(content: any, mainPath: any = "", libraries: string[] = []): Promise<ContractDependency[]> {
     // Regular expression to match import statements
     // const regex = /import\s+{([^}]+)}\s+from\s+[""]([^""]+)[""]|import\s+[""]([^""]+)[""];/g;
     const regex = /import\s+{([^}]+)}\s+from\s+[""'']([^""'']+)[""'']|import\s+[""'']([^""'']+)[""''];/g;
-
     const matches: ContractDependency[] = [];
     let match;
     while ((match = regex.exec(content)) !== null) {
         const [, aliasList, filePathWithAlias, filePathWithoutAlias] = match;
         const contractPath = new ContractPaths(filePathWithAlias || filePathWithoutAlias, mainPath);
-        // console.log(contractPath)
-        const resolved = await resolve(contractPath.filePath, contractPath.isRelative);
 
+        // This is to prevent circular dependency and infinite recursion
+        if (libraries.includes(contractPath.filePath)) {
+            continue;
+        }
+        libraries.push(contractPath.filePath.toString());
+
+        const resolved = await resolve(contractPath.filePath, contractPath.isRelative);
         let codeContent = resolved.fileContents;
         if (aliasList) {
             const names: string[] = aliasList.split(",").map((name: string) => name.trim());
@@ -298,7 +258,7 @@ async function extractImports(content: any, mainPath: any = ""): Promise<Contrac
             fileContents: codeContent,
             originalContents: resolved.fileContents,
         });
-        matches.push(...(await extractImports(resolved.fileContents, contractPath.filePath)));
+        matches.push(...(await extractImports(resolved.fileContents, contractPath.filePath, libraries)));
     }
 
     return matches;

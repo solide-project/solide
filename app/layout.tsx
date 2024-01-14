@@ -4,6 +4,7 @@ import { siteConfig } from "@/config/site"
 import { Space_Grotesk } from "next/font/google"
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SolideFileProvider } from "@/components/provider/file-provider"
 
 export const metadata: Metadata = {
   title: {
@@ -36,9 +37,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={cn("overflow-y-hidden bg-background font-sans antialiased", fontSpace.variable)}>
+        <body className={cn("bg-grayscale-000 font-sans antialiased", fontSpace.variable)}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
+            <SolideFileProvider>
+              {children}
+            </SolideFileProvider>
           </ThemeProvider>
         </body>
       </html>

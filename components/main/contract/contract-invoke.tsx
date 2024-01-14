@@ -33,6 +33,7 @@ export function ContractInvoke({
         }
 
         newArgs[method][name] = value;
+
         setArgs(newArgs);
     }
 
@@ -46,8 +47,19 @@ export function ContractInvoke({
         const contractMethod = contract[method];
         let result: any = undefined;
         try {
+            // Reorder params
+            let params: any[] = [];
+            methodInfo.inputs.forEach((input: any) => {
+                let value = args[method][input.name] || "";  
+                if (input.type.includes("int")) {
+                    value = parseInt(value);
+                } 
+
+                params.push(value);
+            });
+
             if (methodInfo.outputs && methodInfo.outputs.length > 0) {
-                result = await contractMethod();
+                result = await contractMethod(...params);
 
                 if (methodInfo.outputs[0].type.includes("int")) {
                     result = result.toString() as BigNumber;
@@ -57,7 +69,7 @@ export function ContractInvoke({
 
                 setRet({ ...ret, [method]: result });
             } else {
-                await contractMethod();
+                await contractMethod(...params);
             }
         } catch (error: any) {
             setRet({ ...ret, [method]: error.toString() });
@@ -74,10 +86,10 @@ export function ContractInvoke({
     }
 
     return (
-        <div className="overflow-y-scroll pb-32" style={{ height: "90vh" }}>
+        <div className="overflow-y-auto pb-16 flex flex-col gap-4" style={{ height: "90vh" }}>
             {abi.filter(m => m.type === "constructor").map((abi, index) => {
                 return (
-                    <div key={index} className="py-2">
+                    <div key={index}>
                         <Button variant="destructive" size="sm" disabled={true}>
                             constructor
                         </Button>
@@ -89,12 +101,11 @@ export function ContractInvoke({
                                         <div>{input.name}</div>
                                         <Input placeholder={input.type}
                                             onChange={(e) => handleSetConstructorArgs(e, index)} />
-                                        {/* {JSON.stringify(inputs)} */}
                                     </div>
                                 )
                             })}
 
-                            <div className="py-1">
+                            <div className="py-1 text-center">
                                 {ret[abi.name] !== undefined && ret[abi.name]}
                             </div>
                         </div>
@@ -104,12 +115,12 @@ export function ContractInvoke({
 
             {abi.filter(m => m.type === "function").map((abi, index) => {
                 return (
-                    <div key={index} className="py-2">
+                    <div key={index}>
                         <Button size="sm" disabled={(canInvoke &&
                             Object.keys(args[abi.name] || {}).length === abi.inputs.length)
                             ? false : true}
                             onClick={() => invokeContract(abi.name)}>
-                            {abi.name}
+                            {abi.name} {`( ${(abi.inputs && abi.inputs.length > 0) ? "..." : ""} )`}
                         </Button>
 
                         <div>
@@ -119,13 +130,12 @@ export function ContractInvoke({
                                         <div>{input.name}</div>
                                         <Input placeholder={input.type}
                                             onChange={(e) => handleArgChange(abi.name, input.name, e.target.value)} />
-                                        {/* {JSON.stringify(inputs)} */}
                                     </div>
                                 )
                             })}
 
                             <div className="py-1">
-                                {ret[abi.name] !== undefined && ret[abi.name]}
+                                {ret[abi.name] !== undefined && ret[abi.name].toString()}
                             </div>
                         </div>
                     </div>

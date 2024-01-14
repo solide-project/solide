@@ -6,7 +6,7 @@ export default async function Page({ params }: { params: { chain: string, addres
     const data: GetSourceCodeSchema = await getSourceCode(params.chain, params.address)
 
     if (typeof data.result === "string") {
-        return <InvalidMessage>{data.result}</InvalidMessage>
+        return <InvalidMessage>{data.result} {JSON.stringify(data)}</InvalidMessage>
     }
 
     return <SolideIDE

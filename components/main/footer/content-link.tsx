@@ -6,6 +6,8 @@ import { Box, Github } from "lucide-react";
 import Link from "next/link";
 import { getExplorer } from "@/lib/chains/explorer";
 import { ChainID } from "@/lib/chains/chain-id";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 interface ContentLinkProps
     extends React.HTMLAttributes<HTMLDivElement> {
@@ -26,10 +28,10 @@ export function ContentLink({
     }, [])
 
     return (
-        <Link href={text} target="_blank">
+        <Link href={text} target="_blank" className={cn(buttonVariants({ size: "icon", variant: "ghost" }), "border-0 cursor-pointer")}>
             {!ethers.utils.isAddress(url)
-                ? <Github className="mr-2 h-5 w-5" />
-                : <Box className="mr-2 h-5 w-5" />}
+                ? <Github className="h-5 w-5" />
+                : <Box className="h-5 w-5" />}
         </Link>
     )
 }

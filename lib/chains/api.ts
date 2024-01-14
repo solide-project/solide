@@ -8,6 +8,8 @@ export const getAPI = (network: string): string => {
             return "https://api-goerli.etherscan.io";
         case ChainID.ETHEREUM_SEPOLIA:
             return "https://api-sepolia.etherscan.io";
+        case ChainID.ETHEREUM_HOLESKY:
+            return "https://api-holesky.etherscan.io";
         case ChainID.METIS_ANDROMEDA:
             return "https://andromeda-explorer.metis.io";
         case ChainID.METIS_SEPOLIA:
@@ -18,6 +20,97 @@ export const getAPI = (network: string): string => {
             return "https://api-goerli.arbiscan.io";
         case ChainID.ARBITRUM_NOVA:
             return "https://api-nova.arbiscan.io";
+        case ChainID.IMMUTABLE_MAINNET:
+            return "https://explorer.immutable.com";
+        case ChainID.IMMUTABLE_MAINNET:
+            return "https://explorer.immutable.com";
+        case ChainID.IMMUTABLE_TESTNET:
+            return "https://explorer.testnet.immutable.com";
+
+        case ChainID.POLYGON_MAINNET:
+            return "https://api.polygonscan.com";
+        case ChainID.POLYGON_MUMBAI:
+            return "https://api-mumbai.polygonscan.com";
+        case ChainID.OPTIMISM_MAINNET:
+            return "https://api-optimistic.etherscan.io";
+        case ChainID.OPTIMISM_SEPOLIA:
+            return "https://api-goerli-optimistic.etherscan.io";
+        case ChainID.FANTOM_MAINNET:
+            return "https://api.ftmscan.com";
+        case ChainID.FANTOM_TESTNET:
+            return "https://api-testnet.ftmscan.com";
+        case ChainID.BASE_MAINNET:
+            return "https://api.basescan.org";
+        case ChainID.BASE_SEPOLIA:
+            return "https://api-sepolia.basescan.org";
+        case ChainID.BNB_MAINNET:
+            return "https://api.bscscan.com";
+        case ChainID.BNB_TESTNET:
+            return "https://api-testnet.bscscan.com"
+        case ChainID.LINEA_MAINNET:
+            return "https://api.lineascan.build";
+        case ChainID.LINEA_TESTNET:
+            return "https://api-testnet.lineascan.build";
+        case ChainID.MOONBEAM_MAINNET:
+            return "https://api-moonbeam.moonscan.io";
+        case ChainID.MOONBASE_ALPHA:
+            return "https://api-moonbase.moonscan.io";
+        case ChainID.MOONRIVER_MAINNET:
+            return "https://api-moonriver.moonscan.io";
+        case ChainID.CELO_MAINNET:
+            return "https://api.celoscan.io";
+        case ChainID.CELO_ALFAJORES:
+            return "https://api-alfajores.celoscan.io";
+        case ChainID.GNOSIS_MAINNET:
+            return "https://api.gnosisscan.io";
+        case ChainID.CRONOS_MAINNET:
+            return "https://api.cronoscan.com";
+        case ChainID.SCROLL_MAINNET:
+            return "https://api.scrollscan.com";
+        case ChainID.SCROLL_SEPOLIA:
+            return "https://api-sepolia.scrollscan.com";
+        case ChainID.MANTLE_MAINNET:
+            return "https://explorer.mantle.xyz";
+        case ChainID.MANTLE_TESTNET:
+            return "https://explorer.testnet.mantle.xyz";
+        case ChainID.BITTORRENT_MAINNET:
+            return "https://api.bttcscan.com";
+        case ChainID.BITTORRENT_TESTNET:
+            return "https://api-testnet.bttcscan.com";
+        case ChainID.XDC_MAINNET:
+            return "https://xdc.blocksscan.io";
+        case ChainID.CANTO_MAINNET:
+            return "https://explorer.plexnode.wtf";
+        case ChainID.CANTO_TESTNET:
+            return "https://testnet.tuber.build"
+        case ChainID.KAVA_MAINNET:
+            return "https://kavascan.com"
+        case ChainID.KAVA_TESTNET:
+            return "https://testnet.kavascan.com"
+        case ChainID.ROLLUX_MAINNET:
+            return "https://explorer.rollux.com"
+        case ChainID.ROLLUX_TESTNET:
+            return "https://rollux.tanenbaum.io"
+        case ChainID.SYSCOIN_MAINNET:
+            return "https://explorer.syscoin.org"
+        case ChainID.SYSCOIN_TESTNET:
+            return "https://tanenbaum.io"
+        case ChainID.BOBA_ETHEREUM:
+            return "https://api.routescan.io/v2/network/mainnet/evm/288/etherscan";
+        case ChainID.MANTA_PACIFIC:
+            return "https://pacific-explorer.manta.network";
+        case ChainID.MANTA_TESTNET:
+            return "https://pacific-explorer.testnet.manta.network";
+        case ChainID.WEMIX_MAINNET:
+            return "https://api.wemixscan.com";
+        case ChainID.WEMIX_TESTNET:
+            return "https://api-testnet.wemixscan.com";
+        case ChainID.ASTAR_MAINNET:
+            return "https://blockscout.com/astar";
+        case ChainID.ZETACHAIN_MAINNET:
+            return "";
+        case ChainID.ZETACHAIN_TESTNET:
+            return "https://zetachain-athens-3.blockscout.com";
         default:
             return "";
     }

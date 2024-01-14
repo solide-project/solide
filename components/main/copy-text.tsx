@@ -26,7 +26,7 @@ export function CopyText({ title, payload }: CopyTextProps) {
     }
 
     return (
-        <div className="flex cursor-pointer items-center space-x-2 text-xs md:text-sm lg:text-base"
+        <div className="flex cursor-pointer items-center space-x-2 text-sm lg:text-base"
             onClick={() => copyText(payload || "")}>
             <div>{text}</div>
             <Copy className="h-3 w-3 lg:h-5 lg:w-5" />

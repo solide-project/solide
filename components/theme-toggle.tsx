@@ -3,6 +3,8 @@
 import * as React from "react"
 import { Moon, SunMedium } from "lucide-react"
 import { useTheme } from "next-themes"
+import { buttonVariants } from "./ui/button"
+import { cn } from "@/lib/utils"
 
 
 export function ThemeToggle() {
@@ -10,7 +12,7 @@ export function ThemeToggle() {
 
   return (
     <div
-      className="cursor-pointer"
+      className={cn(buttonVariants({ size: "icon", variant: "ghost" }), "border-0 cursor-pointer")}
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
     >
       <SunMedium className="h-[1.5rem] w-[1.3rem] dark:hidden" />

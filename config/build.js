@@ -69,11 +69,24 @@ const library = [
     "@aave/periphery-v3",
     "@aave/core-v3",
     "arb-bridge-eth",
+    "@oasisprotocol/sapphire-contracts",
+    "@imtbl/contracts",
+    "@axelar-network/axelar-gmp-sdk-solidity",
+    "openzeppelin-contracts",
+    
+    // Note these are from git clone
+    "permit2",      // git clone https://github.com/Uniswap/permit2
+    "@uniswap/v4-core",      // git clone https://github.com/Uniswap/v4-core
+    "@uniswap/v4-periphery",      // git clone https://github.com/Uniswap/v4-periphery
 ];
 
 library.forEach((lib) => {
     const sourceFolder = `node_modules/${lib}`;
     const destinationFolder = `public/${lib}`;
+
+    if (!fs.existsSync(sourceFolder)) {
+        return;
+    }
 
     // Create destination folder if it doesn't exist
     fs.mkdirSync(destinationFolder, { recursive: true });

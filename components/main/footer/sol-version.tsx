@@ -15,6 +15,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useSolideFile } from "@/components/provider/file-provider"
+import { solcVersion } from "@/lib/utils"
 
 type SolidityReleases = {
     builds: any;
@@ -25,6 +27,7 @@ type SolidityReleases = {
 };
 
 function extractVersion(buildFormat: string) {
+    if (!buildFormat) return buildFormat;
     const versionRegex = /soljson-(v\d+\.\d+\.\d+\+.+).js/;
     const match = buildFormat.match(versionRegex);
 
@@ -42,11 +45,11 @@ function extractVersion2(version: string) {
 
 interface SolVersionProps
     extends React.HTMLAttributes<HTMLDivElement> {
-    setVersion: Function;
     version?: string;
 }
 
-export function SolVersion({ setVersion, version }: SolVersionProps) {
+export function SolVersion({ }: SolVersionProps) {
+    const { selectedSolcVersion, setSelectedSolcVersion, loadRelease } = useSolideFile();
     const [releases, setRealeases] = useState<SolidityReleases>({
         builds: {},
         releases: {},
@@ -58,25 +61,25 @@ export function SolVersion({ setVersion, version }: SolVersionProps) {
 
     useEffect(() => {
         (async () => {
-            const versionResponse = await fetch("https://binaries.soliditylang.org/bin/list.json");
-            const versions = await versionResponse.json();
+            // Note: selectedSolcVersion must be set before this component is rendered somewhere
+            const versions = await loadRelease();
             setRealeases(versions);
-            setValue(versions.latestRelease);
+            setValue(versions.latestVersion);
 
-            if (version) {
-                setVersion(version)
-                setValue(extractVersion2(version))
+            const solcVersions = versions.releases as { [key: string]: string };
+            const foundVersion = Object.entries(solcVersions)
+                .find(([_, build]) => build.includes(selectedSolcVersion));
+
+            if (foundVersion) {
+                setValue(foundVersion[0]); // Set the version if found
             }
         })();
     }, [])
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" role="combobox"
-                    aria-expanded={open}
-                    className="w-[200px] justify-between overflow-x-hidden"
-                >
+            <PopoverTrigger>
+                <Button className="w-full">
                     {value
                         ? extractVersion(releases.releases[value])
                         : "Select framework..."}
@@ -88,17 +91,18 @@ export function SolVersion({ setVersion, version }: SolVersionProps) {
                     <CommandEmpty>No framework found.</CommandEmpty>
                     <CommandGroup>
                         <ScrollArea className="h-[200px]">
-                            {Object.keys(releases.releases).map((version: string, index: any) => (
+                            {Object.keys(releases?.releases || {}).map((version: string, index: any) => (
                                 <CommandItem
                                     key={index}
                                     value={version}
                                     onSelect={(currentValue) => {
-                                        setVersion(extractVersion(releases.releases[version]))
+                                        const v = extractVersion(releases.releases[currentValue])
+                                        setSelectedSolcVersion(extractVersion(v))
                                         setValue(currentValue)
                                         setOpen(false)
                                     }}
                                 >
-                                    {extractVersion(releases.releases[version])}
+                                    {extractVersion(releases?.releases[version] || solcVersion)}
                                 </CommandItem>
                             ))}
                         </ScrollArea>
