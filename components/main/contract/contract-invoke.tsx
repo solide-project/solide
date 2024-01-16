@@ -60,7 +60,7 @@ export function ContractInvoke({
 
             if (methodInfo.outputs && methodInfo.outputs.length > 0) {
                 result = await contractMethod(...params);
-
+                console.log(result);
                 if (methodInfo.outputs[0].type.includes("int")) {
                     result = result.toString() as BigNumber;
                 } else {
@@ -72,7 +72,7 @@ export function ContractInvoke({
                 await contractMethod(...params);
             }
         } catch (error: any) {
-            setRet({ ...ret, [method]: error.toString() });
+            setRet({ ...ret, [method]: error?.data?.message || error?.message || error.toString() });
             console.error(error);
         }
     }

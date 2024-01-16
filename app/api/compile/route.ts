@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { ContractPaths } from "@/lib/solide/contract-paths";
 import { ethers } from "ethers";
+import { isTronAddress } from "@/lib/explorer/tron";
 const Module = module.constructor as any;
 
 export async function POST(request: NextRequest) {
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
         let title: string = data.get("title") as string || "";
         console.log("Title", title, sourceName)
         // Since we integrate xdc 
-        if (!ethers.utils.isAddress(sourceName) && !isXDCAddress(sourceName)) {
+        if (!ethers.utils.isAddress(sourceName) && !isXDCAddress(sourceName) && !isTronAddress(sourceName)) {
             title = sourceName;
         }
 

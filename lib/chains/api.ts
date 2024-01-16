@@ -20,6 +20,12 @@ export const getAPI = (network: string): string => {
             return "https://api-goerli.arbiscan.io";
         case ChainID.ARBITRUM_NOVA:
             return "https://api-nova.arbiscan.io";
+        case ChainID.OASIS_EMERALD:
+            return "https://explorer.emerald.oasis.dev";
+        case ChainID.OASIS_SAPPHIRE:
+            return "https://explorer.sapphire.oasis.io";
+        case ChainID.OASIS_SAPPHIRE_TESTNET:
+            return "https://testnet.explorer.sapphire.oasis.dev";
         case ChainID.IMMUTABLE_MAINNET:
             return "https://explorer.immutable.com";
         case ChainID.IMMUTABLE_MAINNET:
@@ -27,6 +33,10 @@ export const getAPI = (network: string): string => {
         case ChainID.IMMUTABLE_TESTNET:
             return "https://explorer.testnet.immutable.com";
 
+        case ChainID.AVALANCHE_MAINNET:
+            return "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan";
+        case ChainID.AVALANCHE_FUJI:
+            return "https://api.routescan.io/v2/network/testnet/evm/43113/etherscan";
         case ChainID.POLYGON_MAINNET:
             return "https://api.polygonscan.com";
         case ChainID.POLYGON_MUMBAI:
@@ -108,9 +118,9 @@ export const getAPI = (network: string): string => {
         case ChainID.ASTAR_MAINNET:
             return "https://blockscout.com/astar"; // No API Support yet... "https://astar.blockscout.com";
         case ChainID.SHIDEN_MAINNET:
-            return ""; // No API Support yet... "https://shiden.blockscout.com";
+            return "https://blockscout.com/shiden"; // No API Support yet... "https://shiden.blockscout.com";
         case ChainID.SHUBIYA_TESTNET:
-            return ""; // No API Support yet... "https://shibuya.blockscout.com";
+            return "https://blockscout.com/shibuya"; // No API Support yet... "https://shibuya.blockscout.com";
         case ChainID.ZETACHAIN_MAINNET:
             return "";
         case ChainID.ZETACHAIN_TESTNET:
@@ -141,6 +151,47 @@ export const getAPI = (network: string): string => {
             return "https://explorer.energyweb.org";
         case ChainID.ENERGY_WEB_CHAIN_TESTNET:
             return "https://explorer.testnet.energyweb.org";
+        case ChainID.LUKSO_MAINNET:
+            return "https://api.explorer.execution.mainnet.lukso.network";
+        case ChainID.LUKSO_TESTNET:
+            return "https://api.explorer.execution.testnet.lukso.network";
+        case ChainID.ACALA_MAINNET:
+            return "https://blockscout.acala.network";
+        case ChainID.MANDALA_TESTNET:
+            return "https://blockscout.mandala.aca-staging.network";
+        case ChainID.REI_MAINNET:
+            return "https://scan.rei.network";
+        case ChainID.REI_TESTNET:
+            return "https://scan-test.rei.network";
+        case ChainID.ZORA_NETWORK_MAINNET:
+            return "https://explorer.zora.energy";
+        case ChainID.CALLISTO_MAINNET:
+            return "https://explorer.callisto.network";
+        case ChainID.ZKSYNC_MAINNET:
+            return "https://block-explorer-api.mainnet.zksync.io";
+        case ChainID.ZKSYNC_SEPOLIA:
+            return "https://block-explorer-api.mainnet.zksync.io";
+        case ChainID.NEON_MAINNET:
+            return "https://neon.blockscout.com";
+        case ChainID.NEON_TESTNET:
+            return "https://neon-devnet.blockscout.com";
+        case ChainID.AURORA_MAINNET:
+            return "https://old.explorer.aurora.dev";
+        case ChainID.AURORA_TESTNET:
+            return "https://explorer.old.testnet.aurora.dev";
+        case ChainID.RONIN_MAINNET:
+        case ChainID.RONIN_SAIGON_TESTNET:
+            return "https://explorer-kintsugi.roninchain.com";
+        case ChainID.TRON_MAINNET:
+            return "https://apilist.tronscanapi.com/api/solidity/contract/info"
+        case ChainID.TRON_SHASTA_TESTNET:
+            return "https://shastapi.tronscan.org/api/solidity/contract/info";
+        case ChainID.BEAM_MAINNET:
+            return "https://api.routescan.io/v2/network/mainnet/evm/4337/etherscan";
+        case ChainID.CARBON_EVM_MAINNET:
+            return "https://evm-scan.carbon.network"
+        case ChainID.CARBON_EVM_TESTNET:
+            return "https://test-evm-scan.carbon.network"
         default:
             return "";
     }

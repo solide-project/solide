@@ -1,12 +1,13 @@
 import { getAPIKey } from "./chains/key";
 import { ChainID } from "./chains/chain-id";
-import { getExplorer } from "./chains/explorer";
 import { getAPI } from "./chains/api";
 import { convert as cantoConvert } from "./explorer/canto";
 import { convert as immuntableConvert } from "./explorer/immutable";
 import { convert as xdcConvert } from "./explorer/xdc";
 import { convert as confluxConvert } from "./explorer/conflux";
 import { convert as filecoinConvert } from "./explorer/filecoin";
+import { convert as roninConvert } from "./explorer/ronin";
+import { convert as tronConvert } from "./explorer/tron";
 
 export interface GetSourceCodeSchema {
     status: string;
@@ -40,15 +41,28 @@ const getEndPoint = (chain: string, address: string): string => {
         case ChainID.ZETACHAIN_TESTNET:
         case ChainID.FUSE_MAINNET:
         case ChainID.FUSE_SPARK:
-            // case ChainID.ASTAR_MAINNET:
-            // case ChainID.SHIDEN_MAINNET:
-            // case ChainID.SHUBIYA_TESTNET:
+        // case ChainID.ASTAR_MAINNET:
+        // case ChainID.SHIDEN_MAINNET:
+        // case ChainID.SHUBIYA_TESTNET:
+        case ChainID.LUKSO_MAINNET:
+        case ChainID.LUKSO_TESTNET:
+        case ChainID.ZORA_NETWORK_MAINNET:
+        case ChainID.NEON_MAINNET:
+        case ChainID.NEON_TESTNET:
+        case ChainID.AURORA_MAINNET:
+        case ChainID.AURORA_TESTNET:
             return `api/v2/smart-contracts/${address}`;
         case ChainID.XDC_MAINNET:
             return `api/contracts/${address}`;
         case ChainID.FILECOIN_MAINNET:
         case ChainID.FILECOIN_CALIBRATION:
-            return `api/v1/contract/${address}`
+            return `api/v1/contract/${address}`;
+        case ChainID.RONIN_MAINNET:
+        case ChainID.RONIN_SAIGON_TESTNET:
+            return `v2/${chain}/contract/${address}/src`;
+        case ChainID.TRON_MAINNET:
+        case ChainID.TRON_SHASTA_TESTNET:
+            return "";
         default:
             return `api?module=contract&action=getsourcecode&address=${address}`;
     }
@@ -71,7 +85,37 @@ export const getSourceCode = async (chain: string, address: string): Promise<Get
 
     // console.log(uri)
     try {
-        const response = await fetch(uri)
+        let response: Response;
+        switch (chain) {
+            case ChainID.TRON_MAINNET:
+            case ChainID.TRON_SHASTA_TESTNET:
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                    "contractAddress": address
+                });
+                var requestOptions: any = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+
+                response = await fetch(uri, requestOptions)
+                break;
+            default:
+                response = await fetch(uri)
+                break;
+        }
+
+        if (!response) {
+            return {
+                status: "0",
+                message: "NOTOK",
+                result: "Error fetching contract"
+            };
+        }
 
         switch (chain) {
             case ChainID.METIS_ANDROMEDA:
@@ -84,6 +128,14 @@ export const getSourceCode = async (chain: string, address: string): Promise<Get
             case ChainID.ROLLUX_TESTNET:
             case ChainID.CANTO_TESTNET:
             case ChainID.ASTAR_MAINNET:
+            case ChainID.ACALA_MAINNET:
+            case ChainID.MANDALA_TESTNET:
+            case ChainID.REI_MAINNET:
+            case ChainID.REI_TESTNET:
+            case ChainID.CALLISTO_MAINNET:
+            case ChainID.OASIS_EMERALD:
+            case ChainID.OASIS_SAPPHIRE:
+            case ChainID.OASIS_SAPPHIRE_TESTNET:
                 const data = await response.json() as any;
                 if (data.result && data.result[0]) {
                     if (data.result[0].AdditionalSources) {
@@ -132,15 +184,28 @@ export const getSourceCode = async (chain: string, address: string): Promise<Get
             case ChainID.ZETACHAIN_TESTNET:
             case ChainID.FUSE_MAINNET:
             case ChainID.FUSE_SPARK:
-                // case ChainID.ASTAR_MAINNET:
-                // case ChainID.SHIDEN_MAINNET:
-                // case ChainID.SHUBIYA_TESTNET:
+            // case ChainID.ASTAR_MAINNET:
+            // case ChainID.SHIDEN_MAINNET:
+            // case ChainID.SHUBIYA_TESTNET:
+            case ChainID.LUKSO_MAINNET:
+            case ChainID.LUKSO_TESTNET:
+            case ChainID.ZORA_NETWORK_MAINNET:
+            case ChainID.NEON_MAINNET:
+            case ChainID.NEON_TESTNET:
+            case ChainID.AURORA_MAINNET:
+            case ChainID.AURORA_TESTNET:
                 return await cantoConvert(await response.json(), address, chain);
             case ChainID.XDC_MAINNET:
                 return xdcConvert(await response.json());
             case ChainID.FILECOIN_MAINNET:
             case ChainID.FILECOIN_CALIBRATION:
                 return filecoinConvert(await response.json());
+            case ChainID.RONIN_MAINNET:
+            case ChainID.RONIN_SAIGON_TESTNET:
+                return await roninConvert(await response.json(), address, chain);
+            case ChainID.TRON_MAINNET:
+            case ChainID.TRON_SHASTA_TESTNET:
+                return await tronConvert(await response.json(), address, chain);
         }
         let data = await response.json() as GetSourceCodeSchema;
         // console.log(uri)

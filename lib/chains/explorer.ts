@@ -115,6 +115,10 @@ export const getExplorer = (network: string): string => {
             return Explorer.WEMIX_TESTNET;
         case ChainID.ASTAR_MAINNET:
             return Explorer.ASTAR_MAINNET;
+        case ChainID.SHIDEN_MAINNET:
+            return Explorer.SHIDEN_MAINNET;
+        case ChainID.SHUBIYA_TESTNET:
+            return Explorer.SHUBIYA_TESTNET;
         case ChainID.ZETACHAIN_MAINNET:
             return Explorer.ZETACHAIN_MAINNET;
         case ChainID.ZETACHAIN_TESTNET:
@@ -145,6 +149,48 @@ export const getExplorer = (network: string): string => {
             return Explorer.ENERGY_WEB_CHAIN;
         case ChainID.ENERGY_WEB_CHAIN_TESTNET:
             return Explorer.ENERGY_WEB_CHAIN_TESTNET;
+        case ChainID.LUKSO_MAINNET:
+            return Explorer.LUKSO_MAINNET;
+        case ChainID.LUKSO_TESTNET:
+            return Explorer.LUKSO_TESTNET;
+        case ChainID.ACALA_MAINNET:
+            return Explorer.ACALA_MAINNET;
+        case ChainID.MANDALA_TESTNET:
+            return Explorer.MANDALA_TESTNET;
+        case ChainID.REI_MAINNET:
+            return Explorer.REI_MAINNET;
+        case ChainID.REI_TESTNET:
+            return Explorer.REI_TESTNET;
+        case ChainID.ZORA_NETWORK_MAINNET:
+            return Explorer.ZORA_NETWORK_MAINNET;
+        case ChainID.CALLISTO_MAINNET:
+            return Explorer.CALLISTO_MAINNET;
+        case ChainID.ZKSYNC_MAINNET:
+            return Explorer.ZKSYNC_MAINNET;
+        case ChainID.ZKSYNC_SEPOLIA:
+            return Explorer.ZKSYNC_SEPOLIA;
+        case ChainID.NEON_MAINNET:
+            return Explorer.NEON_MAINNET;
+        case ChainID.NEON_TESTNET:
+            return Explorer.NEON_TESTNET;
+        case ChainID.AURORA_MAINNET:
+            return Explorer.AURORA_MAINNET;
+        case ChainID.AURORA_TESTNET:
+            return Explorer.AURORA_TESTNET;
+        case ChainID.RONIN_MAINNET:
+            return Explorer.RONIN_MAINNET;
+        case ChainID.RONIN_SAIGON_TESTNET:
+            return Explorer.RONIN_SAIGON_TESTNET;
+        case ChainID.TRON_MAINNET:
+            return Explorer.TRON_MAINNET;
+        case ChainID.TRON_SHASTA_TESTNET:
+            return Explorer.TRON_SHASTA_TESTNET;
+        case ChainID.BEAM_MAINNET:
+            return Explorer.BEAM_MAINNET;
+        case ChainID.CARBON_EVM_MAINNET:
+            return Explorer.CARBON_EVM_MAINNET;
+        case ChainID.CARBON_EVM_TESTNET:
+            return Explorer.CARBON_EVM_TESTNET;
         default:
             return "";
     }
@@ -225,4 +271,26 @@ enum Explorer {
     FILECOIN_CALIBRATION = 'https://fvm.starboard.ventures/calibration/explorer',
     ENERGY_WEB_CHAIN = 'https://explorer.energyweb.org',
     ENERGY_WEB_CHAIN_TESTNET = 'https://explorer.testnet.energyweb.org',
+
+    LUKSO_MAINNET = 'https://explorer.execution.mainnet.lukso.network',
+    LUKSO_TESTNET = 'https://explorer.execution.testnet.lukso.network',
+    ACALA_MAINNET = 'https://blockscout.acala.network',
+    MANDALA_TESTNET = 'https://blockscout.mandala.aca-staging.network',
+    REI_MAINNET = 'https://scan.rei.network',
+    REI_TESTNET = 'https://scan-test.rei.network',
+    ZORA_NETWORK_MAINNET = 'https://explorer.zora.energy',
+    CALLISTO_MAINNET = 'https://explorer.callisto.network',
+    ZKSYNC_MAINNET = 'https://explorer.zksync.io',
+    ZKSYNC_SEPOLIA = 'https://sepolia.explorer.zksync.io',
+    NEON_MAINNET = 'https://neon.blockscout.com',
+    NEON_TESTNET = 'https://neon-devnet.blockscout.com',
+    AURORA_MAINNET = 'https://explorer.mainnet.aurora.dev',
+    AURORA_TESTNET = 'https://explorer.testnet.aurora.dev',
+    RONIN_MAINNET = 'https://app.roninchain.com',
+    RONIN_SAIGON_TESTNET = 'https://saigon-app.roninchain.com',
+    TRON_MAINNET = 'https://tronscan.org/#',
+    TRON_SHASTA_TESTNET = 'https://shasta.tronscan.org/#',
+    BEAM_MAINNET = 'https://avascan.info/blockchain/beam',
+    CARBON_EVM_MAINNET = 'https://evm-scan.carbon.network',
+    CARBON_EVM_TESTNET = 'https://test-evm-scan.carbon.network',
 }

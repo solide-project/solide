@@ -36,6 +36,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
+import { ChainID } from '@/lib/chains/chain-id';
+import { getAPI } from '@/lib/chains/api';
 
 interface SolideIDEProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -86,15 +88,16 @@ export function SolideIDE({
   useEffect(() => {
     (async () => {
       // At the start, we need to check if the content is JSON format
-      handleIDEDisplay({ content, filePath: title });
+      const match = title.match(/\/([^:]+\.sol):/);
+      const solFilePath = match ? match[1] : title;
+
+      handleIDEDisplay({ content, filePath: solFilePath });
       setSelectedSolcVersion(version || solcVersion)
 
       if (!content) return;
 
       //#region Check if the smart contract is JSON format
       const input: CompileInput = GetSolidityJsonInputFormat(content);
-      console.log(input)
-
       if (input) {
         setSolidityInput(input);
         let fileSystem: any = {};
@@ -118,13 +121,13 @@ export function SolideIDE({
         });
 
         setFolder(fileSystem)
+        const parsedPath = path.parse(title);
         const onChainEntry = Object.entries(input.sources).find(
-          ([_, val]) => val.content.includes(`contract ${title}`));
+          ([_, val]) => val.content.includes(`contract ${parsedPath.name || title}`));
 
         if (onChainEntry) {
           const [key, onChainContent] = onChainEntry;
           // Now, key is the key, and onChainContent is the value
-          // setValue(onChainContent.content);
           handleIDEDisplay({
             content: onChainContent.content,
             filePath: key,
@@ -132,6 +135,7 @@ export function SolideIDE({
         }
       } else {
         let data: CompileInput = JSONParse(content) as CompileInput
+        console.log(data)  
 
         // If flatten contract, then can't parse JSON, hence we need to manually parse it
         if (!data) {

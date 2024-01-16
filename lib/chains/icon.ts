@@ -114,6 +114,39 @@ export const getIconByChainId = (chainId: string): string => {
         case ChainID.ENERGY_WEB_CHAIN:
         case ChainID.ENERGY_WEB_CHAIN_TESTNET:
             return "/icons/energyweb.svg";
+        case ChainID.LUKSO_MAINNET:
+        case ChainID.LUKSO_TESTNET:
+            return "/icons/lukso.svg";
+        case ChainID.ACALA_MAINNET:
+        case ChainID.MANDALA_TESTNET:
+            return "/icons/acala.svg";
+        case ChainID.REI_MAINNET:
+        case ChainID.REI_TESTNET:
+            return "/icons/rei.svg";
+        case ChainID.ZORA_NETWORK_MAINNET:
+            return "/icons/zora.svg";
+        case ChainID.CALLISTO_MAINNET:
+            return "/icons/callisto.svg";
+        case ChainID.ZKSYNC_MAINNET:
+        case ChainID.ZKSYNC_SEPOLIA:
+            return "/icons/zksync.svg";
+        case ChainID.NEON_MAINNET:
+        case ChainID.NEON_TESTNET:
+            return "/icons/neon.svg";
+        case ChainID.AURORA_MAINNET:
+        case ChainID.AURORA_TESTNET:
+            return "/icons/aurora.svg";
+        case ChainID.RONIN_MAINNET:
+        case ChainID.RONIN_SAIGON_TESTNET:
+            return "/icons/ronin.svg";
+        case ChainID.TRON_MAINNET:
+        case ChainID.TRON_SHASTA_TESTNET:
+            return "/icons/tron.svg";
+        case ChainID.BEAM_MAINNET:
+            return "/icons/beam.png";
+        case ChainID.CARBON_EVM_MAINNET:
+        case ChainID.CARBON_EVM_TESTNET:
+            return "/icons/carbon.svg";
         default:
             return "";
     }

@@ -80,6 +80,11 @@ export const convert = async (
                         results.ContractName = sourifyData.settings.compilationTarget[results.ContractName];
                     }
 
+                    // Here we want to turn the contract source into a .sol path
+                    if (!results.ContractName.endsWith(".sol")) {
+                        results.ContractName = results.ContractName.concat(".sol");
+                    }
+
                     delete sourifyData.settings.compilationTarget;
                 }
 
@@ -100,7 +105,6 @@ export const convert = async (
                 results.CompilerVersion = compilerVersion || solcVersion;   // Fall back to default if not found
             }
 
-            console.log(results)
             return {
                 status: "1",
                 message: "OK",

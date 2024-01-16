@@ -25,6 +25,7 @@
     "@chainlink/contracts": "^0.8.0",
     "@chainlink/contracts-ccip": "^1.2.1",
     "@imtbl/contracts": "^2.1.1",
+    "@lukso/lsp-smart-contracts": "^0.14.0",
     "@monaco-editor/react": "^4.6.0",
     "@oasisprotocol/sapphire-contracts": "^0.2.6",
     "@oceanprotocol/contracts": "^2.0.3",

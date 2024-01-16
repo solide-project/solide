@@ -149,6 +149,48 @@ export const getNetworkNameFromChainID = (chainId: string) => {
             return "Energy Web Mainnet";
         case ChainID.ENERGY_WEB_CHAIN_TESTNET:
             return "Energy Web Volta Testnet";
+        case ChainID.LUKSO_MAINNET:
+            return "Lukso Mainnet";
+        case ChainID.LUKSO_TESTNET:
+            return "Lukso Testnet";
+        case ChainID.ACALA_MAINNET:
+            return "Acala Mainnet";
+        case ChainID.MANDALA_TESTNET:
+            return "Mandala Testnet";
+        case ChainID.REI_MAINNET:
+            return "Rei Network";
+        case ChainID.REI_TESTNET:
+            return "Rei Testnet";
+        case ChainID.ZORA_NETWORK_MAINNET:
+            return "Zora Network";
+        case ChainID.CALLISTO_MAINNET:
+            return "Callisto Network";
+        case ChainID.ZKSYNC_MAINNET:
+            return "zkSync Mainnet";
+        case ChainID.ZKSYNC_SEPOLIA:
+            return "zkSync Seoplia";
+        case ChainID.NEON_MAINNET:
+            return "Neon Mainnet";
+        case ChainID.NEON_TESTNET:
+            return "Neon Devnet";
+        case ChainID.AURORA_MAINNET:
+            return "Aurora Mainnet";
+        case ChainID.AURORA_TESTNET:
+            return "Aurora Testnet";
+        case ChainID.RONIN_MAINNET:
+            return "Ronin Network";
+        case ChainID.RONIN_SAIGON_TESTNET:
+            return "Ronin Saigon Testnet";
+        case ChainID.TRON_MAINNET:
+            return "Tron Mainnet";
+        case ChainID.TRON_SHASTA_TESTNET:
+            return "Tron Shasta Testnet";
+        case ChainID.BEAM_MAINNET:
+            return "Beam";
+        case ChainID.CARBON_EVM_MAINNET:
+            return "Carbon EVM";
+        case ChainID.CARBON_EVM_TESTNET:
+            return "Carbon EVM Testnet";
         default:
             return "";
     }

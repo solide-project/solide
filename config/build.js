@@ -73,6 +73,7 @@ const library = [
     "@imtbl/contracts",
     "@axelar-network/axelar-gmp-sdk-solidity",
     "openzeppelin-contracts",
+    "@lukso/lsp-smart-contracts",
     
     // Note these are from git clone
     "permit2",      // git clone https://github.com/Uniswap/permit2
