@@ -1,10 +1,11 @@
 import "@/styles/globals.css"
 import { Metadata } from "next"
-import { siteConfig } from "@/config/site"
 import { Space_Grotesk } from "next/font/google"
+
+import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { ThemeProvider } from "@/components/theme-provider"
 import { SolideFileProvider } from "@/components/provider/file-provider"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
   title: {
@@ -37,11 +38,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <>
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={cn("bg-grayscale-000 font-sans antialiased", fontSpace.variable)}>
+        <body
+          className={cn(
+            "bg-grayscale-000 font-sans antialiased",
+            fontSpace.variable
+          )}
+        >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <SolideFileProvider>
-              {children}
-            </SolideFileProvider>
+            <SolideFileProvider>{children}</SolideFileProvider>
           </ThemeProvider>
         </body>
       </html>

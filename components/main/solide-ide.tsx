@@ -1,32 +1,22 @@
 "use client"
 
-import Editor from '@monaco-editor/react';
+import path from "path"
+import { useEffect, useState } from "react"
+import Editor from "@monaco-editor/react"
+import { Signer, ethers } from "ethers"
+import { Code, File, FunctionSquare, Settings } from "lucide-react"
 import { useTheme } from "next-themes"
-import { GetSolidityJsonInputFormat, JSONParse, cn, solcVersion } from '@/lib/utils';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { SolVersion } from '@/components/main/footer/sol-version';
-import { Signer, ethers } from 'ethers';
-import { SelectedChain } from '@/components/main/footer/selected-chain';
-import { CompileError, CompileResult } from '@/lib/interfaces';
-import { ThemeToggle } from '@/components/theme-toggle';
-import { Input } from '@/components/ui/input';
-import { ContractInvoke } from '@/components/main/contract/contract-invoke';
-import { ContractMetadata } from '@/components/main/contract/contract-metadata';
-import { ContentLink } from '@/components/main/footer/content-link';
-import { CompileErrors } from '@/components/main/compile/errors';
-import { EditorLoading } from '@/components/main/compile/loading';
-import { Checkbox } from '../ui/checkbox';
-import { FileTree } from './file-tree';
-import { useSolideFile } from '../provider/file-provider';
-import { SolideFile, isSolideFile } from '@/lib/solide/solide-file';
+
+import { CompileError, CompileResult } from "@/lib/interfaces"
+import { SolideFile, isSolideFile } from "@/lib/solide/solide-file"
 import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import path from 'path';
-import { Code, File, FunctionSquare, Settings } from 'lucide-react';
+  GetSolidityJsonInputFormat,
+  JSONParse,
+  cn,
+  solcVersion,
+} from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -35,37 +25,50 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 import { Separator } from "@/components/ui/separator"
-import { ChainID } from '@/lib/chains/chain-id';
-import { getAPI } from '@/lib/chains/api';
+import { CompileErrors } from "@/components/main/compile/errors"
+import { EditorLoading } from "@/components/main/compile/loading"
+import { ContractInvoke } from "@/components/main/contract/contract-invoke"
+import { ContractMetadata } from "@/components/main/contract/contract-metadata"
+import { FileTree } from "@/components/main/file-tree"
+import { ContentLink } from "@/components/main/footer/content-link"
+import { SelectedChain } from "@/components/main/footer/selected-chain"
+import { SolVersion } from "@/components/main/footer/sol-version"
+import { useSolideFile } from "@/components/provider/file-provider"
+import { ThemeToggle } from "@/components/theme-toggle"
 
-interface SolideIDEProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  url?: string;
-  chainId?: string;
-  title?: string;
-  content: string;
-  version?: string;
+interface SolideIDEProps extends React.HTMLAttributes<HTMLDivElement> {
+  url?: string
+  chainId?: string
+  title?: string
+  content: string
+  version?: string
 }
 
 interface CompileInput {
-  language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper";
+  language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper"
   settings?: {
-    outputSelection: any;
-    optimizer: any;
-    evmVersion: string;
-    metadata: any;
-    libraries: any;
-    remappings: any;
-    metadataHash: string;
+    outputSelection: any
+    optimizer: any
+    evmVersion: string
+    metadata: any
+    libraries: any
+    remappings: any
+    metadataHash: string
   }
   sources: {
-    [key: string]: CompileSource;
-  };
+    [key: string]: CompileSource
+  }
 }
 
 interface CompileSource {
-  content: string;
+  content: string
 }
 
 export function SolideIDE({
@@ -76,66 +79,72 @@ export function SolideIDE({
   title = "Contract",
 }: SolideIDEProps) {
   const {
-    folder, setFolder,
-    ideKey, selectedFile, handleIDEDisplay,
-    handleIDEChange, selectedSolcVersion, setSelectedSolcVersion
-  } = useSolideFile();
+    folder,
+    setFolder,
+    ideKey,
+    selectedFile,
+    handleIDEDisplay,
+    handleIDEChange,
+    selectedSolcVersion,
+    setSelectedSolcVersion,
+  } = useSolideFile()
   const { theme } = useTheme()
 
   const [compileInfo, setCompileInfo] = useState<CompileResult | undefined>()
   const [solidityInput, setSolidityInput] = useState<CompileInput | undefined>()
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       // At the start, we need to check if the content is JSON format
-      const match = title.match(/\/([^:]+\.sol):/);
-      const solFilePath = match ? match[1] : title;
+      const match = title.match(/\/([^:]+\.sol):/)
+      const solFilePath = match ? match[1] : title
 
-      handleIDEDisplay({ content, filePath: solFilePath });
+      handleIDEDisplay({ content, filePath: solFilePath })
       setSelectedSolcVersion(version || solcVersion)
 
-      if (!content) return;
+      if (!content) return
 
       //#region Check if the smart contract is JSON format
-      const input: CompileInput = GetSolidityJsonInputFormat(content);
+      const input: CompileInput = GetSolidityJsonInputFormat(content)
+      console.log(input, title)
       if (input) {
-        setSolidityInput(input);
-        let fileSystem: any = {};
+        setSolidityInput(input)
+        let fileSystem: any = {}
         Object.entries(input.sources).forEach(([key, val]) => {
           // console.log(key, val)
-
-          const pathArray = key.split('/');
-          let currentLocation = fileSystem;
+          const pathArray = key.split("/")
+          let currentLocation = fileSystem
 
           for (const folder of pathArray.slice(0, -1)) {
             if (!currentLocation[folder]) {
-              currentLocation[folder] = {};
+              currentLocation[folder] = {}
             }
-            currentLocation = currentLocation[folder];
+            currentLocation = currentLocation[folder]
           }
 
           currentLocation[pathArray[pathArray.length - 1]] = {
             content: val.content,
             filePath: key,
-          } as SolideFile;
-        });
+          } as SolideFile
+        })
 
         setFolder(fileSystem)
-        const parsedPath = path.parse(title);
-        const onChainEntry = Object.entries(input.sources).find(
-          ([_, val]) => val.content.includes(`contract ${parsedPath.name || title}`));
+        const parsedPath = path.parse(title)
+        const onChainEntry = Object.entries(input.sources).find(([_, val]) =>
+          val.content.includes(`contract ${parsedPath.name || title}`)
+        )
 
         if (onChainEntry) {
-          const [key, onChainContent] = onChainEntry;
+          const [key, onChainContent] = onChainEntry
           // Now, key is the key, and onChainContent is the value
           handleIDEDisplay({
             content: onChainContent.content,
             filePath: key,
-          });
+          })
         }
       } else {
         let data: CompileInput = JSONParse(content) as CompileInput
-        console.log(data)  
+        console.log(data)
 
         // If flatten contract, then can't parse JSON, hence we need to manually parse it
         if (!data) {
@@ -143,49 +152,49 @@ export function SolideIDE({
             language: "Solidity",
             sources: {
               [`${title}.sol`]: {
-                content: content
-              }
-            }
+                content: content,
+              },
+            },
           }
         }
 
-        setSolidityInput(data);
-        let fileSystem: any = {};
+        setSolidityInput(data)
+        let fileSystem: any = {}
         Object.entries(data.sources).forEach(([key, val]) => {
-          const pathArray = key.split('/');
-          let currentLocation = fileSystem;
+          const pathArray = key.split("/")
+          let currentLocation = fileSystem
 
           for (const folder of pathArray.slice(0, -1)) {
             if (!currentLocation[folder]) {
-              currentLocation[folder] = {};
+              currentLocation[folder] = {}
             }
-            currentLocation = currentLocation[folder];
+            currentLocation = currentLocation[folder]
           }
 
           currentLocation[pathArray[pathArray.length - 1]] = {
             content: val.content,
             filePath: key,
-          } as SolideFile;
-        });
+          } as SolideFile
+        })
 
         setFolder(fileSystem)
-        const onChainEntry = Object.entries(data.sources).find(
-          ([key, _]) => path.basename(key).startsWith(path.basename(title)));
+        const onChainEntry = Object.entries(data.sources).find(([key, _]) =>
+          path.basename(key).startsWith(path.basename(title))
+        )
 
         if (onChainEntry) {
-          const [key, onChainContent] = onChainEntry;
+          const [key, onChainContent] = onChainEntry
           // Now, key is the key, and onChainContent is the value
           // setValue(onChainContent.content);
           handleIDEDisplay({
             content: onChainContent.content,
             filePath: key,
-          });
+          })
         }
       }
       //#endregion
-
     })()
-  }, [content]);
+  }, [content])
 
   //#region Compiling on client using web worker
   // const compileOffLine = async () => {
@@ -261,78 +270,76 @@ export function SolideIDE({
   //#endregion
 
   const onChange = async (newValue: string | undefined, event: any) => {
-    if (!newValue) return;
-    handleIDEChange(selectedFile.filePath, newValue);
+    if (!newValue) return
+    handleIDEChange(selectedFile.filePath, newValue)
   }
 
   const [viaIR, setViaIR] = useState<boolean>(false)
   const [compilerRun, setCompilerRun] = useState<number>(200)
   const [compileOptimiser, setCompileOptimiser] = useState<boolean>(false)
   const handleCompileOptimiser = (e: any) => {
-    const val = compileOptimiser;
+    const val = compileOptimiser
     setCompileOptimiser(!val)
   }
   const handleViaIR = (e: any) => {
-    const val = viaIR;
+    const val = viaIR
     setViaIR(!val)
   }
 
   const [compilerVersion, setCompilerVersion] = useState<string>(solcVersion)
   const [compiling, setCompiling] = useState<boolean>(false)
-  const [compileError, setCompileError] = useState<CompileError | undefined>();
+  const [compileError, setCompileError] = useState<CompileError | undefined>()
 
   const getAllStringValues = (obj: any) => {
-    let sources: any = {};
+    let sources: any = {}
 
     const traverse = (currentObj: any) => {
       for (const key in currentObj) {
         if (isSolideFile(currentObj[key])) {
-          sources[currentObj[key].filePath] = { content: currentObj[key].content };
-        } else if (typeof currentObj[key] === 'object') {
-          traverse(currentObj[key]);
+          sources[currentObj[key].filePath] = {
+            content: currentObj[key].content,
+          }
+        } else if (typeof currentObj[key] === "object") {
+          traverse(currentObj[key])
         }
       }
-    };
+    }
 
-    traverse(obj);
+    traverse(obj)
 
-    return sources;
-  };
+    return sources
+  }
 
   const compile = async () => {
-    if (compiling) return;
+    if (compiling) return
 
-    setCompiling(true);
+    setCompiling(true)
+    setCompileError(undefined)
+    setCompileInfo(undefined)
+    setContract(undefined)
 
-    setCompileError(undefined);
-    setCompileInfo(undefined);
-    setContract(undefined);
-
-    const formData = new FormData();
+    const formData = new FormData()
 
     // override the content with the json format if it exists
     const sources = getAllStringValues(folder)
     console.log({ ...solidityInput, sources })
-    const blob = new Blob([JSON.stringify({ ...solidityInput, sources })], { type: 'text/plain' });
-    formData.append('file', blob, url);
-    // if (contractInput) {
-    //   const blob = new Blob([JSON.stringify(contractInput)], { type: 'text/plain' });
-    //   formData.append('file', blob, url);
-    // } else {
-    //   const blob = new Blob([value], { type: 'text/plain' });
-    //   formData.append('file', blob, url);
-    // }
-    formData.append('source', url || encodeURIComponent(title));
+    const blob = new Blob([JSON.stringify({ ...solidityInput, sources })], {
+      type: "text/plain",
+    })
+    formData.append("file", blob, url)
+
+    formData.append("source", url || encodeURIComponent(title))
 
     if (title) {
-
-      formData.append('title', title);
+      formData.append("title", title)
     }
 
     let uri = `/api/compile?version=${encodeURIComponent(selectedSolcVersion)}`
 
     if (compileOptimiser) {
-      uri += `&optimizer=${encodeURIComponent(compileOptimiser)}&runs=${encodeURIComponent(compilerRun)}`
+      uri += `&optimizer=${encodeURIComponent(
+        compileOptimiser
+      )}&runs=${encodeURIComponent(compilerRun)}`
     }
 
     if (viaIR) {
@@ -340,113 +347,134 @@ export function SolideIDE({
     }
 
     const response = await fetch(uri, {
-      method: 'POST',
+      method: "POST",
       body: formData,
-    });
+    })
 
     if (!response.ok) {
-      const data = await response.json() as CompileError;
-      setCompileError(data);
-      setCompiling(false);
-      return;
+      const data = (await response.json()) as CompileError
+      setCompileError(data)
+      setCompiling(false)
+      return
     }
-    const data = await response.json();
-    const constructors: any[] = data.data.abi.filter((m: any) => m.type === "constructor");
+    const data = await response.json()
+    const constructors: any[] = data.data.abi.filter(
+      (m: any) => m.type === "constructor"
+    )
 
     if (constructors.length > 0) {
-      const contractConstructor = constructors.pop();
+      const contractConstructor = constructors.pop()
       setConstructorABI(contractConstructor)
     }
-    setContractAddress("");
-    setCompileInfo(data);
-    setCompiling(false);
+    setContractAddress("")
+    setCompileInfo(data)
+    setCompiling(false)
   }
 
-  const [contractAddress, setContractAddress] = useState<string>("");
-  const [constructorArgs, setConstructorArgs] = useState<any[]>([]);
+  const [contractAddress, setContractAddress] = useState<string>("")
+  const [constructorArgs, setConstructorArgs] = useState<any[]>([])
   const [constructorABI, setConstructorABI] = useState<{
-    inputs: any[];
+    inputs: any[]
   }>({
     inputs: [],
-  } as any);
+  } as any)
 
-  const [contract, setContract] = useState<ethers.Contract | undefined>();
-  const [contractKey, setContractKey] = useState<number>(0);
+  const [contract, setContract] = useState<ethers.Contract | undefined>()
+  const [contractKey, setContractKey] = useState<number>(0)
   const deploy = async () => {
-    if (compileInfo === undefined) return;
+    if (compileInfo === undefined) return
 
-    setContract(undefined);
+    setContract(undefined)
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner() as Signer;
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    await provider.send("eth_requestAccounts", [])
+    const signer = provider.getSigner() as Signer
 
-    console.log(constructorArgs, constructorABI, constructorArgs.length, (constructorABI.inputs || []).length);
+    console.log(
+      constructorArgs,
+      constructorABI,
+      constructorArgs.length,
+      (constructorABI.inputs || []).length
+    )
     if (!ethers.utils.isAddress(contractAddress)) {
-      const factory = new ethers.ContractFactory(compileInfo.data.abi, compileInfo.data.evm.bytecode.object, signer);
-      const contract = await factory.deploy(...constructorArgs);
-      setContractAddress(contract.address);
-      setContractKey(contractKey + 1);
-      setContract(contract);
+      const factory = new ethers.ContractFactory(
+        compileInfo.data.abi,
+        compileInfo.data.evm.bytecode.object,
+        signer
+      )
+      const contract = await factory.deploy(...constructorArgs)
+      setContractAddress(contract.address)
+      setContractKey(contractKey + 1)
+      setContract(contract)
     } else {
-      const contract = new ethers.Contract(contractAddress, compileInfo.data.abi, signer);
-      setContractAddress(contract.address);
-      setContractKey(contractKey + 1);
-      setContract(contract);
+      const contract = new ethers.Contract(
+        contractAddress,
+        compileInfo.data.abi,
+        signer
+      )
+      setContractAddress(contract.address)
+      setContractKey(contractKey + 1)
+      setContract(contract)
     }
   }
 
   //#region Set width, fontsize of the editor
-  const [width, setWidth] = useState<number>(1024);
-  const [editorFontSize, setEditorFontSize] = useState<number>(16);
+  const [editorFontSize, setEditorFontSize] = useState<number>(16)
   useEffect(() => {
     const handleWindowResize = () => {
-      let fontSize = 12;
+      let fontSize = 12
 
       if (window.innerWidth > 1024) {
-        fontSize = 16;
+        fontSize = 16
       } else if (window.innerWidth > 768) {
-        fontSize = 14;
+        fontSize = 14
       }
 
-      setWidth(window.innerWidth);
-      setEditorFontSize(fontSize);
-    };
+      setEditorFontSize(fontSize)
+    }
 
-    handleWindowResize(); // Initialize size
-    window.addEventListener('resize', handleWindowResize);
+    handleWindowResize() // Initialize size
+    window.addEventListener("resize", handleWindowResize)
     return () => {
-      window.removeEventListener('resize', handleWindowResize);
-    };
-  }, []);
+      window.removeEventListener("resize", handleWindowResize)
+    }
+  }, [])
   //#endregion
 
-
-  const [isFileSytemVisible, setIsFileSytemVisible] = useState(false);
+  const [isFileSytemVisible, setIsFileSytemVisible] = useState(false)
   const toggleFileSytemVisible = () => {
-    setIsFileSytemVisible(!isFileSytemVisible);
-  };
+    setIsFileSytemVisible(!isFileSytemVisible)
+  }
 
-  const [isEditorVisible, setIsEditorVisible] = useState(true);
+  const [isEditorVisible, setIsEditorVisible] = useState(true)
   const toggleEditorVisible = () => {
-    setIsEditorVisible(!isEditorVisible);
-  };
+    setIsEditorVisible(!isEditorVisible)
+  }
 
-  const [isContractVisible, setIsContractVisible] = useState(true);
+  const [isContractVisible, setIsContractVisible] = useState(true)
   const toggleIsContractVisible = () => {
-    setIsContractVisible(!isContractVisible);
-  };
+    setIsContractVisible(!isContractVisible)
+  }
 
   return (
     <div className="flex max-h-screen min-h-screen">
-      <div className={cn("max-h-screen mx-0", `${isFileSytemVisible ? '' : 'hidden'}`)}>
+      <div
+        className={cn(
+          "mx-0 max-h-screen",
+          `${isFileSytemVisible ? "" : "hidden"}`
+        )}
+      >
         <div className="h-full">
-          <div className="overflow-y-auto overflow-x-auto h-full p-4 pb-8">
+          <div className="h-full overflow-x-auto overflow-y-auto p-4 pb-8">
             <FileTree name={path.basename(url || "")} />
           </div>
         </div>
       </div>
-      <div className={cn("flex flex-col gap-2 items-center py-4 lg:px-2 max-h-screen px-1")}>
+      <div
+        className={cn(
+          "flex max-h-screen flex-col items-center gap-2 px-1 py-4 lg:px-2"
+        )}
+      >
         <Button size="icon" variant="ghost" onClick={toggleFileSytemVisible}>
           <File />
         </Button>
@@ -457,7 +485,7 @@ export function SolideIDE({
           <Code />
         </Button>
 
-        <Button size="icon" variant="ghost" onClick={toggleIsContractVisible} >
+        <Button size="icon" variant="ghost" onClick={toggleIsContractVisible}>
           <FunctionSquare />
         </Button>
 
@@ -474,10 +502,12 @@ export function SolideIDE({
                 <Settings />
               </Button>
             </DialogTrigger>
-            <DialogContent className="shadow-none border-none bg-grayscale-025 overflow-y-auto">
+            <DialogContent className="overflow-y-auto border-none bg-grayscale-025 shadow-none">
               <DialogHeader>
-                <DialogTitle className="text-center text-sm lg:text-xl mb-0 lg:mb-6">Settings</DialogTitle>
-                <DialogDescription className="flex flex-col gap-2 lg:gap-8 text-xs lg:text-base">
+                <DialogTitle className="mb-0 text-center text-sm lg:mb-6 lg:text-xl">
+                  Settings
+                </DialogTitle>
+                <DialogDescription className="flex flex-col gap-2 text-xs lg:gap-8 lg:text-base">
                   <div>
                     <div className="my-2">Compiler</div>
                     <SolVersion version={version} />
@@ -485,23 +515,41 @@ export function SolideIDE({
 
                   <div>
                     <div className="my-2">Runs</div>
-                    <Input type="number" max={1300} min={200}
+                    <Input
+                      type="number"
+                      max={1300}
+                      min={200}
                       value={compilerRun}
-                      onChange={(e: any) => setCompilerRun(parseInt(e.target.value))} />
+                      onChange={(e: any) =>
+                        setCompilerRun(parseInt(e.target.value))
+                      }
+                    />
                   </div>
 
-                  <div className="flex items-center space-x-2 bg-grayscale-100 rounded-md py-1 px-4 lg:py-4 lg:px-4">
-                    <Checkbox id="optimizer" checked={compileOptimiser} onClick={handleCompileOptimiser} />
-                    <label htmlFor="optimizer"
+                  <div className="flex items-center space-x-2 rounded-md bg-grayscale-100 px-4 py-1 lg:px-4 lg:py-4">
+                    <Checkbox
+                      id="optimizer"
+                      checked={compileOptimiser}
+                      onClick={handleCompileOptimiser}
+                    />
+                    <label
+                      htmlFor="optimizer"
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      Enable optimization (Note enable may timeout on large contracts)
+                      Enable optimization (Note enable may timeout on large
+                      contracts)
                     </label>
                   </div>
 
-                  <div className="flex items-center space-x-2 bg-grayscale-100 rounded-md py-4 px-4">
-                    <Checkbox id="viaIR" checked={viaIR} onClick={handleViaIR} disabled={true} />
-                    <label htmlFor="viaIR"
+                  <div className="flex items-center space-x-2 rounded-md bg-grayscale-100 px-4 py-4">
+                    <Checkbox
+                      id="viaIR"
+                      checked={viaIR}
+                      onClick={handleViaIR}
+                      disabled={true}
+                    />
+                    <label
+                      htmlFor="viaIR"
                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Use CLI (Coming Soon)
@@ -514,9 +562,18 @@ export function SolideIDE({
         </div>
       </div>
       <ResizablePanelGroup direction="horizontal" className="">
-        <ResizablePanel defaultSize={70} minSize={5} className={cn("relative", `${isEditorVisible ? '' : 'hidden'}`)}>
-          <div className="flex items-center justify-center text-center" style={{ height: "5vh" }}>
-            <span className="border py-1 px-16 rounded-md bg-grayscale-025">{selectedFile.filePath || "Contract.sol"}</span>
+        <ResizablePanel
+          defaultSize={70}
+          minSize={5}
+          className={cn("relative", `${isEditorVisible ? "" : "hidden"}`)}
+        >
+          <div
+            className="flex items-center justify-center text-center"
+            style={{ height: "5vh" }}
+          >
+            <span className="rounded-md border bg-grayscale-025 px-16 py-1">
+              {selectedFile.filePath || "Contract.sol"}
+            </span>
           </div>
           <Editor
             key={ideKey}
@@ -529,29 +586,62 @@ export function SolideIDE({
             options={{ fontSize: editorFontSize }}
           />
           <Button
-            className="absolute" style={{ bottom: "16px", right: "16px" }}
-            size="sm" onClick={compile} disabled={compiling}>{compiling ? "Compiling ..." : "Compile"}</Button>
+            className="absolute"
+            style={{ bottom: "16px", right: "16px" }}
+            size="sm"
+            onClick={compile}
+            disabled={compiling}
+          >
+            {compiling ? "Compiling ..." : "Compile"}
+          </Button>
         </ResizablePanel>
         {isContractVisible && isEditorVisible && <ResizableHandle withHandle />}
-        <ResizablePanel defaultSize={30} minSize={5} className={cn("", `${isContractVisible ? '' : 'hidden'}`)}>
-          {compileError && compileError.details &&
-            <CompileErrors errors={compileError.details} />}
-          {compileInfo
-            ? <div className="max-h-screen flex flex-col gap-2">
+        <ResizablePanel
+          defaultSize={30}
+          minSize={5}
+          className={cn("", `${isContractVisible ? "" : "hidden"}`)}
+        >
+          {compileError && compileError.details && (
+            <CompileErrors errors={compileError.details} />
+          )}
+          {compileInfo ? (
+            <div className="flex max-h-screen flex-col gap-2">
               <div className="px-4">
-                <ContractMetadata items={[
-                  { title: "ABI", payload: JSON.stringify(compileInfo.data?.abi || "{}") },
-                  { title: "Bytecode", payload: compileInfo.data?.evm?.bytecode?.object || "" },
-                  { title: "Flatten", payload: compileInfo.flattenContract },
-                ]} />
+                <ContractMetadata
+                  items={[
+                    {
+                      title: "ABI",
+                      payload: JSON.stringify(compileInfo.data?.abi || "{}"),
+                    },
+                    {
+                      title: "Bytecode",
+                      payload: compileInfo.data?.evm?.bytecode?.object || "",
+                    },
+                    { title: "Flatten", payload: compileInfo.flattenContract },
+                  ]}
+                />
 
                 <div className="flex">
-                  <Button size="sm" onClick={deploy}
+                  <Button
+                    size="sm"
+                    onClick={deploy}
                     variant="default"
-                    disabled={ethers.utils.isAddress(contractAddress) || constructorArgs.length === (constructorABI.inputs || []).length
-                      ? false : true}>Deploy</Button>
-                  <Input className="h-9 rounded-md px-3" placeholder="Contract Address"
-                    value={contractAddress} onChange={(e) => setContractAddress(e.target.value)} />
+                    disabled={
+                      ethers.utils.isAddress(contractAddress) ||
+                      constructorArgs.length ===
+                        (constructorABI.inputs || []).length
+                        ? false
+                        : true
+                    }
+                  >
+                    Deploy
+                  </Button>
+                  <Input
+                    className="h-9 rounded-md px-3"
+                    placeholder="Contract Address"
+                    value={contractAddress}
+                    onChange={(e) => setContractAddress(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="pl-4">
@@ -559,14 +649,22 @@ export function SolideIDE({
                   setConstructorArgs={setConstructorArgs}
                   key={contractKey}
                   contract={contract}
-                  abi={compileInfo?.data.abi || []} />
+                  abi={compileInfo?.data.abi || []}
+                />
               </div>
             </div>
-            : <div className={cn("py-4 min-h-screen flex items-center justify-center", `${compileError && compileError.details && "hidden"}`)}>
+          ) : (
+            <div
+              className={cn(
+                "flex min-h-screen items-center justify-center py-4",
+                `${compileError && compileError.details && "hidden"}`
+              )}
+            >
               Compile contract to render section
-            </div>}
+            </div>
+          )}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
-  );
+  )
 }
