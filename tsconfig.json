@@ -34,7 +34,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts", "lib/pi.js", "public/_solc-worker/worker.ts",
+    ".next/types/**/*.ts", "lib/pi.js", "public/_solc-worker/worker.ts", "lib/assemblyscript.js",
   ],
   "exclude": [
     "node_modules",

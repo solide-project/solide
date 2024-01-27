@@ -105,6 +105,7 @@ const data: { [key: string]: string } = {
     "https://api.routescan.io/v2/network/mainnet/evm/4337/etherscan",
   [ChainID.CARBON_EVM_MAINNET]: "https://evm-scan.carbon.network",
   [ChainID.CARBON_EVM_TESTNET]: "https://test-evm-scan.carbon.network",
+  [ChainID.ARTELA_TESTNET]: "https://betanet-scan.artela.network",
 }
 
 export const getAPI = (network: string): string => data[network] || ""

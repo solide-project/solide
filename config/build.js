@@ -65,16 +65,30 @@ const library = [
     "@balancer-labs/v2-interfaces",
     "@balancer-labs/v2-solidity-utils",
     "@balancer-labs/v2-pool-utils",
-    "cross-not-official",
     "@aave/periphery-v3",
     "@aave/core-v3",
-    "arb-bridge-eth",
     "@oasisprotocol/sapphire-contracts",
     "@imtbl/contracts",
     "@axelar-network/axelar-gmp-sdk-solidity",
     "openzeppelin-contracts",
     "@lukso/lsp-smart-contracts",
+    "@0x/contracts-treasury",
+    "@0x/contracts-utils",
+    "@0x/contracts-erc20",
+    "@0x/contracts-zero-ex",
+    "@jbx-protocol/juice-contracts-v3",
+    "@prb/math",
+    "@account-abstraction/contracts",
+    "@dydxprotocol/perpetual",
+    "@dydxprotocol/solo",
+    "@dydxprotocol/protocol",
     
+    // Deceprecated
+    "@0x/contracts-asset-proxy",
+    "arb-bridge-eth",
+    "openzeppelin-solidity",
+    "cross-not-official",
+
     // Note these are from git clone
     "permit2",      // git clone https://github.com/Uniswap/permit2
     "@uniswap/v4-core",      // git clone https://github.com/Uniswap/v4-core

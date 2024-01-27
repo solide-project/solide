@@ -25,6 +25,7 @@ class SolideContractLoader {
     if (!this.isValidURL()) return "Invalid Github URL Path"
 
     // Resolve the raw path to get the source code
+
     const resolver = GithubResolver()
     const raw = (await resolver(this.source, { resolver: "" })) || ""
     if (!raw) return "Can't resolve the Github URL Path"
@@ -45,6 +46,7 @@ class SolideContractLoader {
       dependencies = await extractImports(content, raw, [])
       dependencies = removeDuplicatesPreserveOrder(dependencies)
     } catch (error: any) {
+      console.log(error)
       return "Error loading dependencies"
     }
 
@@ -153,14 +155,12 @@ export async function getEntryDetails(output: any, entry: string) {
   entry = entry.replace(/\.[^/.]+$/, "") // Remove file extension
   return new Promise((resolve, reject) => {
     Object.keys(output.contracts).forEach((contractSource) => {
-      // console.log(contractSource, entry);
       if (contractSource === entry) {
         for (var contractName in output.contracts[entry]) {
           resolve(output.contracts[contractSource][contractName])
         }
       }
       Object.keys(output.contracts[contractSource]).forEach((contractName) => {
-        // console.log(contractName, entry);
         if (contractName === entry) {
           resolve(output.contracts[contractSource][entry])
         }
@@ -178,7 +178,7 @@ export async function getEntryDetails(output: any, entry: string) {
  * @param isRelative
  * @returns
  */
-async function resolve(
+export async function resolve(
   importPath: string,
   isRelative: boolean = false
 ): Promise<{ fileContents: string }> {

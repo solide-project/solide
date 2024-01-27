@@ -4,7 +4,7 @@ import { Space_Grotesk } from "next/font/google"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { SolideFileProvider } from "@/components/provider/file-provider"
+import { FileSystemProvider } from "@/components/file-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <SolideFileProvider>{children}</SolideFileProvider>
+            <FileSystemProvider>{children}</FileSystemProvider>
           </ThemeProvider>
         </body>
       </html>

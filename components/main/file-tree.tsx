@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { ChevronDown, ChevronRight, FileBox } from "lucide-react"
 
-import { SolideFile, isSolideFile } from "@/lib/solide/solide-file"
+import { SolideFile, isSolideFile } from "@/lib/client/solide-file-system"
 import { cn } from "@/lib/utils"
-import { useSolideFile } from "@/components/provider/file-provider"
+
+import { useFileSystem } from "../file-provider"
 
 interface FileTreeNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string
@@ -14,15 +15,15 @@ interface FileTreeNodeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const FileTreeNode = ({ name, node, depth }: FileTreeNodeProps) => {
-  const { handleIDEDisplay } = useSolideFile()
+  const { handleIDEDisplay } = useFileSystem()
   const [isExpanded, setIsExpanded] = useState(false)
-
-  const handleToggle = () => {
-    setIsExpanded(!isExpanded)
-  }
 
   const openFile = () => {
     handleIDEDisplay(node as SolideFile)
+  }
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded)
   }
 
   const getIndentStyle = () => {
@@ -73,15 +74,15 @@ interface FileTreeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const FileTree = ({ name = "root", className }: FileTreeProps) => {
-  const { folder } = useSolideFile()
+  const { fs } = useFileSystem()
 
-  if (!folder) {
+  if (!fs) {
     return <div className={cn("w-[350px]", className)}>Empty</div>
   }
 
   return (
     <div className={cn("w-[350px]", className)}>
-      <FileTreeNode name={name} node={folder} depth={0} />
+      <FileTreeNode name={name} node={fs.fileSystem || {}} depth={0} />
     </div>
   )
 }

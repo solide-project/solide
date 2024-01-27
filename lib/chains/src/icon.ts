@@ -147,6 +147,8 @@ export const getIconByChainId = (chainId: string): string => {
     case ChainID.CARBON_EVM_MAINNET:
     case ChainID.CARBON_EVM_TESTNET:
       return "/icons/carbon.svg"
+    case ChainID.ARTELA_TESTNET:
+      return "/icons/artela.svg"
     default:
       return ""
   }

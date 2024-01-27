@@ -1,7 +1,8 @@
 import { EthGetSourceCodeInterface } from "@/lib/explorer/chains"
 import { getSourceCode } from "@/lib/explorer/src/api"
 import { InvalidMessage } from "@/components/invalid-message"
-import { SolideIDE } from "@/components/main/solide-ide"
+import { SolideIDE } from "@/components/main/evm/evm-ide"
+import { EVMProvider } from "@/components/main/evm/provider/evm-provider"
 
 export default async function Page({
   params,
@@ -22,12 +23,14 @@ export default async function Page({
   }
 
   return (
-    <SolideIDE
-      url={params.address}
-      chainId={params.chain}
-      title={data.result[0].ContractName}
-      content={data.result[0].SourceCode}
-      version={data.result[0].CompilerVersion}
-    />
+    <EVMProvider>
+      <SolideIDE
+        url={params.address}
+        chainId={params.chain}
+        title={data.result[0].ContractName}
+        content={data.result[0].SourceCode}
+        version={data.result[0].CompilerVersion}
+      />
+    </EVMProvider>
   )
 }

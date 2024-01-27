@@ -54,16 +54,19 @@ export class FilScanClient extends BaseScan implements ExplorerInterface {
       sources: {},
     }
 
+    sourceInput.sources = await this.fetchSources(data.data.source_codes)
+
     // Same implementation as blockscout's explorer that uses sourcify except here the metadata is available in API
     const sourifyData = JSON.parse(data.data.metadata)
 
     if (sourifyData.sources) {
-      try {
-        const sources: any = await this.metadataGetSources(sourifyData)
-        sourceInput.sources = sources
-      } catch (error) {
-        return generateSourceCodeError("Error loading contract")
-      }
+      // We not use this but this is an alternative to get source code
+      // try {
+      //   const sources: any = await this.metadataGetSources(sourifyData)
+      //   sourceInput.sources = sources
+      // } catch (error) {
+      //   return generateSourceCodeError("Error loading contract")
+      // }
 
       results.SourceCode = `{${JSON.stringify(sourceInput)}}`
       results.ABI = JSON.stringify(sourifyData.output?.abi || {})
@@ -112,5 +115,30 @@ export class FilScanClient extends BaseScan implements ExplorerInterface {
     }
 
     return generateSourceCodeError("Error loading contract")
+  }
+
+  async fetchSources(files: any[]): Promise<any> {
+    const fileContentDict: any = {}
+
+    // Use Promise.all to parallelize the fetching of multiple URLs
+    await Promise.all(
+      files.map(async (file) => {
+        try {
+          const response = await fetch(file.code)
+          if (response.ok) {
+            const content = await response.text()
+            fileContentDict[file.file_name] = { content }
+          } else {
+            console.error(
+              `Failed to fetch ${file.file_name}. Status: ${response.status}`
+            )
+          }
+        } catch (error) {
+          console.error(`Error fetching ${file.file_name}: ${error}`)
+        }
+      })
+    )
+
+    return fileContentDict
   }
 }

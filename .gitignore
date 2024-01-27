@@ -2,6 +2,7 @@
 
 Dockerfile
 .dockerignore
+tmp/
 
 # dependencies
 node_modules/
