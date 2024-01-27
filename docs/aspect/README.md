@@ -27,7 +27,7 @@ For new developers entering the realm of Aspect programming, the IDE simplifies 
 
 #### 1. Aspect IDE
 
-![Solide-IDE](/docs/aspect//images/apsect-ide.png)
+![Solide-IDE](/docs/aspect/images/aspect-ide.png)
 
 Additional info (Going from left to right):
 - First Component: **File Explorer** where you can view the entire source.
@@ -38,7 +38,7 @@ Additional info (Going from left to right):
 
 #### 2. Aspect Tab
 
-![Solide-IDE](/docs/aspect//images/apsect-deploy.png)
+![Solide-IDE](/docs/aspect/images/aspect-deploy.png)
 
 Additional info (Focused on Fourth Component):
 - In the Aspect Tab, after successfully compiling an Aspect, you can access features such as downloading the `.wasm` file.
@@ -48,7 +48,7 @@ Additional info (Focused on Fourth Component):
 
 #### 3. Smart Contract Tab
 
-![Solide-IDE](/docs/aspect//images/apsect-evm.png)
+![Solide-IDE](/docs/aspect/images/aspect-evm.png)
 
 Additional info (Focused on Fifth Component):
 - In the Smart Contract Tab, you can load an EVM smart contract on Artela. This will be the contract that the Aspect Address will bind to (if click on *bind*)
@@ -64,9 +64,9 @@ The IDE is created by Next and compilation is done by the AssemblyScript compile
 
 The concept of Aspect programming is a feature that can be used in the Artela EVM ecosystem. Currently, the sole method involves downloading their suite of packages. An online IDE tailored for Aspect development simplifies the onboarding process for developers.
 
-Another instance is the of integrating the Aspect IDE into applications allows us to inject similar to CodePen. Developers interested in understanding Aspect can interactively demo it without the need for installations. This approach simplifies and streamlines Aspect programming, bringing significant value to Artela. Here we are using the Aspect IDE in another application to showcase the Aspect with a Tutorial or a Guide below to help and guide developers unders the smart contract. You can see the demo here: [Aspect Contracts](https://solide-dapp.vercel.app/aspect)
+Another instance is the of integrating the Aspect IDE into applications allows us to inject similar to CodePen. Developers interested in understanding Aspect can interactively demo it without the need for installations. This approach simplifies and streamlines Aspect programming, bringing significant value to Artela. Here we are using the Aspect IDE in another application to showcase the Aspect with a Tutorial or a Guide below to help and guide developers unders the smart contract. You can see the demo here: [Artela Aspect Contracts](https://solide-dapp.vercel.app/artela)
 
-![Solide-IDE](/docs/aspect//images/apsect-dapp.png)
+![Solide-IDE](/docs/aspect/images/solide-dapp.png)
 
 Furthermore, the proposed IDE is envisioned as an open-source platform, fostering continuous improvement and community involvement. Developers can contribute by implementing plugins and features related to Aspect programming, encouraging collaboration and ensuring the IDE evolves to meet the dynamic needs of the Aspect development community. In essence, the solution aims to offer a comprehensive, accessible, and community-driven development environment for Aspect programming in the realm of smart contract development..
 
