@@ -68,10 +68,11 @@ Another instance is the of integrating the Aspect IDE into applications allows u
 
 ![Solide-IDE](/docs/aspect/images/solide-dapp.png)
 
-Furthermore, the proposed IDE is envisioned as an open-source platform, fostering continuous improvement and community involvement. Developers can contribute by implementing plugins and features related to Aspect programming, encouraging collaboration and ensuring the IDE evolves to meet the dynamic needs of the Aspect development community. In essence, the solution aims to offer a comprehensive, accessible, and community-driven development environment for Aspect programming in the realm of smart contract development..
+Furthermore, the proposed IDE is envisioned as an open-source platform, fostering continuous improvement and community involvement. Developers can contribute by implementing plugins and features related to Aspect programming, encouraging collaboration and ensuring the IDE evolves to meet the dynamic needs of the Aspect development community. In essence, the solution aims to offer a comprehensive, accessible, and community-driven development environment for Aspect programming in the realm of smart contract development. So Solide can act as both as Aspect Integration as well as Aspect Education.
 
 ## Future
 - Creation of Documentation to help developers navigate the Aspect IDE
+
 ## How to Use
 
 - New Aspect IDE https://solidewidget.azurewebsites.net/aspect
