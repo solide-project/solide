@@ -1,4 +1,5 @@
 export const compilerVersions = [
+  "v0.8.24+commit.e11b9ed9",
   "v0.8.23+commit.f704f362",
   "v0.8.22+commit.4fc1097e",
   "v0.8.21+commit.d9974bed",

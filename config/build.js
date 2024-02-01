@@ -93,6 +93,10 @@ const library = [
     "permit2",      // git clone https://github.com/Uniswap/permit2
     "@uniswap/v4-core",      // git clone https://github.com/Uniswap/v4-core
     "@uniswap/v4-periphery",      // git clone https://github.com/Uniswap/v4-periphery
+    "@openzeppelin/contracts@3.4.0",
+    "@openzeppelin/contracts@4.7.0",
+    "@openzeppelin/contracts-upgradeable@3.4.0",
+    "@openzeppelin/contracts-upgradeable@4.7.0",
 ];
 
 library.forEach((lib) => {

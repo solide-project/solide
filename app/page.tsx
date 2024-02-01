@@ -18,7 +18,17 @@ export default async function IndexPage({ searchParams }: SearchParams) {
     compilerVersions.includes(searchParams?.version) &&
     (version = searchParams?.version)
 
-  const data = await getSolidityContract(url)
+  let remappings: Record<string, string> = {}
+  if (searchParams?.remappings) {
+    searchParams?.remappings.split(',').forEach((remapping: string) => {
+      const [to, from] = remapping.split('=')
+      if (!to || !from) return <InvalidMessage>{"Remapping Issue"}</InvalidMessage>
+
+      remappings[to] = from
+    })
+  }
+
+  const data = await getSolidityContract(url, remappings)
   if (typeof data === "string") {
     return <InvalidMessage>{data}</InvalidMessage>
   }

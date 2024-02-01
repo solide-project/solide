@@ -10,9 +10,11 @@ import { ContractPaths } from "../solide/contract-paths"
  * @param url
  * @returns
  */
-export const getSolidityContract = async (url: string) => {
+export const getSolidityContract = async (url: string, remappings: Record<string, string>) => {
   const loader = new SolideContractLoader(url)
-  return await loader.generateSource()
+  return await loader.generateSource({
+    remappings,
+  })
 }
 
 class SolideContractLoader {
@@ -21,7 +23,7 @@ class SolideContractLoader {
     this.source = source
   }
 
-  async generateSource(): Promise<any | string> {
+  async generateSource({ remappings }: { remappings?: Record<string, string> }): Promise<any | string> {
     if (!this.isValidURL()) return "Invalid Github URL Path"
 
     // Resolve the raw path to get the source code
@@ -43,7 +45,7 @@ class SolideContractLoader {
 
     let dependencies: ContractDependency[] = []
     try {
-      dependencies = await extractImports(content, raw, [])
+      dependencies = await extractImports(content, raw, [], remappings)
       dependencies = removeDuplicatesPreserveOrder(dependencies)
     } catch (error: any) {
       console.log(error)
@@ -78,7 +80,8 @@ class SolideContractLoader {
 async function extractImports(
   content: any,
   mainPath: any = "",
-  libraries: string[] = []
+  libraries: string[] = [],
+  remappings: Record<string, string> = {},
 ): Promise<ContractDependency[]> {
   // Regex to extract import information
   const regex =
@@ -100,8 +103,21 @@ async function extractImports(
     libraries.push(contractPath.filePath.toString())
 
     // Get the source code either from node_modules or relative github path
+    const maps: string[] = Object.keys(remappings) || []
+    let remapper: string = ""
+    for (const map of maps) {
+      if (contractPath.filePath.startsWith(map)) {
+        remapper = map;
+        break;
+      }
+    }
+
+    const fileToResolve: string = remapper
+      ? contractPath.filePath.replace(remapper, remappings[remapper])
+      : contractPath.filePath
+
     const { fileContents } = await resolve(
-      contractPath.filePath,
+      fileToResolve, // contractPath.filePath,
       contractPath.isRelative
     )
     let codeContent = fileContents
@@ -126,7 +142,7 @@ async function extractImports(
       originalContents: fileContents,
     })
     matches.push(
-      ...(await extractImports(fileContents, contractPath.filePath, libraries))
+      ...(await extractImports(fileContents, contractPath.filePath, libraries, remappings))
     )
   }
 
@@ -204,7 +220,15 @@ export async function resolve(
  * @returns
  */
 export const fetchGithubSource = async (url: string) => {
-  const response = await fetch(url)
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${process.env.GITHUB_API_KEY}`);
+
+  var requestOptions: any = {
+    method: 'GET',
+    headers: myHeaders,
+  };
+
+  const response = await fetch(url, requestOptions)
   if (!response.ok) return ""
 
   const content = await response.text()

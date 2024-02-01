@@ -30,7 +30,7 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
 
     try {
       const parsedABI = JSON.parse(abi)
-      console.log(aspectAddress, contractAddress, parsedABI)
+      // console.log(aspectAddress, contractAddress, parsedABI)
 
       const receipt: AspectTransactionReceipt = await aspectSDK.bind(
         contractAddress,
@@ -38,7 +38,7 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
         parsedABI
       )
 
-      console.log(receipt)
+      // console.log(receipt)
     } catch (error: any) {
       if (error.toString().includes("is not valid JSON")) {
         setError("ABI is not valid")
@@ -53,7 +53,7 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
 
     try {
       const aspects = await aspectSDK.getAspect(contractAddress)
-      console.log(aspects)
+      // console.log(aspects)
       setContractAspects(aspects)
     } catch (error) {
       console.log(error)

@@ -17,7 +17,6 @@ export function AspectEntry({ aspectAddress }: AspectEntryProps) {
 
   const handleEntryPoint = async () => {
     const receipt = await aspectSDK.entry(aspectAddress, operatioData)
-    console.log(receipt)
   }
 
   return (

@@ -54,12 +54,12 @@ export function SolVersion({ version }: SolVersionProps) {
   const [value, setValue] = useState("")
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       // Note: selectedSolcVersion must be set before this component is rendered somewhere
       setRealeases(compilerSetting.releases)
       setValue(compilerSetting.releases.latestRelease)
 
-      console.log(compilerSetting.compilerVersion)
+      // console.log(compilerSetting.compilerVersion)
       const solcVersions = compilerSetting.releases.releases as {
         [key: string]: string
       }

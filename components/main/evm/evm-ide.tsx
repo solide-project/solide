@@ -236,12 +236,12 @@ export function SolideIDE({
     await provider.send("eth_requestAccounts", [])
     const signer = provider.getSigner() as Signer
 
-    console.log(
-      constructorArgs,
-      constructorABI,
-      constructorArgs.length,
-      (constructorABI.inputs || []).length
-    )
+    // console.log(
+    //   constructorArgs,
+    //   constructorABI,
+    //   constructorArgs.length,
+    //   (constructorABI.inputs || []).length
+    // )
     if (!ethers.utils.isAddress(contractAddress)) {
       const factory = new ethers.ContractFactory(
         compileInfo.data.abi,
