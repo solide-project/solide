@@ -98,6 +98,7 @@ const data: { [key: string]: string } = {
   [ChainID.CARBON_EVM_MAINNET]: "https://evm-scan.carbon.network",
   [ChainID.CARBON_EVM_TESTNET]: "https://test-evm-scan.carbon.network",
   [ChainID.ARTELA_TESTNET]: "https://betanet-scan.artela.network",
+  [ChainID.BERACHAIN_TESTNET]: "https://artio.beratrail.io",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""

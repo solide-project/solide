@@ -1,6 +1,3 @@
-import { solcVersion } from "@/lib/utils"
-import { compilerVersions } from "@/lib/versions"
-
 import { ExplorerInterface } from "../explorer-interface"
 import { generateSourceCodeError } from "../get-source-code"
 import { EthGetSourceCodeInterface } from "../get-source-code-interface"

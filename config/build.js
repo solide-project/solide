@@ -67,6 +67,7 @@ const library = [
     "@balancer-labs/v2-pool-utils",
     "@aave/periphery-v3",
     "@aave/core-v3",
+    "@aave/aave-token",
     "@oasisprotocol/sapphire-contracts",
     "@imtbl/contracts",
     "@axelar-network/axelar-gmp-sdk-solidity",
@@ -82,7 +83,12 @@ const library = [
     "@dydxprotocol/perpetual",
     "@dydxprotocol/solo",
     "@dydxprotocol/protocol",
-    
+    "erc721a",
+    "erc721a-upgradeable",
+    "@chiru-labs/pbt",
+    "synthetix",
+    "seaport-types",
+
     // Deceprecated
     "@0x/contracts-asset-proxy",
     "arb-bridge-eth",
