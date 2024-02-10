@@ -1,3 +1,5 @@
+import JSZip from 'jszip';
+
 export interface SolideFile {
   content: string
   filePath: string
@@ -17,6 +19,40 @@ export class SolideFileSystem {
   fileSystem: any
   constructor() {
     this.fileSystem = {}
+  }
+
+  private createFolderStructure(root: Record<string, any>, zip: JSZip, path: string[] = []): void {
+    for (const [key, value] of Object.entries(root)) {
+      const newPath = [...path, key];
+
+      if (isSolideFile(value)) {
+        // It's a file
+        console.log(newPath.join('/'), value.content);
+        zip.file(newPath.join('/'), value.content);
+      } else {
+        // It's a folder
+        const subFolder = zip.folder(newPath.join('/')) as JSZip;
+        this.createFolderStructure(value, subFolder, newPath);
+      }
+    }
+  }
+
+  async download(): Promise<Blob> {
+    const zip = new JSZip();
+    
+    // this.createFolderStructure(this.fileSystem, zip, []);
+    // const blob = await zip.generateAsync({ type: 'blob' });
+    // console.log(blob.size, blob.type);
+    // return blob;
+
+    const sources = await this.generateSources();
+    console.log(sources);
+    Object.entries(sources).forEach(([key, val]) => {
+      zip.file(key, val.content);
+    });
+    const blob = await zip.generateAsync({ type: 'blob' });
+    console.log(blob.size, blob.type);
+    return blob;
   }
 
   async init(sources: { [key: string]: { content: string } }) {
@@ -71,9 +107,9 @@ export class SolideFileSystem {
     this.fileSystem = { ...originalStructure }
   }
 
-  async generateSources() {
+  async generateSources(): Promise<Record<string, { content: string }>> {
     let obj = { ...this.fileSystem } // Create a copy of the file system
-    let sources: any = {}
+    let sources: Record<string, { content: string }> = {}
 
     const traverse = (currentObj: any) => {
       for (const key in currentObj) {

@@ -54,9 +54,9 @@ export function ContentLink({
       )}
     >
       {!ethers.utils.isAddress(url) ? (
-        <Github className="h-5 w-5" />
+        <Github />
       ) : (
-        <Box className="h-5 w-5" />
+        <Box />
       )}
     </Link>
   )

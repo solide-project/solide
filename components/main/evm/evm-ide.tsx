@@ -4,7 +4,7 @@ import path from "path"
 import { useEffect, useState } from "react"
 import Editor from "@monaco-editor/react"
 import { Signer, ethers } from "ethers"
-import { Code, File, FunctionSquare, Settings } from "lucide-react"
+import { Code, Download, File, FunctionSquare, Settings } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { CompileError, CompileResult } from "@/lib/interfaces"
@@ -107,7 +107,7 @@ export function SolideIDE({
   const [solidityInput, setSolidityInput] = useState<CompileInput | undefined>()
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       // At the start, we need to check if the content is JSON format
       const match = title.match(/\/([^:]+\.sol):/)
       const solFilePath = match ? match[1] : title
@@ -264,6 +264,16 @@ export function SolideIDE({
     }
   }
 
+  const downloadFile = async () => {
+    const sourceBlob: Blob = await fs.download()
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(sourceBlob);
+    link.download = 'source.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <div className="flex max-h-screen min-h-screen">
       <div
@@ -298,6 +308,10 @@ export function SolideIDE({
         </Button>
 
         {url && <ContentLink url={url} chainId={chainId} />}
+
+        <Button size="icon" variant="ghost" onClick={downloadFile}>
+          <Download />
+        </Button>
 
         <div className="mt-auto flex flex-col items-center gap-2">
           <SelectedChain />
@@ -356,7 +370,7 @@ export function SolideIDE({
                   variant="default"
                   disabled={
                     ethers.utils.isAddress(contractAddress) ||
-                    constructorArgs.length ===
+                      constructorArgs.length ===
                       (constructorABI.inputs || []).length
                       ? false
                       : true
@@ -373,7 +387,7 @@ export function SolideIDE({
               </div>
 
               <div className="flex">
-                <Button size="sm" onClick={() => {}} variant="default">
+                <Button size="sm" onClick={() => { }} variant="default">
                   msg.value
                 </Button>
                 <Input

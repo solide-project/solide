@@ -78,6 +78,8 @@ const library = [
     "@0x/contracts-erc20",
     "@0x/contracts-zero-ex",
     "@jbx-protocol/juice-contracts-v3",
+    "@jbx-protocol/juice-delegates-registry",
+    "@jbx-protocol/contracts-v2",
     "@prb/math",
     "@account-abstraction/contracts",
     "@dydxprotocol/perpetual",
@@ -88,19 +90,25 @@ const library = [
     "@chiru-labs/pbt",
     "synthetix",
     "seaport-types",
-
+    "@paulrberg/contracts",
+    
     // Deceprecated
     "@0x/contracts-asset-proxy",
     "arb-bridge-eth",
     "openzeppelin-solidity",
     "cross-not-official",
+    "prb-math",
 
     // Note these are from git clone
     "permit2",      // git clone https://github.com/Uniswap/permit2
     "@uniswap/v4-core",      // git clone https://github.com/Uniswap/v4-core
     "@uniswap/v4-periphery",      // git clone https://github.com/Uniswap/v4-periphery
+    "@jbx-protocol/juice-ownable",      // git clone https://github.com/jbx-protocol/juice-ownable.git
+    "@jbx-protocol/juice-delegate-metadata-lib", 
     "@openzeppelin/contracts@3.4.0",
+    "@openzeppelin/contracts@4.5.0",
     "@openzeppelin/contracts@4.7.0",
+    "@openzeppelin/contracts@4.9.0",
     "@openzeppelin/contracts-upgradeable@3.4.0",
     "@openzeppelin/contracts-upgradeable@4.7.0",
 ];

@@ -38,3 +38,7 @@ yarn-error.log*
 
 .contentlayer
 .env
+
+public/**
+!public/favicon*
+!public/icons/
