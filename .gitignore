@@ -42,3 +42,5 @@ yarn-error.log*
 public/**
 !public/favicon*
 !public/icons/
+!public/icons/**
+
