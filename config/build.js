@@ -48,7 +48,35 @@ function deleteNonSolidityFiles(directory) {
     });
 }
 
-// Example usage
+function deleteEmptyFoldersRecursiveSync(directory) {
+    if (!fs.existsSync(directory)) {
+        return;
+    }
+
+    const contents = fs.readdirSync(directory);
+    if (contents.length === 0) {
+        fs.rmdirSync(directory);
+        // Recursively check parent directories
+        deleteEmptyFoldersRecursiveSync(path.dirname(directory));
+        return;
+    }
+
+    contents.forEach(item => {
+        const itemPath = path.join(directory, item);
+        if (fs.statSync(itemPath).isDirectory()) {
+            deleteEmptyFoldersRecursiveSync(itemPath);
+        }
+    });
+
+    // Check if the directory is now empty after recursive deletion
+    if (fs.readdirSync(directory).length === 0) {
+        fs.rmdirSync(directory);
+        // Recursively check parent directories
+        deleteEmptyFoldersRecursiveSync(path.dirname(directory));
+    }
+}
+
+// const library = ["@uniswap/v2-core", "@uniswap/v2-periphery"]
 const library = [
     "@chainlink/contracts",
     "@chainlink/contracts-ccip",
@@ -91,26 +119,36 @@ const library = [
     "synthetix",
     "seaport-types",
     "@paulrberg/contracts",
-    
+    "@uniswap/universal-router", 
+    "solady",
+
     // Deceprecated
     "@0x/contracts-asset-proxy",
     "arb-bridge-eth",
     "openzeppelin-solidity",
     "cross-not-official",
     "prb-math",
+    "@uniswap/lib",
+    "@uniswap/v2-core",
+    "@uniswap/v2-periphery",
+    "base64-sol",
+    "@uniswap/swap-router-contracts",
+    "@uniswap/v3-staker",
 
-    // Note these are from git clone
-    "permit2",      // git clone https://github.com/Uniswap/permit2
-    "@uniswap/v4-core",      // git clone https://github.com/Uniswap/v4-core
-    "@uniswap/v4-periphery",      // git clone https://github.com/Uniswap/v4-periphery
-    "@jbx-protocol/juice-ownable",      // git clone https://github.com/jbx-protocol/juice-ownable.git
-    "@jbx-protocol/juice-delegate-metadata-lib", 
+    // Note these are from git clone: 13/02/24
+    "permit2",                                          // git clone https://github.com/Uniswap/permit2
+    "@uniswap/v4-core",                                 // git clone https://github.com/Uniswap/v4-core
+    "@uniswap/v4-periphery",                            // git clone https://github.com/Uniswap/v4-periphery
+    "@jbx-protocol/juice-ownable",                      // git clone https://github.com/jbx-protocol/juice-ownable.git
+    "@jbx-protocol/juice-delegate-metadata-lib",        // git clone https://github.com/jbx-protocol/juice-delegate-metadata-lib
     "@openzeppelin/contracts@3.4.0",
     "@openzeppelin/contracts@4.5.0",
     "@openzeppelin/contracts@4.7.0",
     "@openzeppelin/contracts@4.9.0",
     "@openzeppelin/contracts-upgradeable@3.4.0",
     "@openzeppelin/contracts-upgradeable@4.7.0",
+    "@uniswap/v3-core@1.0.0",
+    "@uniswap/v3-periphery@1.0.0",
 ];
 
 library.forEach((lib) => {
@@ -132,6 +170,7 @@ library.forEach((lib) => {
     const destinationFolder = `public/${lib}`;
     try {
         deleteNonSolidityFiles(destinationFolder);
+        deleteEmptyFoldersRecursiveSync(destinationFolder);
         console.log(`Finished cleaning ${destinationFolder}`);
     } catch (error) {
         console.error(`Error cleaning ${destinationFolder}: ${error.message}`);

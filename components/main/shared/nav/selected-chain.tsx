@@ -33,7 +33,7 @@ export function SelectedChain({}: SelectedChainProps) {
 
       setHasEthereumInjection(true)
       const chainId = await window.ethereum.request({ method: "eth_chainId" })
-      console.log("chainId", chainId)
+      // console.log("chainId", chainId)
       setChainId(hexToDecimal(chainId))
 
       window.ethereum.on("chainChanged", handleChainChanged)

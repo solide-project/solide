@@ -107,7 +107,7 @@ export function SolideIDE({
   const [solidityInput, setSolidityInput] = useState<CompileInput | undefined>()
 
   useEffect(() => {
-    ; (async () => {
+    (async () => {
       // At the start, we need to check if the content is JSON format
       const match = title.match(/\/([^:]+\.sol):/)
       const solFilePath = match ? match[1] : title
@@ -115,6 +115,13 @@ export function SolideIDE({
       handleIDEDisplay({ content, filePath: solFilePath })
 
       if (!content) return
+
+      if (version) {
+        console.log("Setting compiler version to", version)
+        await compilerSetting.setCompilerVersion(version)
+    
+        console.log("compilerSetting.compilerVersion", compilerSetting.compilerVersion)
+      }
 
       //#region Check if the smart contract is JSON format
       const input: CompileInput = GetSolidityJsonInputFormat(content)

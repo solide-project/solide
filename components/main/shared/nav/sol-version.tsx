@@ -56,6 +56,7 @@ export function SolVersion({ version }: SolVersionProps) {
   useEffect(() => {
     (async () => {
       // Note: selectedSolcVersion must be set before this component is rendered somewhere
+      console.log("SolVersion Selected Solc Version", version, compilerSetting.compilerVersion)
       setRealeases(compilerSetting.releases)
       setValue(compilerSetting.releases.latestRelease)
 
@@ -68,6 +69,7 @@ export function SolVersion({ version }: SolVersionProps) {
       )
 
       if (foundVersion) {
+        compilerSetting.setCompilerVersion(extractVersion(foundVersion[1]))
         setValue(foundVersion[0]) // Set the version if found
       }
     })()

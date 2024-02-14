@@ -9,6 +9,7 @@ import { FilScanClient } from "./scanner/filscan"
 import { RoninChainClient } from "./scanner/roninchain"
 import { TronScanClient } from "./scanner/tronscan"
 import { XdcScanClient } from "./scanner/xdcscan"
+import { VicScanClient } from "./scanner/vicscan"
 
 export const getScanner = (chainId: string): ExplorerInterface | undefined => {
   switch (chainId) {
@@ -65,6 +66,9 @@ export const getScanner = (chainId: string): ExplorerInterface | undefined => {
     case ChainID.TRON_MAINNET:
     case ChainID.TRON_SHASTA_TESTNET:
       return new TronScanClient(chainId)
+    case ChainID.VICTION_MAINNET:
+    case ChainID.VICTION_TESTNET:
+      return new VicScanClient(chainId)
     default:
       return new EtherScanClient(chainId)
   }

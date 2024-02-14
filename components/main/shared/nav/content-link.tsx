@@ -46,7 +46,7 @@ export function ContentLink({
 
   return (
     <Link
-      href={explorerPath}
+      href={!ethers.utils.isAddress(url) ? url : explorerPath}
       target="_blank"
       className={cn(
         buttonVariants({ size: "icon", variant: "ghost" }),

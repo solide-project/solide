@@ -20,7 +20,7 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
   )
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       await compilerSetting.init()
     })()
   }, [])

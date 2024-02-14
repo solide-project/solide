@@ -97,6 +97,8 @@ const data: { [key: string]: string } = {
   [ChainID.CARBON_EVM_TESTNET]: "Carbon EVM Testnet",
   [ChainID.ARTELA_TESTNET]: "Artela Testnet",
   [ChainID.BERACHAIN_TESTNET]: "Berachain Artio",
+  [ChainID.VICTION_MAINNET]: "Viction",
+  [ChainID.VICTION_TESTNET]: "Viction Testnet",
 }
 
 export const getNetworkNameFromChainID = (network: string): string =>

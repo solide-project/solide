@@ -151,6 +151,9 @@ export const getIconByChainId = (chainId: string): string => {
       return "/icons/artela.svg"
     case ChainID.BERACHAIN_TESTNET:
       return "/icons/berachain.svg"
+    case ChainID.VICTION_MAINNET:
+    case ChainID.VICTION_TESTNET:
+      return "/icons/viction.svg"
     default:
       return ""
   }
