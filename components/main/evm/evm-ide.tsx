@@ -117,10 +117,7 @@ export function SolideIDE({
       if (!content) return
 
       if (version) {
-        console.log("Setting compiler version to", version)
         await compilerSetting.setCompilerVersion(version)
-    
-        console.log("compilerSetting.compilerVersion", compilerSetting.compilerVersion)
       }
 
       //#region Check if the smart contract is JSON format

@@ -26,9 +26,8 @@ export class ContractPaths {
         /https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//,
         ""
       )
-      // console.log(this.folderPath, filePath)
-      this.parentBasePath =
-        this.getCommonDirectory(this.filePath, fromPath) || ""
+      // this.parentBasePath =
+      //   this.getCommonDirectory(this.filePath, fromPath) || ""
       return
     }
   }

@@ -220,6 +220,11 @@ export async function resolve(
  * @returns
  */
 export const fetchGithubSource = async (url: string) => {
+
+  if (url.startsWith("https://github.com/")) {
+    const resolver = GithubResolver()
+    url = await resolver(url, { resolver: "" }) || url
+  }
   var myHeaders = new Headers();
   myHeaders.append("Authorization", `Bearer ${process.env.GITHUB_API_KEY}`);
 
