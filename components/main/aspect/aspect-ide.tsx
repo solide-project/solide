@@ -2,42 +2,22 @@
 
 import path from "path"
 import { useEffect, useState } from "react"
-import Editor from "@monaco-editor/react"
 import { ethers } from "ethers"
 import {
   Code,
-  ContrastIcon,
   Download,
   File,
   FunctionSquare,
-  Settings,
   Share2,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 
-import {
-  AspectSDK,
-  AspectTransactionReceipt,
-  KVPair,
-} from "@/lib/aspect/aspect-service"
-import { SolideFileSystem } from "@/lib/client/solide-file-system"
 import { CompileError, CompileResult } from "@/lib/interfaces"
 import {
   GetSolidityJsonInputFormat,
   JSONParse,
   cn,
-  solcVersion,
 } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   ResizableHandle,
@@ -47,11 +27,9 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { useFileSystem } from "@/components/file-provider"
 import { CompileErrors } from "@/components/main/compile/errors"
-import { EditorLoading } from "@/components/main/compile/loading"
 import { FileTree } from "@/components/main/file-tree"
 import { ContentLink } from "@/components/main/shared/nav/content-link"
 import { SelectedChain } from "@/components/main/shared/nav/selected-chain"
-import { SolVersion } from "@/components/main/shared/nav/sol-version"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 import { ContractMetadata } from "../shared/components/contract-metadata"
@@ -65,9 +43,9 @@ import { ContractBind } from "./components/bind/contract-bind"
 import { DeployProperties } from "./components/deploy-properties"
 import { JointsList } from "./components/joints-list"
 import { useAspect } from "./provider/aspect-provider"
+import { Service } from "@/lib/services/aspect/aspect-service"
 
 // import { TextEncoder } from "util"
-
 // import { LoadContractAspect } from "./aspect/load-contract-aspect"
 
 interface SolideAspectIDEProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -133,7 +111,7 @@ export function SolideAspectIDE({
   const [compiledWasm, setCompiledWasm] = useState<Blob | undefined>()
 
   useEffect(() => {
-    ; (async () => {
+    (async () => {
       // At the start, we need to check if the content is JSON format
       const match = title.match(/\/([^:]+\.sol):/)
       const solFilePath = match ? match[1] : title
@@ -181,6 +159,7 @@ export function SolideAspectIDE({
     setCompiling(true)
     setCompileError(undefined)
     setCompileInfo(undefined)
+    setCompiledWasm(undefined)
 
     const formData = new FormData()
     const sources = await fs.generateSources()
@@ -210,9 +189,9 @@ export function SolideAspectIDE({
   const [joints, setJoints] = useState<string[]>([])
   const [properties, setProperties] = useState<any>({} as any)
 
-  const generateProperties = (): KVPair[] => {
+  const generateProperties = (): Service.Aspect.KVPair[] => {
     const encoder = new TextEncoder()
-    const props: KVPair[] = Object.entries(properties).map(([key, val]) => ({
+    const props: Service.Aspect.KVPair[] = Object.entries(properties).map(([key, val]) => ({
       key,
       value: ethers.utils.isAddress(val as string)
         ? val
@@ -226,8 +205,8 @@ export function SolideAspectIDE({
     if (compiledWasm === undefined) return
 
     try {
-      const props: KVPair[] = generateProperties();
-      const receipt: AspectTransactionReceipt = await aspectSDK.deploy(
+      const props: Service.Aspect.KVPair[] = generateProperties();
+      const receipt: Service.Aspect.AspectTransactionReceipt = await aspectSDK.deploy(
         compiledWasm,
         props,
         joints
@@ -242,8 +221,8 @@ export function SolideAspectIDE({
     if (!ethers.utils.isAddress(contractAddress)) return
     if (compiledWasm === undefined) return
 
-    const props: KVPair[] = generateProperties();
-    const receipt: AspectTransactionReceipt = await aspectSDK.upgrade(
+    const props: Service.Aspect.KVPair[] = generateProperties();
+    const receipt: Service.Aspect.AspectTransactionReceipt = await aspectSDK.upgrade(
       compiledWasm,
       props,
       joints,

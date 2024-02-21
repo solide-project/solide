@@ -1,8 +1,8 @@
-import { EthGetSourceCodeInterface } from "@/lib/explorer/chains"
-import { getSourceCode } from "@/lib/explorer/src/api"
 import { InvalidMessage } from "@/components/invalid-message"
 import { SolideIDE } from "@/components/main/evm/evm-ide"
 import { EVMProvider } from "@/components/main/evm/provider/evm-provider"
+import { getSourceCode } from "@/lib/services/explorer/explorer-service"
+import { EthGetSourceCodeInterface } from "@/lib/services/explorer/scanner/explorer-service"
 
 export default async function Page({
   params,

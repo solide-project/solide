@@ -109,6 +109,16 @@ const data: { [key: string]: string } = {
   [ChainID.BERACHAIN_TESTNET]: "https://api.routescan.io/v2/network/testnet/evm/80085/etherscan",
   [ChainID.VICTION_MAINNET]: "https://www.vicscan.xyz",
   [ChainID.VICTION_TESTNET]: "https://testnet.vicscan.xyz",
+  [ChainID.PALM_MAINNET]: "https://sourcify.sirato.xyz/mesh/11297108109",
+  [ChainID.PALM_TESTNET]: "https://sourcify.sirato.xyz/mesh/11297108099",
+  [ChainID.METER_MAINNET]: "https://api.meter.io:8000/api/cfile",
+  [ChainID.METER_TESTNET]: "https://api.meter.io:4000/api/cfile",
+  [ChainID.PUBLIC_GOOD_NETWORK]: "https://explorer.publicgoods.network",
+  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]: "https://explorer.sepolia.publicgoods.network",
+  [ChainID.ROOTSTOCK_MAINNET]: "https://rootstock.blockscout.com",
+  [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
+  [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",
+  [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "https://pegasus.lightlink.io",
 }
 
 export const getAPI = (network: string): string => data[network] || ""

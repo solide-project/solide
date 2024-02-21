@@ -3,7 +3,6 @@ import Editor, { useMonaco } from "@monaco-editor/react"
 import { useTheme } from "next-themes"
 
 import { SolideFile } from "@/lib/client/solide-file-system"
-import { cn } from "@/lib/utils"
 import { useFileSystem } from "@/components/file-provider"
 
 import { EditorLoading } from "../compile/loading"

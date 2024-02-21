@@ -99,6 +99,16 @@ const data: { [key: string]: string } = {
   [ChainID.BERACHAIN_TESTNET]: "Berachain Artio",
   [ChainID.VICTION_MAINNET]: "Viction",
   [ChainID.VICTION_TESTNET]: "Viction Testnet",
+  [ChainID.PALM_MAINNET]: "Palm",
+  [ChainID.PALM_TESTNET]: "Palm Testnet",
+  [ChainID.METER_MAINNET]: "Meter Mainnet",
+  [ChainID.METER_TESTNET]: "Meter Testnet",
+  [ChainID.PUBLIC_GOOD_NETWORK]: "PGN (Public Goods Network)",
+  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]: "PGN Testnet (Public Goods Network)",
+  [ChainID.ROOTSTOCK_MAINNET]: "Rootstock Mainnet",
+  [ChainID.ROOTSTOCK_TESTNET]: "Rootstock Testnet",
+  [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "Lightlink Phoenix Mainnet",
+  [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "Lightlink Pegasus Testnet",
 }
 
 export const getNetworkNameFromChainID = (network: string): string =>

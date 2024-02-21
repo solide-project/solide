@@ -2,8 +2,8 @@ import path from "path"
 import { NextRequest, NextResponse } from "next/server"
 import { ethers } from "ethers"
 
-import { isTronAddress } from "@/lib/explorer/chains/scanner/tronscan"
-import { isXDCAddress } from "@/lib/explorer/chains/scanner/xdcscan"
+import { isTronAddress } from "@/lib/services/explorer/scanner/tronscan"
+import { isXDCAddress } from "@/lib/services/explorer/scanner/xdcscan"
 import { ContractDependency, SolcError } from "@/lib/interfaces"
 import {
   Solc,
@@ -84,13 +84,18 @@ export async function POST(request: NextRequest) {
     let sourceName = path.basename(filePath) // filePath.replace(/https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//, "");
     let title: string = (data.get("title") as string) || ""
 
-    if (
-      !ethers.utils.isAddress(sourceName) &&
-      !isXDCAddress(sourceName) &&
-      !isTronAddress(sourceName)
-    ) {
-      title = sourceName
-    }
+    // Note commiting this might break flow
+    // if (
+    //   !ethers.utils.isAddress(sourceName) &&
+    //   !isXDCAddress(sourceName) &&
+    //   !isTronAddress(sourceName)
+    // ) {
+    //   title = sourceName
+    // }
+
+    // get the contract name from the compilation target
+    title = path.basename(title);
+    // console.log("Contract Name", title)
 
     if (!solidityInput.language) {
       solidityInput.language = "Solidity"

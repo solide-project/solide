@@ -101,6 +101,16 @@ const data: { [key: string]: string } = {
   [ChainID.BERACHAIN_TESTNET]: "https://artio.beratrail.io",
   [ChainID.VICTION_MAINNET]: "https://www.vicscan.xyz",
   [ChainID.VICTION_TESTNET]: "https://testnet.vicscan.xyz",
+  [ChainID.PALM_MAINNET]: "https://palm.chainlens.com",
+  [ChainID.PALM_TESTNET]: "https://testnet.palm.chainlens.com",
+  [ChainID.METER_MAINNET]: "https://scan.meter.io",
+  [ChainID.METER_TESTNET]: "https://scan-warringstakes.meter.io",
+  [ChainID.PUBLIC_GOOD_NETWORK]: "https://explorer.publicgoods.network",
+  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]: "https://explorer.sepolia.publicgoods.network",
+  [ChainID.ROOTSTOCK_MAINNET]: "https://rootstock.blockscout.com",
+  [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
+  [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",
+  [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "https://pegasus.lightlink.io",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""

@@ -1,9 +1,8 @@
-import { ExplorerInterface } from "../explorer-interface"
-import {
-  generateSourceCodeError,
-} from "../get-source-code"
-import { EthGetSourceCodeInterface } from "../get-source-code-interface"
+import { getAPI } from "@/lib/chains"
 import { BaseScan } from "./base"
+import {
+  generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
+} from "@/lib/services/explorer/scanner/explorer-service"
 
 interface SourceElement {
   file_path: string
@@ -19,8 +18,25 @@ export class BlockScoutClient extends BaseScan implements ExplorerInterface {
     return `api/v2/smart-contracts/${address}`
   }
 
+  async contractImplmentation(address: string): Promise<string> {
+    const apiUrl: string = getAPI(this.chainId)
+    if (!apiUrl) {
+      return ""
+    }
+
+    const uri = `${apiUrl}/api/v2/addresses/${address}`
+    const response = await fetch(uri)
+    if (!response || !response.ok) {
+      return ""
+    }
+
+    const data = await response.json()
+    return data.implementation_address || ""
+  }
+
   async getSourceCode(address: string): Promise<EthGetSourceCodeInterface> {
-    const apiUrl: string = this.getsourcecodeURL(address)
+    const implementation = await this.contractImplmentation(address) || address;
+    const apiUrl: string = this.getsourcecodeURL(implementation)
     if (!apiUrl) {
       return generateSourceCodeError("API Endpoint not found")
     }
@@ -109,7 +125,15 @@ export class BlockScoutClient extends BaseScan implements ExplorerInterface {
       sourceInput.sources = this.generateSources(data.additional_sources)
     }
 
-    let sourceName: string = this.appendExtension(data.file_path || data.name)
+    // People put ridiculous names for their contracts, so we will have to manually set the contract name
+    let nameToUse: string = data.file_path
+    if (!data.file_path || data.file_path === ".sol") {
+      nameToUse = data.name
+      if (!nameToUse) {
+        nameToUse = "Contract"
+      }
+    }
+    let sourceName: string = this.appendExtension(nameToUse)
     sourceInput.sources[sourceName] = {
       content: data.source_code,
     }

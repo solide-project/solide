@@ -1,29 +1,55 @@
-# Solide IDE
+<p align="center">
+  <h2 align="center">Solide IDE</h2>
+  <p align="center">
+    <img src="https://therealsujitk-vercel-badge.vercel.app/?app=solide" alt="Vercel Deploy">
+  </p>
+  <p align="center"><b>Lightweight Smart Contract IDE</b></p>
+  <p align="center">Comprehensive intuitive integrated development environment tailored for load smart contract from various blockchain and repositories</p>
+</p>
 
-Welcome to Solide, your gateway to a revolutionary approach to blockchain development! This repository showcases the capabilities of Solide, providing developers with a powerful and user-friendly environment for creating, exploring, and understanding smart contracts. As an open-source project, Solide empowers developers, educators, and blockchain enthusiasts to seamlessly connect with diverse protocols and blockchains, fostering collaboration and innovation within the blockchain ecosystem. Below, you'll find essential information to get started with Solide and explore its cutting-edge features.
+## About Solide
+
+Solide is an open-source Solidity Integrated Development Environment (IDE) and Knowledge Hub designed to empower developers, educators, and blockchain enthusiasts in their journey of smart contract development and exploration. This repository serves as the home for the Solide IDE.
+
+## Remix Clone?
+
+Solide tries distinguishes itself from similar online IDEs, notably the Remix IDE from Ethereum, by positioning itself as more than just a IDE tool. While both Solide and Remix serve as online IDEs, Solide takes a unique approach by prioritizing accessible learning and fostering an interactive environment for both developers and non-developers interested in smart contract exploration. Solide is designed to be lightweight and seamlessly integratable, offering flexibility in deployment across various environments, tutorials, and demonstrations. The innovative aspect of Solide lies in its expertise in creating an interactive learning environment from any Github Repository or various chains. By embedding the IDE in any web-based application, Solide consolidates educational content and tutorials within the development environment, enhancing the learning journey. However, Solide goes beyond having IDE functionalities, rather also a dedicated space for blockchain and protocols. As Solide continues to expand and grow its collection of smart contracts, it maintains its commitment to being a unique and comprehensive solution that stands out in the realm of online IDEs.
+
+## Features 🌟
+
+- **EVM Programming**: See the EVM Programming documentation for more information.
+
+- **Aspect Programming**: See the Aspect Programming documentation for more information.
 
 ## Getting Started
-To experience Solide, visit our website. You can also check out the Solide IDE and Knowledge Hub at solide-dapp.vercel.app.
 
-Installation
-Clone the repository: git clone https://github.com/solide-project/solide
-Install dependencies: npm install
-Run the development server: npm run dev
+To experience Solide, visit our [Doc (Coming Soon)](#). You can also check out the Solide IDE and Knowledge Hub at [solide-dapp.vercel.app](https://solide-dapp.vercel.app/).
 
-### EVM Programming
-See the [EVM Programming](/docs/evm/README.md) documentation for more information.
+## Examples 🏗️
 
-### Aspect Programming
-See the [Aspect Programming](/docs/aspect/README.md) documentation for more information.
+Explore these contract hubs and interactive demos:
+
+- [Chainlink Token on Ethereum](https://solidewidget.azurewebsites.net/address/1/0x514910771af9ca656af840dff83e8264ecf986ca)
+- [Aave Pool on Ethereum](http://localhost:3001/address/1/0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2)
+- [Aave Pool Source on GitHub](https://github.com/aave/aave-v3-core/blob/master/contracts/protocol/pool/Pool.sol)
+- [TokenPaymaster.sol from @account-abstraction/contracts](https://solidewidget.azurewebsites.net/?url=https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/TokenPaymaster.sol)
+- [Aspect IDE](https://solidewidget.azurewebsites.net/aspect)
 
 ## Contribution Guidelines
 
-We welcome contributions from the community to enhance Solide further. If you have suggestions, bug reports, or want to contribute code, please follow our Contribution Guidelines.
+We welcome contributions from the community to enhance Solide further. If you have suggestions, bug reports, or want to contribute code, please follow our [Contribution Guidelines](link-to-contribution-guidelines).
 
 ## Community and Support
 
-Join the Solide community for discussions, support, and collaboration. Visit our Discord channel to connect with fellow developers and enthusiasts.
+Join the Solide community for discussions, support, and collaboration. Visit our [Discord channel (Coming Soon)](#) to connect with fellow developers and enthusiasts.
 
-Note: Ensure you have the required dependencies, such as Node.js and npm, installed before running Solide locally.
+## License
 
-Start your journey with Solide today, and experience the future of blockchain development!
+Solide is released under the [MIT License](link-to-license). Feel free to use, modify, and distribute Solide for your projects.
+
+---
+
+
+Note: Solide is a community-driven project aimed at fostering openness, collaboration, and innovation in the blockchain development domain. Your feedback and contributions are highly valued. Let's build the future of smart contract development together!
+
+Support us by starring this Repository and following us on [X](https://twitter.com/SolideProject)! 😊

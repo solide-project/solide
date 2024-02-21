@@ -1,9 +1,8 @@
-import { ExplorerInterface } from "../explorer-interface"
+import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
-  generateSourceCodeError,
-} from "../get-source-code"
-import { EthGetSourceCodeInterface } from "../get-source-code-interface"
-import { BaseScan } from "./base"
+  generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
+} from "@/lib/services/explorer/scanner/explorer-service"
+import { ethers } from "ethers"
 
 export class BlockScoutOldClient extends BaseScan implements ExplorerInterface {
   constructor(chainId: string) {
@@ -11,17 +10,18 @@ export class BlockScoutOldClient extends BaseScan implements ExplorerInterface {
   }
 
   async getSourceCode(address: string): Promise<EthGetSourceCodeInterface> {
-    const apiUrl: string = this.getsourcecodeURL(address)
-    if (!apiUrl) {
-      return generateSourceCodeError("API Endpoint not found")
+    let data: EthGetSourceCodeInterface = await this.call(address)
+    if (data.status === "0") {
+      return data
     }
 
-    const response = await fetch(apiUrl)
-    if (!response || !response.ok) {
-      return generateSourceCodeError("Error fetching contract")
+    const result = data.result[0] as any;
+    if (ethers.utils.isAddress(result.ImplementationAddress)) {
+      data = await this.call(result.ImplementationAddress)
+      // return data;
     }
 
-    return await this.convert(await response.json(), address)
+    return await this.convert(data, address)
   }
 
   async convert(
@@ -29,6 +29,9 @@ export class BlockScoutOldClient extends BaseScan implements ExplorerInterface {
     address: string
   ): Promise<EthGetSourceCodeInterface> {
     if (data.result && data.result[0]) {
+      if (!data.result[0].SourceCode) {
+        return generateSourceCodeError("Contract source code not verified")
+      }
       if (data.result[0].AdditionalSources) {
         let sources: any = {}
 

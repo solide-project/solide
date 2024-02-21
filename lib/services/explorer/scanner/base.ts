@@ -1,11 +1,7 @@
 import { getAPI, getAPIKey } from "@/lib/chains"
 import { solcVersion } from "@/lib/utils"
-
-import {
-  generateSourceCodeError,
-  getSourceCodeEndpoint,
-} from "../get-source-code"
-import { EthGetSourceCodeInterface } from "../get-source-code-interface"
+import { ethers } from "ethers"
+import { generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface } from "@/lib/services/explorer/scanner/explorer-service"
 
 /**
  * Base of Etherscan implementation, other scanner will have these overrides
@@ -15,24 +11,6 @@ export class BaseScan {
 
   constructor(chainId: string) {
     this.chainId = chainId
-  }
-
-  generateDefaultResult = (): any => {
-    return {
-      SourceCode: "",
-      ABI: "",
-      ContractName: "",
-      CompilerVersion: solcVersion,
-      OptimizationUsed: "0",
-      Runs: "200",
-      ConstructorArguments: "",
-      EVMVersion: "default",
-      Library: "",
-      LicenseType: "0",
-      Proxy: "",
-      Implementation: "",
-      SwarmSource: "",
-    }
   }
 
   //#region getSoureCode implementation
@@ -45,6 +23,7 @@ export class BaseScan {
     if (!apiUrl) {
       return ""
     }
+
     let uri = `${apiUrl}/${this.getSourceCodeEndpoint(address)}`
     const apiKey = getAPIKey(this.chainId)
     if (apiKey) {
@@ -54,7 +33,7 @@ export class BaseScan {
     return uri
   }
 
-  async getSourceCode(address: string): Promise<EthGetSourceCodeInterface> {
+  async call(address: string): Promise<any> {
     const apiUrl: string = this.getsourcecodeURL(address)
     if (!apiUrl) {
       return generateSourceCodeError("API Endpoint not found")
@@ -66,6 +45,21 @@ export class BaseScan {
     }
 
     let data = (await response.json()) as EthGetSourceCodeInterface
+    return data
+  }
+
+  async getSourceCode(address: string): Promise<EthGetSourceCodeInterface> {
+    let data: EthGetSourceCodeInterface = await this.call(address)
+    if (data.status === "0") {
+      return data
+    }
+
+    const result = data.result[0] as any;
+    if (ethers.utils.isAddress(result.Implementation)) {
+      data = await this.call(result.Implementation)
+      // return data;
+    }
+
     return data
   }
   //#endregion
@@ -85,6 +79,24 @@ export class BaseScan {
     }
 
     return payload
+  }
+
+  generateDefaultResult = (): ContractInfo => {
+    return {
+      SourceCode: "",
+      ABI: "",
+      ContractName: "",
+      CompilerVersion: solcVersion,
+      OptimizationUsed: "0",
+      Runs: "200",
+      ConstructorArguments: "",
+      EVMVersion: "default",
+      Library: "",
+      LicenseType: "0",
+      Proxy: "",
+      Implementation: "",
+      SwarmSource: "",
+    }
   }
   //#endregion
 

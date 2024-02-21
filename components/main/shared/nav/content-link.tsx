@@ -7,7 +7,7 @@ import { Box, Github } from "lucide-react"
 
 import { ChainID } from "@/lib/chains/src/chain-id"
 import { getExplorer } from "@/lib/chains/src/explorer"
-import { isTronAddress } from "@/lib/explorer/chains/scanner/tronscan"
+import { isTronAddress } from "@/lib/services/explorer/scanner/tronscan"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
@@ -31,6 +31,9 @@ export function ContentLink({
           case ChainID.TRON_MAINNET:
           case ChainID.TRON_SHASTA_TESTNET:
             addressPath = `contract/${url}`
+          case ChainID.PALM_MAINNET:
+          case ChainID.PALM_TESTNET:
+            addressPath = `contracts/${url}`
             break
           default:
             addressPath = `address/${url}`

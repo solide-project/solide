@@ -1,14 +1,9 @@
-import { getAPI, getAPIKey } from "@/lib/chains"
-import { solcVersion } from "@/lib/utils"
-import { compilerVersions } from "@/lib/versions"
-
-import { ExplorerInterface } from "../explorer-interface"
+import { solcVersion } from "@/lib/utils";
+import { compilerVersions } from "@/lib/versions";
+import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
-  generateSourceCodeError,
-  getSourceCodeEndpoint,
-} from "../get-source-code"
-import { EthGetSourceCodeInterface } from "../get-source-code-interface"
-import { BaseScan } from "./base"
+  generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
+} from "@/lib/services/explorer/scanner/explorer-service"
 
 export const isTronAddress = (address: string): boolean =>
   address.substring(0, 1) === "T" && address.length === 34

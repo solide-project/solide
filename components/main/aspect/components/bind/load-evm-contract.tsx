@@ -1,19 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { ExternalLink } from "lucide-react"
 
 import { ChainID, getNetworkNameFromChainID } from "@/lib/chains"
-import { cn, solcVersion } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Popover,
   PopoverContent,
@@ -39,7 +32,10 @@ export function LoadEVMContract({ contractAddress }: LoadEVMContractProps) {
         {value ? getNetworkNameFromChainID(value) : "Load to IDE"}
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <ScrollArea className="h-max-[200px] my-4">
+        <div className="text-center py-2">
+          Mainnet (Coming soon)
+        </div>
+        <ScrollArea className="h-max-[200px]">
           {chains.map((chain: string, index: any) => (
             <Link
               key={index}
@@ -54,16 +50,6 @@ export function LoadEVMContract({ contractAddress }: LoadEVMContractProps) {
               <ExternalLink className="ml-2 h-4 w-4" />
             </Link>
           ))}
-          <Link
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "flex items-center justify-center"
-            )}
-            href="#"
-          >
-            Artela Mainnet (Coming Soon)
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </Link>
         </ScrollArea>
       </PopoverContent>
     </Popover>

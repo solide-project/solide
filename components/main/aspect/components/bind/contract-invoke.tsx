@@ -8,17 +8,13 @@ import { Input } from "@/components/ui/input"
 import { Service } from "@/lib/services/abi/abi-service"
 
 interface ContractInvokeProps extends React.HTMLAttributes<HTMLDivElement> {
-  setConstructorArgs: Function
   contract: ethers.Contract | undefined
-  abi: any[]
-  msgValue: string
+  abi: Service.ABIService.ABIEntry[]
 }
 
 export function ContractInvoke({
-  setConstructorArgs,
   contract,
   abi,
-  msgValue = "",
 }: ContractInvokeProps) {
   const [isContractLoaded, setIsContractLoaded] = useState<boolean>(false)
   const [ret, setRet] = useState<{
@@ -28,14 +24,6 @@ export function ContractInvoke({
   useEffect(() => {
     setIsContractLoaded(contract ? true : false)
   }, [contract])
-
-  const handleSetConstructorArgs = (e: any, index: number) => {
-    setConstructorArgs((prev: any) => {
-      const newArgs = [...prev]
-      newArgs[index] = e.target.value
-      return newArgs
-    })
-  }
 
   //#region Params State
   const [args, setArgs] = useState<{
@@ -78,13 +66,7 @@ export function ContractInvoke({
       let params: any[] = formatParameters(entry, method);
 
       setRet({ ...ret, [method]: "Waiting Transaction ..." })
-      if (msgValue === "" || msgValue === "0") {
-        result = await contractMethod(...params)
-      } else {
-        result = await contractMethod(...params, {
-          value: ethers.utils.parseEther(msgValue),
-        })
-      }
+      result = await contractMethod(...params)
 
       if (entry.outputs && entry.outputs.length > 0) {
         if (entry.outputs[0].type.includes("int")) {
@@ -126,9 +108,8 @@ export function ContractInvoke({
       let params: any[] = formatParameters(entry, method);
 
       setRet({ ...ret, [method]: "Waiting Transaction ..." })
+      console.log(contract, method, params)
       result = await contract.callStatic[method](...params);
-
-      console.log(result)
       setRet({ ...ret, [method]: result })
     } catch (error: any) {
       setRet({
@@ -154,40 +135,9 @@ export function ContractInvoke({
   //#endregion
 
   return (
-    <div
-      className="flex h-full flex-col gap-4 pb-16"
+    <div className="flex h-full flex-col gap-4 pb-16"
     // style={{ height: "90vh" }}
     >
-      {abi
-        .filter((m) => m.type === "constructor")
-        .map((abi, index) => {
-          return (
-            <div key={index}>
-              <Button variant="destructive" size="sm" disabled={true}>
-                constructor
-              </Button>
-
-              <div>
-                {abi.inputs.map((input: any, index: number) => {
-                  return (
-                    <div key={index} className="flex items-center space-x-2">
-                      <div>{input.name}</div>
-                      <Input
-                        placeholder={input.type}
-                        onChange={(e) => handleSetConstructorArgs(e, index)}
-                      />
-                    </div>
-                  )
-                })}
-
-                <div className="py-1 text-center">
-                  {ret[abi.name] !== undefined && ret[abi.name]}
-                </div>
-              </div>
-            </div>
-          )
-        })}
-
       {abi
         .filter((m) => m.type === "function")
         .map((abi, index) => {

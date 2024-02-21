@@ -154,6 +154,21 @@ export const getIconByChainId = (chainId: string): string => {
     case ChainID.VICTION_MAINNET:
     case ChainID.VICTION_TESTNET:
       return "/icons/viction.svg"
+    case ChainID.PALM_MAINNET:
+    case ChainID.PALM_TESTNET:
+      return "/icons/palm.svg"
+    case ChainID.METER_MAINNET:
+    case ChainID.METER_TESTNET:
+      return "/icons/meter.svg"
+    case ChainID.PUBLIC_GOOD_NETWORK:
+    case ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA:
+      return "/icons/pgn.svg"
+    case ChainID.ROOTSTOCK_MAINNET:
+    case ChainID.ROOTSTOCK_TESTNET:
+      return "/icons/rootstock.svg"
+    case ChainID.LIGHTLINK_PHOENIX_MAINNET:
+    case ChainID.LIGHTLINK_PEGASUS_TESTNET:
+      return "/icons/lightlink.svg"
     default:
       return ""
   }

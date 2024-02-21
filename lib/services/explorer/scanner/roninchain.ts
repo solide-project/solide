@@ -1,18 +1,12 @@
 import path from "path"
-
-import { getAPI, getAPIKey } from "@/lib/chains"
 import { ContractDependency } from "@/lib/interfaces"
 import { ContractPaths } from "@/lib/solide/contract-paths"
-import { solcVersion } from "@/lib/utils"
 import { compilerVersions } from "@/lib/versions"
-
-import { ExplorerInterface } from "../explorer-interface"
+import { solcVersion } from "@/lib/utils"
+import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
-  generateSourceCodeError,
-  getSourceCodeEndpoint,
-} from "../get-source-code"
-import { EthGetSourceCodeInterface } from "../get-source-code-interface"
-import { BaseScan } from "./base"
+  generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
+} from "@/lib/services/explorer/scanner/explorer-service"
 
 export class RoninChainClient extends BaseScan implements ExplorerInterface {
   constructor(chainId: string) {

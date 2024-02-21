@@ -1,11 +1,10 @@
 "use client"
 
+import { Service } from "@/lib/services/aspect/aspect-service"
 import React, { createContext, useContext, useState } from "react"
 
-import { AspectSDK } from "@/lib/aspect/aspect-service"
-
 export const AspectProvider = ({ children }: AspectProviderProps) => {
-  const [aspectSDK, _] = useState<AspectSDK>(new AspectSDK())
+  const [aspectSDK, _] = useState<Service.Aspect.AspectSDK>(new Service.Aspect.AspectSDK())
 
   return (
     <AspectContext.Provider
@@ -23,7 +22,7 @@ interface AspectProviderProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const AspectContext = createContext({
-  aspectSDK: {} as AspectSDK,
+  aspectSDK: {} as Service.Aspect.AspectSDK,
 })
 
 export const useAspect = () => useContext(AspectContext)

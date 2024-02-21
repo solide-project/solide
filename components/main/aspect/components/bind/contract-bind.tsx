@@ -1,7 +1,6 @@
 import { useState } from "react"
-import { ethers } from "ethers"
+import { Signer, ethers } from "ethers"
 
-import { AspectTransactionReceipt, ContractAspect } from "@/lib/aspect/aspect-service"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,6 +8,9 @@ import { ContractMetadata } from "@/components/main/shared/components/contract-m
 
 import { useAspect } from "../../provider/aspect-provider"
 import { LoadEVMContract } from "./load-evm-contract"
+import { ContractInvoke } from "./contract-invoke"
+import { ContractAspects } from "./contract-aspects"
+import { Service } from "@/lib/services/aspect/aspect-service"
 
 interface ContractBindProps extends React.HTMLAttributes<HTMLDivElement> {
   aspectAddress?: string
@@ -20,9 +22,45 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
   const [error, setError] = useState<string>("")
 
   const [contractAddress, setContractAddress] = useState("")
-  const [contractAspects, setContractAspects] = useState<ContractAspect[] | null>(null)
+  const [contract, setContract] = useState<ethers.Contract | undefined>()
 
   const [abi, setABI] = useState<string>("")
+  const [isABI, setIsABI] = useState<boolean>(false)
+
+  const handleContractAddress = async (address: string) => {
+    setContractAddress(address)
+
+    if (ethers.utils.isAddress(address) && isABI) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      await provider.send("eth_requestAccounts", [])
+      const signer = provider.getSigner() as Signer
+
+      setContract(new ethers.Contract(address, JSON.parse(abi || "[]"), signer))
+    }
+  }
+
+  const handleSetABI = async (abi: string) => {
+    try {
+      setABI(abi)
+
+      const parsedABI = JSON.parse(abi)
+      if (Array.isArray(parsedABI)) {
+        setError("")
+        setIsABI(true)
+
+        if (ethers.utils.isAddress(contractAddress)) {
+          const provider = new ethers.providers.Web3Provider(window.ethereum)
+          await provider.send("eth_requestAccounts", [])
+          const signer = provider.getSigner() as Signer
+
+          setContract(new ethers.Contract(contractAddress, JSON.parse(abi), signer))
+        }
+      }
+    } catch (error) {
+      setError("ABI is not valid")
+      setIsABI(false)
+    }
+  }
 
   const bind = async () => {
     if (!aspectAddress || !contractAddress) return
@@ -32,7 +70,7 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
       const parsedABI = JSON.parse(abi)
       // console.log(aspectAddress, contractAddress, parsedABI)
 
-      const receipt: AspectTransactionReceipt = await aspectSDK.bind(
+      const receipt: Service.Aspect.AspectTransactionReceipt = await aspectSDK.bind(
         contractAddress,
         aspectAddress,
         parsedABI
@@ -48,18 +86,6 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
     }
   }
 
-  const getContractAspects = async () => {
-    if (!ethers.utils.isAddress(contractAddress)) return
-
-    try {
-      const aspects = await aspectSDK.getAspect(contractAddress)
-      // console.log(aspects)
-      setContractAspects(aspects)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   return (
     <div className={cn("", className)}>
       <div className="my-2">Bind to Artela Smart Contract</div>
@@ -67,54 +93,33 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
       <Input
         className="h-9 rounded-md px-3"
         placeholder="Binding Contract Address"
-        value={contractAddress}
-        onChange={(e) => setContractAddress(e.target.value)}
+        // value={contractAddress}
+        onChange={(e) => handleContractAddress(e.target.value)}
       />
 
       <ContractMetadata name="Contract Tools">
-        <div className="flex space-x-2">
-          <Button className="h-9 rounded-md px-3" onClick={getContractAspects}>
-            Load Aspects
-          </Button>
+        <div className="space-y-2">
           {ethers.utils.isAddress(contractAddress || "") && (
             <LoadEVMContract contractAddress={contractAddress} />
           )}
+          <ContractAspects contractAddress={contractAddress} />
         </div>
-        {contractAspects && (
-          <div className="my-4 max-h-[200px] overflow-y-auto">
-            <Button
-              size="sm"
-              variant="outline"
-              className="flex"
-              onClick={() => {
-                setContractAspects(null)
-              }}
-            >
-              Clear
-            </Button>
-
-            {contractAspects.length > 0 ? (
-              contractAspects.map((aspect: any) => (
-                <div key={aspect.aspectId}>
-                  {aspect.aspectId} {`(v${aspect.version})`}
-                </div>
-              ))
-            ) : (
-              <div>Contract is not binded to any Aspect</div>
-            )}
-          </div>
-        )}
       </ContractMetadata>
 
-      {ethers.utils.isAddress(contractAddress || "") && (
-        <div>
-          <div className="my-2">ABI</div>
-          <textarea
-            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            onChange={(e) => setABI(e.target.value)}
-          ></textarea>
-        </div>
-      )}
+      <ContractMetadata name="ABI">
+        {ethers.utils.isAddress(contractAddress || "") && (
+          <div>
+            <div className="my-2">ABI</div>
+            <textarea
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              onChange={(e) => handleSetABI(e.target.value)}
+            ></textarea>
+          </div>
+        )}
+
+        {isABI && ethers.utils.isAddress(contractAddress) &&
+          <ContractInvoke contract={contract} abi={JSON.parse(abi)} />}
+      </ContractMetadata>
 
       <Button
         className="my-2"
@@ -131,7 +136,6 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
           ? "Deploy Aspect to bind"
           : "Bind"}
       </Button>
-
       {error && <div className="text-red-500">{error}</div>}
     </div>
   )

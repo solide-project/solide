@@ -1,7 +1,8 @@
-import { ExplorerInterface } from "../explorer-interface"
-import { generateSourceCodeError } from "../get-source-code"
-import { EthGetSourceCodeInterface } from "../get-source-code-interface"
-import { BaseScan } from "./base"
+import { BaseScan } from "@/lib/services/explorer/scanner/base"
+import {
+  generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
+} from "@/lib/services/explorer/scanner/explorer-service"
+
 
 export class ConfluxScanClient extends BaseScan implements ExplorerInterface {
   constructor(chainId: string) {

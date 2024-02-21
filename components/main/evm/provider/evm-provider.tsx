@@ -2,8 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 
-import { AspectSDK } from "@/lib/aspect/aspect-service"
-import { SolideFile } from "@/lib/client/solide-file-system"
 import { solcVersion } from "@/lib/utils"
 
 export type SolidityReleases = {

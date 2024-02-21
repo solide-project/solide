@@ -121,6 +121,7 @@ const library = [
     "@paulrberg/contracts",
     "@uniswap/universal-router", 
     "solady",
+    "@matterlabs/zksync-contracts",
 
     // Deceprecated
     "@0x/contracts-asset-proxy",
@@ -144,9 +145,11 @@ const library = [
     "@openzeppelin/contracts@3.4.0",
     "@openzeppelin/contracts@4.5.0",
     "@openzeppelin/contracts@4.7.0",
+    "@openzeppelin/contracts@4.8.0",
     "@openzeppelin/contracts@4.9.0",
     "@openzeppelin/contracts-upgradeable@3.4.0",
     "@openzeppelin/contracts-upgradeable@4.7.0",
+    "@openzeppelin/contracts-upgradeable@4.8.0",
     "@uniswap/v3-core@1.0.0",
     "@uniswap/v3-periphery@1.0.0",
 ];
