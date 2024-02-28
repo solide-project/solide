@@ -27,7 +27,19 @@ export function ContractInvoke({
 
   useEffect(() => {
     setIsContractLoaded(contract ? true : false)
-  }, [contract])
+    console.log(abi)
+    // Here we will edit all input params that are nameless. ie name: "" 
+    abi = abi.map((method: Service.ABIService.ABIEntry) => {
+      if (method.type === "function" && method.inputs) {
+        method.inputs.forEach((input: Service.ABIService.ABIParameter, index: number) => {
+          if (input.name === "") {
+            input.name = `input${index}`;
+          }
+        });
+      }
+      return method;
+    });
+  }, [contract, abi])
 
   const handleSetConstructorArgs = (e: any, index: number) => {
     setConstructorArgs((prev: any) => {
@@ -145,12 +157,13 @@ export function ContractInvoke({
     return entry.inputs.map((input: Service.ABIService.ABIParameter) => {
       const val: any = Service.ABIService
         .abiParameterToNative(input, args[method][input.name])
+      console.log(val)
       return val
     })
   }
 
   const isMethodParameterFilled = (method: string, expectedInputLength: number = 0): boolean =>
-    Object.keys(args[method] || {}).length === expectedInputLength && Object.values(args[method]).every((x: string) => x)
+    Object.keys(args[method] || {}).length === expectedInputLength && Object.values(args[method] || {}).every((x: string) => x)
   //#endregion
 
   return (

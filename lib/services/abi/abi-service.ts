@@ -37,13 +37,15 @@ export namespace Service {
          * @returns 
          */
         export function abiParameterToNative(input: ABIParameter, value: any = ""): any {
-            const data: any = value.toString();
-
+            let data: any = value.toString();
+            console.log(input, value)
             if (input.type.includes("int")) {
-                value = parseInt(value)
+                data = parseInt(value)
             } else if (input.type.includes("bool")) {
-                value = value === "true"
-            } 
+                data = value === "true"
+            } else if (input.type.includes("tuple")) {
+                data = JSON.parse(value)
+            }
 
             return data
         }

@@ -48,6 +48,7 @@ import { useResizables } from "../shared/use-resizeable.hook"
 import { EVMMetadata } from "./components/evm-metadata"
 import { EVMSettings } from "./components/evm-settings"
 import { useEVM } from "./provider/evm-provider"
+import { DecompileOutput, SelectedContract } from "./components/selected-contract"
 
 interface SolideIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   url?: string
@@ -214,6 +215,10 @@ export function SolideIDE({
       const contractConstructor = constructors.pop()
       setConstructorABI(contractConstructor)
     }
+
+    const outputs: DecompileOutput = data.output as DecompileOutput;
+    console.log(outputs)
+    setOutput(outputs)
     setContractAddress("")
     setCompileInfo(data)
     setCompiling(false)
@@ -229,9 +234,13 @@ export function SolideIDE({
     inputs: [],
   } as any)
 
+  const [output, setOutput] = useState<DecompileOutput | null>(null)
+  const [selectedCompiledInfo, setSelectedCompiledInfo] = useState<any | null>(null);
   const [contract, setContract] = useState<ethers.Contract | undefined>()
   const [contractKey, setContractKey] = useState<number>(0)
   const deploy = async () => {
+    console.log(selectedCompiledInfo)
+
     if (compileInfo === undefined) return
 
     setContract(undefined)
@@ -367,6 +376,8 @@ export function SolideIDE({
                 ]}
               />
 
+              {/* {output &&
+                <SelectedContract output={output} onSet={setSelectedCompiledInfo} />} */}
               <div className="flex">
                 <Button
                   size="sm"
@@ -407,7 +418,7 @@ export function SolideIDE({
                 setConstructorArgs={setConstructorArgs}
                 key={contractKey}
                 contract={contract}
-                abi={compileInfo?.data.abi || []}
+                abi={selectedCompiledInfo?.data?.abi || compileInfo?.data?.abi || []}
                 msgValue={msgValue}
               />
             </div>

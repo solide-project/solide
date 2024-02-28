@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     const { flattenContract } = flattenContracts({ dependencies })
     const compiled = await getEntryDetails(output, title)
     if (compiled) {
-      return NextResponse.json({ data: compiled, flattenContract })
+      return NextResponse.json({ data: compiled, flattenContract, output: output })
     }
 
     return NextResponseError("No contract found")
