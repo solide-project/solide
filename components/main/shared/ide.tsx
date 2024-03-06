@@ -57,6 +57,20 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
     handleIDEChange(selectedFile.filePath, newValue)
   }
 
+  const handleSelectionChange = (event: any, editor: any) => {
+    console.log(editor.getSelection(), editor.getModel())
+    const model = editor.getModel();
+    if (model) {
+      const selection = editor.getSelection();
+      if (selection && !selection.isEmpty()) {
+        const selectedText = model.getValueInRange(selection);
+        // console.log('Text is highlighted:', selectedText);
+        window.parent.postMessage({ data: { selectedText }, target: 'solide-highlight' } || "", 'http://localhost:3000/' || 'https://solide.vercel.app');
+        // You can perform further actions here with the selected text
+      }
+    }
+  };
+
   return (
     <Editor
       key={file.filePath}
@@ -67,6 +81,14 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
       onChange={onChange}
       defaultValue={file.content || ""}
       options={{ fontSize: editorFontSize }}
+      onMount={(editor, monaco) => {
+        editor.onDidChangeCursorPosition((event) => {
+          console.log('Cursor position changed:', event.position);
+          // You can perform actions when the cursor position changes here
+        });
+
+        editor.onDidChangeCursorSelection((e: any) => handleSelectionChange(e, editor));
+      }}
     />
   )
 }

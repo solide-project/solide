@@ -2,10 +2,8 @@
 
 import { Download } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { CopyText, CopyTextItem } from "@/components/main/shared/copy-text"
-
-import { ContractMetadata } from "../../shared/components/contract-metadata"
+import { ContractMetadata } from "@/components/main/shared/components/contract-metadata"
+import { FileDownloader } from "@/lib/helpers/file-downloader"
 
 interface AspectMetadataProps extends React.HTMLAttributes<HTMLDivElement> {
   contractWasm: Blob | undefined
@@ -13,16 +11,14 @@ interface AspectMetadataProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function AspectMetadata({
   contractWasm,
-  children,
 }: AspectMetadataProps) {
   const downloadWasm = () => {
     if (!contractWasm) return
-    const url = window.URL.createObjectURL(contractWasm)
-
-    var link = document.createElement("a") // Or maybe get it from the current document
-    link.href = url
-    link.download = "aspect.wasm"
-    link.click()
+    const downloader = new FileDownloader()
+    downloader.downloadFile({
+      source: contractWasm,
+      name: "aspect.wasm",
+    })
   }
 
   return (

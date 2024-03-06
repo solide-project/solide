@@ -2,12 +2,10 @@
 
 import path from "path"
 import { useEffect, useState } from "react"
-import Editor from "@monaco-editor/react"
 import { Signer, ethers } from "ethers"
-import { Code, Download, File, FunctionSquare, Settings } from "lucide-react"
-import { useTheme } from "next-themes"
+import { Code, Download, File, FunctionSquare } from "lucide-react"
 
-import { CompileError, CompileResult } from "@/lib/interfaces"
+import { CompileError, CompileInput, CompileResult } from "@/lib/interfaces"
 import {
   GetSolidityJsonInputFormat,
   JSONParse,
@@ -15,15 +13,6 @@ import {
   solcVersion,
 } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import {
   ResizableHandle,
@@ -32,13 +21,10 @@ import {
 } from "@/components/ui/resizable"
 import { Separator } from "@/components/ui/separator"
 import { CompileErrors } from "@/components/main/compile/errors"
-import { EditorLoading } from "@/components/main/compile/loading"
 import { ContractInvoke } from "@/components/main/evm/components/contract-invoke"
 import { FileTree } from "@/components/main/file-tree"
-import { ContractMetadata } from "@/components/main/shared/components/contract-metadata"
 import { ContentLink } from "@/components/main/shared/nav/content-link"
 import { SelectedChain } from "@/components/main/shared/nav/selected-chain"
-import { SolVersion } from "@/components/main/shared/nav/sol-version"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 import { useFileSystem } from "../../file-provider"
@@ -48,34 +34,22 @@ import { useResizables } from "../shared/use-resizeable.hook"
 import { EVMMetadata } from "./components/evm-metadata"
 import { EVMSettings } from "./components/evm-settings"
 import { useEVM } from "./provider/evm-provider"
-import { DecompileOutput, SelectedContract } from "./components/selected-contract"
+import { DecompileOutput } from "./components/selected-contract"
+import { FileDownloader } from "@/lib/helpers/file-downloader"
+import { QueryParamBuilder } from "@/lib/helpers/query-param-builder"
 
 interface SolideIDEProps extends React.HTMLAttributes<HTMLDivElement> {
+  /**
+   * Entire GitHub URL or an contract address
+   */
   url?: string
+  /**
+   * Chain ID of contract address, should only be used when smart contract is address
+   */
   chainId?: string
   title?: string
   content: string
   version?: string
-}
-
-interface CompileInput {
-  language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper"
-  settings?: {
-    outputSelection: any
-    optimizer: any
-    evmVersion: string
-    metadata: any
-    libraries: any
-    remappings: any
-    metadataHash: string
-  }
-  sources: {
-    [key: string]: CompileSource
-  }
-}
-
-export interface CompileSource {
-  content: string
 }
 
 export function SolideIDE({
@@ -100,11 +74,9 @@ export function SolideIDE({
     fs,
     initSolIDE,
     initIDE,
-
     handleIDEDisplay,
   } = useFileSystem()
 
-  const [compileInfo, setCompileInfo] = useState<CompileResult | undefined>()
   const [solidityInput, setSolidityInput] = useState<CompileInput | undefined>()
 
   useEffect(() => {
@@ -112,7 +84,6 @@ export function SolideIDE({
       // At the start, we need to check if the content is JSON format
       const match = title.match(/\/([^:]+\.sol):/)
       const solFilePath = match ? match[1] : title
-
       handleIDEDisplay({ content, filePath: solFilePath })
 
       if (!content) return
@@ -152,65 +123,92 @@ export function SolideIDE({
   }, [content])
 
   const [compiling, setCompiling] = useState<boolean>(false)
+  const [compileInfo, setCompileInfo] = useState<CompileResult | undefined>()
   const [compileError, setCompileError] = useState<CompileError | undefined>()
+
+  const setCompilingState = ({
+    compiling = false,
+    errors,
+    info,
+    contractAddress = "",
+    contract,
+  }: {
+    compiling?: boolean
+    errors?: CompileError,
+    info?: CompileResult,
+    contractAddress?: string
+    contract?: ethers.Contract
+  }) => {
+    setCompiling(compiling)
+    setCompileError(errors)
+    setCompileInfo(info)
+    setContractAddress(contractAddress)
+    setContract(contract)
+  }
+
+  const compileInput = async ({
+    source,
+    title,
+    compileVersion,
+    optimizer = false,
+    runs = 200,
+    viaIR = false,
+  }: {
+    source: any
+    title: string,
+    compileVersion?: string,
+    optimizer?: boolean,
+    runs?: number,
+    viaIR?: boolean   // Note that this is not used in the current implementation
+  }): Promise<Response> => {
+    const queryBuilder = new QueryParamBuilder()
+    let queryString = queryBuilder.addParam('version', compileVersion);
+    if (optimizer) {
+      queryBuilder
+        .addParam('optimizer', optimizer)
+        .addParam('runs', runs.toString());
+    }
+    if (viaIR) {
+      queryBuilder.addParam('viaIR', viaIR)
+    }
+
+    const formData = new FormData()
+    const blob = new Blob([JSON.stringify(source)], {
+      type: "text/plain",
+    })
+    formData.append("file", blob)
+    formData.append("title", title)
+
+    return fetch(`/api/compile/${queryString.build()}`, {
+      method: "POST",
+      body: formData,
+    })
+  }
 
   const compile = async () => {
     if (compiling) return
 
-    setCompiling(true)
-    setCompileError(undefined)
-    setCompileInfo(undefined)
-    setContract(undefined)
+    setCompilingState({ compiling: true })
 
-    const formData = new FormData()
-
-    // override the content with the json format if it exists
     const sources = await fs.generateSources()
-    const blob = new Blob([JSON.stringify({ ...solidityInput, sources })], {
-      type: "text/plain",
-    })
-    formData.append("file", blob, url)
-
-    formData.append("source", url || encodeURIComponent(title))
-
-    if (title) {
-      formData.append("title", title)
-    }
-
-    let uri = `/api/compile?version=${encodeURIComponent(
-      compilerSetting.compilerVersion
-    )}`
-
-    if (compilerSetting.input?.settings?.optimizer?.enabled) {
-      uri += `&optimizer=${encodeURIComponent(
-        compilerSetting.input.settings.optimizer.enabled
-      )}&runs=${encodeURIComponent(
-        compilerSetting.input?.settings?.optimizer?.runs || 200
-      )}`
-    }
-
-    if (compilerSetting.input?.settings?.optimizer?.viaIR) {
-      uri += `&viaIR=${encodeURIComponent(
-        compilerSetting.input.optimizer.viaIR
-      )}`
-    }
-
-    const response = await fetch(uri, {
-      method: "POST",
-      body: formData,
+    const response = await compileInput({
+      source: { ...solidityInput, sources },
+      title: title,
+      compileVersion: compilerSetting.compilerVersion,
+      optimizer: compilerSetting.input?.settings?.optimizer?.enabled,
+      runs: compilerSetting.input?.settings?.optimizer?.runs
     })
 
     if (!response.ok) {
       const data = (await response.json()) as CompileError
-      setCompileError(data)
-      setCompiling(false)
+      setCompilingState({ errors: data, })
       return
     }
+
     const data = await response.json()
     const constructors: any[] = data.data.abi.filter(
       (m: any) => m.type === "constructor"
     )
-
     if (constructors.length > 0) {
       const contractConstructor = constructors.pop()
       setConstructorABI(contractConstructor)
@@ -219,9 +217,7 @@ export function SolideIDE({
     const outputs: DecompileOutput = data.output as DecompileOutput;
     console.log(outputs)
     setOutput(outputs)
-    setContractAddress("")
-    setCompileInfo(data)
-    setCompiling(false)
+    setCompilingState({ info: data, })
   }
 
   const [msgValue, setMsgValue] = useState<string>("")
@@ -238,13 +234,17 @@ export function SolideIDE({
   const [selectedCompiledInfo, setSelectedCompiledInfo] = useState<any | null>(null);
   const [contract, setContract] = useState<ethers.Contract | undefined>()
   const [contractKey, setContractKey] = useState<number>(0)
-  const deploy = async () => {
-    console.log(selectedCompiledInfo)
 
+  const setDeployState = (contract: ethers.Contract) => {
+    setContract(contract)
+    setContractAddress(contract.address)
+    setContractKey(contractKey + 1)
+  }
+
+  const deploy = async () => {
     if (compileInfo === undefined) return
 
-    setContract(undefined)
-
+    // setContract(undefined)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     await provider.send("eth_requestAccounts", [])
     const signer = provider.getSigner() as Signer
@@ -262,29 +262,24 @@ export function SolideIDE({
         signer
       )
       const contract = await factory.deploy(...constructorArgs)
-      setContractAddress(contract.address)
-      setContractKey(contractKey + 1)
-      setContract(contract)
+      setDeployState(contract)
     } else {
       const contract = new ethers.Contract(
         contractAddress,
         compileInfo.data.abi,
         signer
       )
-      setContractAddress(contract.address)
-      setContractKey(contractKey + 1)
-      setContract(contract)
+      setDeployState(contract)
     }
   }
 
   const downloadFile = async () => {
     const sourceBlob: Blob = await fs.download()
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(sourceBlob);
-    link.download = 'source.zip';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const downloader = new FileDownloader()
+    downloader.downloadFile({
+      source: sourceBlob,
+      name: "contract.zip",
+    })
   }
 
   return (

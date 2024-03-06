@@ -27,14 +27,12 @@ export function ContractInvoke({
 
   useEffect(() => {
     setIsContractLoaded(contract ? true : false)
-    console.log(abi)
-    // Here we will edit all input params that are nameless. ie name: "" 
+  
+    // This is a workaround to handle the case where the parameters are not named for the method
     abi = abi.map((method: Service.ABIService.ABIEntry) => {
       if (method.type === "function" && method.inputs) {
         method.inputs.forEach((input: Service.ABIService.ABIParameter, index: number) => {
-          if (input.name === "") {
-            input.name = `input${index}`;
-          }
+          input.name = input.name === "" ? `input${index}` : input.name;
         });
       }
       return method;

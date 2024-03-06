@@ -16,6 +16,26 @@ export interface CompileResult {
   flattenContract: string
 }
 
+export interface CompileInput {
+  language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper" | "Aspect"
+  settings?: {
+    outputSelection: any
+    optimizer: any
+    evmVersion: string
+    metadata: any
+    libraries: any
+    remappings: any
+    metadataHash: string
+  }
+  sources: {
+    [key: string]: CompileSource
+  }
+}
+
+export interface CompileSource {
+  content: string
+}
+
 export interface SolcError {
   component: string
   errorCode: string

@@ -4,8 +4,7 @@ import path from "path"
 import React, { createContext, useContext, useState } from "react"
 
 import { SolideFile, SolideFileSystem } from "@/lib/client/solide-file-system"
-
-import { CompileSource } from "./main/evm/evm-ide"
+import { CompileSource } from "@/lib/interfaces"
 
 /**
  * VFS Provider to handle files and folders in the IDE

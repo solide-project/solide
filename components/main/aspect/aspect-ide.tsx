@@ -11,7 +11,7 @@ import {
   Share2,
 } from "lucide-react"
 
-import { CompileError, CompileResult } from "@/lib/interfaces"
+import { CompileError, CompileInput, CompileResult } from "@/lib/interfaces"
 import {
   GetSolidityJsonInputFormat,
   JSONParse,
@@ -44,9 +44,7 @@ import { DeployProperties } from "./components/deploy-properties"
 import { JointsList } from "./components/joints-list"
 import { useAspect } from "./provider/aspect-provider"
 import { Service } from "@/lib/services/aspect/aspect-service"
-
-// import { TextEncoder } from "util"
-// import { LoadContractAspect } from "./aspect/load-contract-aspect"
+import { FileDownloader } from "@/lib/helpers/file-downloader"
 
 interface SolideAspectIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   url?: string
@@ -54,26 +52,6 @@ interface SolideAspectIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
   content: string
   version?: string
-}
-
-interface CompileInput {
-  language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper" | "Aspect"
-  settings?: {
-    outputSelection: any
-    optimizer: any
-    evmVersion: string
-    metadata: any
-    libraries: any
-    remappings: any
-    metadataHash: string
-  }
-  sources: {
-    [key: string]: CompileSource
-  }
-}
-
-interface CompileSource {
-  content: string
 }
 
 export function SolideAspectIDE({
@@ -105,9 +83,7 @@ export function SolideAspectIDE({
     handleIDEDisplay,
   } = useFileSystem()
 
-  const [compileInfo, setCompileInfo] = useState<CompileResult | undefined>()
   const [solidityInput, setSolidityInput] = useState<CompileInput | undefined>()
-
   const [compiledWasm, setCompiledWasm] = useState<Blob | undefined>()
 
   useEffect(() => {
@@ -153,13 +129,28 @@ export function SolideAspectIDE({
   const [compiling, setCompiling] = useState<boolean>(false)
   const [compileError, setCompileError] = useState<CompileError | undefined>()
 
+  const setCompilingState = ({
+    compiling = false,
+    errors,
+    contractAddress = "",
+    wasm,
+  }: {
+    compiling?: boolean
+    errors?: CompileError,
+    info?: CompileResult,
+    contractAddress?: string
+    wasm?: Blob
+  }) => {
+    setCompiling(compiling)
+    setCompileError(errors)
+    setContractAddress(contractAddress)
+    setCompiledWasm(wasm)
+  }
+
   const compile = async () => {
     if (compiling) return
 
-    setCompiling(true)
-    setCompileError(undefined)
-    setCompileInfo(undefined)
-    setCompiledWasm(undefined)
+    setCompilingState({ compiling: true })
 
     const formData = new FormData()
     const sources = await fs.generateSources()
@@ -175,14 +166,12 @@ export function SolideAspectIDE({
 
     if (!response.ok) {
       const data = (await response.json()) as CompileError
-      setCompileError(data)
-      setCompiling(false)
+      setCompilingState({ errors: data })
       return
     }
 
     const wasm: Blob = await response.blob()
-    setCompiledWasm(wasm)
-    setCompiling(false)
+    setCompilingState({ wasm })
   }
 
   const [contractAddress, setContractAddress] = useState<string>("")
@@ -234,12 +223,11 @@ export function SolideAspectIDE({
 
   const downloadFile = async () => {
     const sourceBlob: Blob = await fs.download()
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(sourceBlob);
-    link.download = 'source.zip';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const downloader = new FileDownloader()
+    downloader.downloadFile({
+      source: sourceBlob,
+      name: "contract.zip",
+    })
   }
 
   return (
@@ -284,7 +272,7 @@ export function SolideAspectIDE({
         <Button size="icon" variant="ghost" onClick={downloadFile}>
           <Download />
         </Button>
-        
+
         <div className="mt-auto flex flex-col items-center gap-2">
           <SelectedChain />
           <ThemeToggle />
