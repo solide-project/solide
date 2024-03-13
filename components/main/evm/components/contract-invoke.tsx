@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,7 +27,7 @@ export function ContractInvoke({
 
   useEffect(() => {
     setIsContractLoaded(contract ? true : false)
-  
+
     // This is a workaround to handle the case where the parameters are not named for the method
     abi = abi.map((method: Service.ABIService.ABIEntry) => {
       if (method.type === "function" && method.inputs) {
@@ -92,13 +92,13 @@ export function ContractInvoke({
         result = await contractMethod(...params)
       } else {
         result = await contractMethod(...params, {
-          value: ethers.utils.parseEther(msgValue),
+          value: ethers.parseEther(msgValue),
         })
       }
 
       if (entry.outputs && entry.outputs.length > 0) {
         if (entry.outputs[0].type.includes("int")) {
-          result = result.toString() as BigNumber
+          result = result.toString() as BigInt
         } else {
           result = result as string
         }
@@ -136,8 +136,7 @@ export function ContractInvoke({
       let params: any[] = formatParameters(entry, method);
 
       setRet({ ...ret, [method]: "Waiting Transaction ..." })
-      result = await contract.callStatic[method](...params);
-
+      result = await contract[method].staticCall(...params)
       console.log(result)
       setRet({ ...ret, [method]: result })
     } catch (error: any) {
@@ -155,7 +154,6 @@ export function ContractInvoke({
     return entry.inputs.map((input: Service.ABIService.ABIParameter) => {
       const val: any = Service.ABIService
         .abiParameterToNative(input, args[method][input.name])
-      console.log(val)
       return val
     })
   }

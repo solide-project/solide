@@ -1,5 +1,4 @@
-import { ChainID } from "@/lib/chains"
-import { EthGetSourceCodeInterface, ExplorerInterface, generateSourceCodeError } from "./scanner/explorer-service"
+import { ContractInfo, EthGetSourceCodeInterface, ExplorerInterface, generateSourceCodeError } from "./scanner/explorer-service"
 import { BlockScoutOldClient } from "./scanner/blockscout-old"
 import { BlockScoutClient } from "./scanner/blockscout-new"
 import { XdcScanClient } from "./scanner/xdcscan"
@@ -10,6 +9,11 @@ import { VicScanClient } from "./scanner/vicscan"
 import { TronScanClient } from "./scanner/tronscan"
 import { ChainLensClient } from "./scanner/chain-lens"
 import { EtherScanClient } from "./scanner/etherscan"
+import { ethers } from "ethers"
+import { solcVersion } from "@/lib/utils"
+import { ChainID, getRPC } from "@/lib/chains"
+import { BTFSGateway, GlacierService } from "@/lib/services/solidity-db"
+import { SolidityMetadata } from "@/lib/services/solidity-metadata"
 
 export const getSourceCode = async (
     chain: string,
@@ -21,7 +25,60 @@ export const getSourceCode = async (
     }
 
     // return scanner.getSourceCode(address)
-    return await scanner.getSourceCode(address)  // This throw 
+    const data = await scanner.getSourceCode(address)
+
+    // NEW: Solide Smart Contract Database Service to load unverified contracts
+    if (typeof data.result !== "string") {
+        const source = (data.result[0] as ContractInfo).SourceCode;
+        if (!source) {
+            const rpc = getRPC(chain)
+            if (rpc) {
+                const provider: ethers.JsonRpcProvider = new ethers.JsonRpcProvider(rpc);
+                const bytecode = await provider.getCode(address)
+                if (bytecode !== null && bytecode !== "0x") {
+                    const hash = ethers.id(bytecode.slice(2))
+
+                    const databaseService = new GlacierService()
+                    const results = await databaseService.find(hash);
+                    if (!databaseService.exist(results)) {
+                        console.log("address not found in database")
+                        return data;
+                    }
+                    if (results && results.length > 1) {
+                        console.log("multiple results found. Note this should not happen")
+                    }
+
+                    const response = await fetch(`${BTFSGateway}/${results[0].input}`);
+                    const metadata = await response.json();
+
+                    const contractName = SolidityMetadata.contractName(metadata)
+                    const compilerVersion = SolidityMetadata.compilerVersion(metadata)
+
+                    const result = {
+                        SourceCode: `{${JSON.stringify(metadata)}}`,
+                        ABI: "",
+                        ContractName: contractName,
+                        CompilerVersion: compilerVersion || solcVersion,
+                        OptimizationUsed: "0",
+                        Runs: "200",
+                        ConstructorArguments: "",
+                        EVMVersion: "default",
+                        Library: "",
+                        LicenseType: "0",
+                        Proxy: "",
+                        Implementation: "",
+                        SwarmSource: "",
+                        BytcodeContract: results[0].input
+                    }
+
+                    data.result = [result]
+                }
+            }
+        }
+    }
+
+    // console.log("getSourceCode", data)
+    return data;
 }
 
 const getScanner = (chainId: string): ExplorerInterface | undefined => {

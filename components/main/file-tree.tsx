@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { ChevronDown, ChevronRight, FileBox } from "lucide-react"
 
-import { SolideFile, isSolideFile } from "@/lib/client/solide-file-system"
+import { SolideFile, isSolideFile } from "@/lib/services/file-system"
 import { cn } from "@/lib/utils"
 
 import { useFileSystem } from "../file-provider"
@@ -46,7 +46,7 @@ const FileTreeNode = ({ name, node, depth }: FileTreeNodeProps) => {
     <div className="dark:border-white border-l" style={getIndentStyle()}>
       <div>
         <span
-          onClick={node ? handleToggle : () => {}}
+          onClick={node ? handleToggle : () => { }}
           className="flex cursor-pointer"
         >
           {isExpanded ? <ChevronDown /> : <ChevronRight />} {name}

@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
 
     // Note commiting this might break flow
     // if (
-    //   !ethers.utils.isAddress(sourceName) &&
+    //   !ethers.isAddress(sourceName) &&
     //   !isXDCAddress(sourceName) &&
     //   !isTronAddress(sourceName)
     // ) {
@@ -126,6 +126,14 @@ export async function POST(request: NextRequest) {
     // Since our backend doesn't have CLI and will timeout for large files, will disable for now but looking to implementation
     if (solidityInput.settings && solidityInput.settings.viaIR) {
       delete solidityInput.settings.viaIR
+    }
+
+    if (solidityInput.settings && solidityInput.settings.compilationTarget) {
+      delete solidityInput.settings.compilationTarget
+    }
+
+    if (solidityInput.compiler) {
+      delete solidityInput.compiler
     }
 
     var output = JSON.parse(solcSnapshot.compile(JSON.stringify(solidityInput)))

@@ -1,7 +1,7 @@
 import Web3 from "@artela/web3"
 import Web3Eth from "@artela/web3-eth"
 import { getContractAddress } from "@ethersproject/address"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 
 export namespace Service {
     export namespace Aspect {
@@ -13,7 +13,7 @@ export namespace Service {
         }
 
         export interface AspectTransactionReceipt
-            extends ethers.providers.TransactionReceipt {
+            extends ethers.TransactionReceipt {
             aspectAddress: string
         }
 
@@ -26,7 +26,7 @@ export namespace Service {
         export class AspectSDK {
             web3: Web3
             eth: Web3Eth
-            provider: ethers.providers.Web3Provider | undefined
+            provider: ethers.BrowserProvider | undefined
 
             ARTELA_ADDR: string = "0x0000000000000000000000000000000000A27E14"
             defaultTransactionReceipt: any = {
@@ -35,15 +35,15 @@ export namespace Service {
                 contractAddress: "0x0",
                 transactionIndex: 0,
                 root: "0x0",
-                gasUsed: BigNumber.from(0),
+                gasUsed: BigInt(0),
                 logsBloom: "0x0",
                 blockHash: "0x0",
                 transactionHash: "0x0",
                 logs: [],
                 blockNumber: 0,
                 confirmations: 0,
-                cumulativeGasUsed: BigNumber.from(0),
-                effectiveGasPrice: BigNumber.from(0),
+                cumulativeGasUsed: BigInt(0),
+                effectiveGasPrice: BigInt(0),
                 byzantium: false,
                 type: 0,
                 status: 0,
@@ -56,11 +56,11 @@ export namespace Service {
 
             async deploy(contractWasm: Blob, properties: KVPair[], joinPoints: any[]) {
                 if (!this.provider) {
-                    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+                    this.provider = new ethers.BrowserProvider(window.ethereum)
                 }
                 const signer = await this.getSigner()
-                this.provider = new ethers.providers.Web3Provider(window.ethereum)
-                const gasPrice: BigNumber = await this.provider.getGasPrice()
+                this.provider = new ethers.BrowserProvider(window.ethereum)
+                const gasPrice = (await this.provider.getFeeData()).gasPrice
 
                 if (!signer) {
                     throw new Error("No signer found")
@@ -85,11 +85,11 @@ export namespace Service {
                     from: await signer.getAddress(),
                     data: deploy.encodeABI(),
                     to: this.ARTELA_ADDR,
-                    gasPrice: gasPrice.toNumber(),
+                    gasPrice: Number(gasPrice),
                     gasLimit: 9000000,
                 }
 
-                let signedTx: ethers.providers.TransactionResponse =
+                let signedTx: ethers.TransactionResponse =
                     await signer.sendTransaction(tx)
                 let receipt: any = await signedTx.wait()
 
@@ -101,9 +101,10 @@ export namespace Service {
             async bind(contractAddress: string, aspectAddress: string, abi: any[]) {
                 const signer = await this.getSigner()
                 if (!this.provider) {
-                    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+                    this.provider = new ethers.BrowserProvider(window.ethereum)
                 }
-                const gasPrice: BigNumber = await this.provider.getGasPrice()
+
+                const gasPrice = (await this.provider.getFeeData()).gasPrice
 
                 if (!signer) {
                     throw new Error("No signer found")
@@ -124,12 +125,12 @@ export namespace Service {
                     to: this.ARTELA_ADDR || aspectCore.options.address,
                     // gasPrice: 7,
                     // gas: 9000000
-                    gasPrice: gasPrice.toNumber(),
+                    gasPrice: Number(gasPrice),
                     gasLimit: 9000000,
                 }
 
                 try {
-                    let signedTx: ethers.providers.TransactionResponse =
+                    let signedTx: ethers.TransactionResponse =
                         await signer.sendTransaction(tx)
                     let receipt: any = await signedTx.wait()
 
@@ -143,9 +144,9 @@ export namespace Service {
             async entry(aspectAddress: string, operationData: string) {
                 const signer = await this.getSigner()
                 if (!this.provider) {
-                    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+                    this.provider = new ethers.BrowserProvider(window.ethereum)
                 }
-                const gasPrice: BigNumber = await this.provider.getGasPrice()
+                const gasPrice = (await this.provider.getFeeData()).gasPrice
 
                 if (!signer) {
                     throw new Error("No signer found")
@@ -159,12 +160,12 @@ export namespace Service {
                     from: await signer.getAddress(),
                     to: this.ARTELA_ADDR,
                     data: encodeABI,
-                    gasPrice,
+                    gasPrice: Number(gasPrice),
                     gasLimit: 9000000,
                 }
 
                 try {
-                    let signedTx: ethers.providers.TransactionResponse =
+                    let signedTx: ethers.TransactionResponse =
                         await signer.sendTransaction(tx)
                     let receipt: any = await signedTx.wait()
 
@@ -189,9 +190,9 @@ export namespace Service {
             ) {
                 const signer = await this.getSigner()
                 if (!this.provider) {
-                    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+                    this.provider = new ethers.BrowserProvider(window.ethereum)
                 }
-                const gasPrice: BigNumber = await this.provider.getGasPrice()
+                const gasPrice = (await this.provider.getFeeData()).gasPrice
 
                 if (!signer) {
                     throw new Error("No signer found")
@@ -214,12 +215,12 @@ export namespace Service {
                     from: await signer.getAddress(),
                     data: deploy.encodeABI(),
                     to: this.ARTELA_ADDR,
-                    gasPrice,
+                    gasPrice: Number(gasPrice),
                     gasLimit: 9000000,
                 }
 
                 try {
-                    let signedTx: ethers.providers.TransactionResponse =
+                    let signedTx: ethers.TransactionResponse =
                         await signer.sendTransaction(tx)
                     let receipt: any = await signedTx.wait()
 
@@ -251,7 +252,7 @@ export namespace Service {
 
             async getSigner() {
                 if (!this.provider) {
-                    this.provider = new ethers.providers.Web3Provider(window.ethereum)
+                    this.provider = new ethers.BrowserProvider(window.ethereum)
                 }
                 await this.provider.send("eth_requestAccounts", [])
                 return this.provider.getSigner()

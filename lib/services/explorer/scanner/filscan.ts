@@ -4,6 +4,7 @@ import {
 } from "@/lib/services/explorer/scanner/explorer-service"
 import { compilerVersions } from "@/lib/versions"
 import { solcVersion } from "@/lib/utils"
+import { SolidityMetadata } from "../../solidity-metadata"
 
 
 export class FilScanClient extends BaseScan implements ExplorerInterface {
@@ -49,55 +50,26 @@ export class FilScanClient extends BaseScan implements ExplorerInterface {
     sourceInput.sources = await this.fetchSources(data.data.source_codes)
 
     // Same implementation as blockscout's explorer that uses sourcify except here the metadata is available in API
-    const sourifyData = JSON.parse(data.data.metadata)
-
-    if (sourifyData.sources) {
+    const metadata = JSON.parse(data.data.metadata)
+    if (metadata.sources) {
       // We not use this but this is an alternative to get source code
       // try {
-      //   const sources: any = await this.metadataGetSources(sourifyData)
+      //   const sources: any = await this.metadataGetSources(metadata)
       //   sourceInput.sources = sources
       // } catch (error) {
       //   return generateSourceCodeError("Error loading contract")
       // }
 
       results.SourceCode = `{${JSON.stringify(sourceInput)}}`
-      results.ABI = JSON.stringify(sourifyData.output?.abi || {})
+      results.ABI = SolidityMetadata.abi(metadata)
+      results.Language = SolidityMetadata.language(metadata)
+      results.ContractName = this.appendExtension(
+        SolidityMetadata.contractName(metadata))
+      results.CompilerVersion = this.formatVersion(
+        SolidityMetadata.compilerVersion(metadata)
+      )
 
-      if (sourifyData.settings) {
-        if (sourifyData.settings.compilationTarget) {
-          // Since API doesn't provide the contract name we can just get it from the compilationTarget
-          results.ContractName =
-            Object.keys(sourifyData.settings.compilationTarget).pop() || ""
-
-          // We take the value of the key as Contract Name
-          if (results.ContractName) {
-            results.ContractName =
-              sourifyData.settings.compilationTarget[results.ContractName]
-          }
-
-          results.ContractName = this.appendExtension(results.ContractName)
-
-          delete sourifyData.settings.compilationTarget
-        }
-
-        if (sourifyData.settings.libraries) {
-          delete sourifyData.settings.libraries
-        }
-
-        sourceInput.settings = sourifyData.settings
-      }
-
-      if (sourifyData.language) {
-        results.Language = sourifyData.language
-      }
-
-      if (sourifyData.compiler?.version) {
-        // Found a valid version as per sourcify can just be a version number
-        const compilerVersion = compilerVersions.find((element: string) =>
-          element.includes(sourifyData.compiler.version)
-        )
-        results.CompilerVersion = compilerVersion || solcVersion // Fall back to default if not found
-      }
+      sourceInput.settings = SolidityMetadata.settings(metadata)
 
       return {
         status: "1",

@@ -3,7 +3,7 @@
 import path from "path"
 import React, { createContext, useContext, useState } from "react"
 
-import { SolideFile, SolideFileSystem } from "@/lib/client/solide-file-system"
+import { SolideFile, SolideFileSystem } from "@/lib/services/file-system"
 import { CompileSource } from "@/lib/interfaces"
 
 /**
@@ -97,12 +97,12 @@ interface FileSystemProviderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const FileContext = createContext({
   fs: {} as SolideFileSystem,
-  initSolIDE: async (sources: any, entry: string) => {},
-  initIDE: async (sources: any, entry: string) => {},
+  initSolIDE: async (sources: any, entry: string) => { },
+  initIDE: async (sources: any, entry: string) => { },
 
   selectedFile: {} as SolideFile,
-  handleIDEDisplay: (display: SolideFile) => {},
-  handleIDEChange: (folderPath: string, content: string) => {},
+  handleIDEDisplay: (display: SolideFile) => { },
+  handleIDEChange: (folderPath: string, content: string) => { },
 })
 
 export const useFileSystem = () => useContext(FileContext)

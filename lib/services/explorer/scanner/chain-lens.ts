@@ -4,6 +4,7 @@ import {
 } from "@/lib/services/explorer/scanner/explorer-service"
 import { solcVersion } from "@/lib/utils";
 import { compilerVersions } from "@/lib/versions";
+import { SolidityMetadata } from "../../solidity-metadata";
 
 
 interface FileMetadata {
@@ -52,7 +53,6 @@ export class ChainLensClient extends BaseScan implements ExplorerInterface {
         data: any,
         address: string
     ): Promise<EthGetSourceCodeInterface> {
-
         if (data.error || data.message) {
             return generateSourceCodeError(data.message)
         }
@@ -79,40 +79,20 @@ export class ChainLensClient extends BaseScan implements ExplorerInterface {
 
         results.SourceCode = `{${JSON.stringify(sourceInput)}}`
 
-        const metadata: FileMetadata = data.files.filter((file: FileMetadata) => file.name === "metadata.json")[0]
+        const metadataFile: FileMetadata = data.files.filter((file: FileMetadata) => file.name === "metadata.json")[0]
 
-        if (metadata) {
-            const sourifyData = JSON.parse(metadata.content)
-            if (sourifyData.language) {
-                results.Language = sourifyData.language
-            }
+        if (metadataFile) {
+            const metadata = JSON.parse(metadataFile.content)
 
             if (!results.ContractName) {
-                const entry = Object.entries(sourifyData.settings.compilationTarget)[0];
-                if (entry) {
-                    results.ContractName = entry[0]
-                }
+                results.ContractName = SolidityMetadata.contractName(metadata)
             }
-
             results.ContractName = this.appendExtension(results.ContractName)
 
-            if (sourifyData.settings.libraries) {
-                delete sourifyData.settings.libraries
-            }
-
-            if (sourifyData.language) {
-                results.Language = sourifyData.language
-            }
-
-            if (sourifyData.compiler?.version) {
-                // Found a valid version as per sourcify can just be a version number
-                const compilerVersion = compilerVersions.find((element: string) =>
-                    element.includes(sourifyData.compiler.version)
-                )
-                results.CompilerVersion = compilerVersion || solcVersion // Fall back to default if not found
-            }
-
-            results.ABI = JSON.stringify(sourifyData.output?.abi || {})
+            results.Language = SolidityMetadata.language(metadata)
+            results.CompilerVersion = this.formatVersion(
+                SolidityMetadata.compilerVersion(metadata))
+            results.ABI = SolidityMetadata.abi(metadata)
         }
 
         return {

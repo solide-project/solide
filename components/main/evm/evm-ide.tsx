@@ -3,7 +3,7 @@
 import path from "path"
 import { useEffect, useState } from "react"
 import { Signer, ethers } from "ethers"
-import { Code, Download, File, FunctionSquare } from "lucide-react"
+import { Code, Download, File, FunctionSquare, Star } from "lucide-react"
 
 import { CompileError, CompileInput, CompileResult } from "@/lib/interfaces"
 import {
@@ -37,6 +37,8 @@ import { useEVM } from "./provider/evm-provider"
 import { DecompileOutput } from "./components/selected-contract"
 import { FileDownloader } from "@/lib/helpers/file-downloader"
 import { QueryParamBuilder } from "@/lib/helpers/query-param-builder"
+import { Service } from "@/lib/services/abi/abi-service"
+import { ByteCodeContract } from "./components/bytecode-contract"
 
 interface SolideIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -50,6 +52,7 @@ interface SolideIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
   content: string
   version?: string
+  bytecodeId?: string
 }
 
 export function SolideIDE({
@@ -58,6 +61,7 @@ export function SolideIDE({
   version,
   chainId,
   title = "Contract",
+  bytecodeId,
 }: SolideIDEProps) {
   const { compilerSetting } = useEVM()
 
@@ -89,6 +93,7 @@ export function SolideIDE({
       if (!content) return
 
       if (version) {
+        console.log("Setting compiler version", version)
         await compilerSetting.setCompilerVersion(version)
       }
 
@@ -235,41 +240,56 @@ export function SolideIDE({
   const [contract, setContract] = useState<ethers.Contract | undefined>()
   const [contractKey, setContractKey] = useState<number>(0)
 
-  const setDeployState = (contract: ethers.Contract) => {
+  const setDeployState = async (contract: ethers.Contract) => {
     setContract(contract)
-    setContractAddress(contract.address)
+    const address = await contract.getAddress()
+    setContractAddress(address)
     setContractKey(contractKey + 1)
   }
 
   const deploy = async () => {
     if (compileInfo === undefined) return
+    if (!window.ethereum) return
 
     // setContract(undefined)
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const provider = new ethers.BrowserProvider(window.ethereum)
     await provider.send("eth_requestAccounts", [])
-    const signer = provider.getSigner() as Signer
+    const signer = await provider.getSigner()
 
-    // console.log(
-    //   constructorArgs,
-    //   constructorABI,
-    //   constructorArgs.length,
-    //   (constructorABI.inputs || []).length
-    // )
-    if (!ethers.utils.isAddress(contractAddress)) {
+    if (!ethers.isAddress(contractAddress)) {
+      console.log(
+        constructorArgs,
+        constructorABI,
+        constructorArgs.length,
+        (constructorABI.inputs || []).length
+      )
+      let params: any[] = constructorABI.inputs.map((input: Service.ABIService.ABIParameter, index: number) => {
+        const val: any = Service.ABIService
+          .abiParameterToNative(input, constructorArgs[index])
+        return val
+      })
+
+      console.log(params)
       const factory = new ethers.ContractFactory(
         compileInfo.data.abi,
         compileInfo.data.evm.bytecode.object,
         signer
       )
-      const contract = await factory.deploy(...constructorArgs)
-      setDeployState(contract)
+      const contract: ethers.BaseContract = await factory.deploy(...params);
+      const address = await contract.getAddress()
+      await setDeployState(new ethers.Contract(
+        address,
+        compileInfo.data.abi,
+        signer
+      ))
+      await testUpload();
     } else {
       const contract = new ethers.Contract(
         contractAddress,
         compileInfo.data.abi,
         signer
       )
-      setDeployState(contract)
+      await setDeployState(contract)
     }
   }
 
@@ -280,6 +300,66 @@ export function SolideIDE({
       source: sourceBlob,
       name: "contract.zip",
     })
+  }
+
+  const testUpload = async () => {
+    const payload: {
+      bytecodes: string[],
+    } = {
+      bytecodes: []
+    }
+    if (compileInfo && compileInfo?.data?.evm?.bytecode?.object) {
+      payload.bytecodes.push(compileInfo?.data?.evm?.bytecode?.object)
+    }
+    if (compileInfo && compileInfo?.data?.evm?.deployedBytecode?.object) {
+      payload.bytecodes.push(compileInfo?.data?.evm?.deployedBytecode?.object)
+    }
+
+    if (payload.bytecodes.length === 0) {
+      console.log("No bytecodes to upload")
+      // return;  // Important uncomment this line
+    }
+
+    const sources = await fs.generateSources()
+    const metadata: any = {
+      ...solidityInput,
+      sources,
+      compiler: {
+        version: compilerSetting.compilerVersion,
+      }
+    }
+
+    const onChainEntry = Object.entries(sources).find(([key, _]) =>
+      path.basename(key).startsWith(path.basename(title))
+    )
+    if (!onChainEntry) {
+      console.log("Cannot find upload to Solide Smart Contract DB")
+      return;
+    }
+
+    if (!metadata.settings) {
+      metadata.settings = {}
+    }
+
+    metadata.settings.compilationTarget = {
+      [onChainEntry[0]]: title
+    }
+
+    const blob = new Blob([JSON.stringify(metadata)], {
+      type: "application/json",
+    })
+
+    const formData = new FormData();
+    formData.append('file', blob);
+    formData.append('payload', JSON.stringify(payload));
+
+    const response = await fetch("/api/smart-contract/store", {
+      method: "POST",
+      body: formData,
+    })
+
+    const data = await response.json()
+    console.log(data)
   }
 
   return (
@@ -305,6 +385,10 @@ export function SolideIDE({
           <File />
         </Button>
 
+        {/* <Button size="icon" variant="ghost" onClick={testUpload}>
+          <Star />
+        </Button> */}
+
         <Separator className="my-4" />
 
         <Button size="icon" variant="ghost" onClick={toggleEditorVisible}>
@@ -322,6 +406,7 @@ export function SolideIDE({
         </Button>
 
         <div className="mt-auto flex flex-col items-center gap-2">
+          {bytecodeId && <ByteCodeContract id={bytecodeId} />}
           <SelectedChain />
           <ThemeToggle />
           <EVMSettings solcVersion={version || solcVersion} />
@@ -379,7 +464,7 @@ export function SolideIDE({
                   onClick={deploy}
                   variant="default"
                   disabled={
-                    ethers.utils.isAddress(contractAddress) ||
+                    ethers.isAddress(contractAddress) ||
                       constructorArgs.length ===
                       (constructorABI.inputs || []).length
                       ? false

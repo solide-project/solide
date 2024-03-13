@@ -22,7 +22,7 @@ export function AspectEntry({ aspectAddress }: AspectEntryProps) {
   return (
     <div className="flex">
       <Button
-        disabled={!ethers.utils.isAddress(aspectAddress) && !operatioData}
+        disabled={!ethers.isAddress(aspectAddress) && !operatioData}
         onClick={handleEntryPoint}
       >
         Entry

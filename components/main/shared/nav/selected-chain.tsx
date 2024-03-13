@@ -66,7 +66,9 @@ export function SelectedChain({}: SelectedChainProps) {
           width={50}
           height={50}
           alt={getNetworkNameFromChainID(chainId.toString())}
+          loader={() => getIconByChainId(chainId.toString())} 
           src={getIconByChainId(chainId.toString())}
+          // src={getIconByChainId(chainId.toString())}
           className={cn(
             buttonVariants({ size: "icon", variant: "none" }),
             "h-5 w-5 cursor-pointer sm:h-8 sm:w-8"

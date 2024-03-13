@@ -7,6 +7,7 @@ import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
   generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
 } from "@/lib/services/explorer/scanner/explorer-service"
+import { SolidityMetadata } from "../../solidity-metadata"
 
 export class RoninChainClient extends BaseScan implements ExplorerInterface {
   constructor(chainId: string) {
@@ -19,6 +20,7 @@ export class RoninChainClient extends BaseScan implements ExplorerInterface {
 
   async getSourceCode(address: string): Promise<EthGetSourceCodeInterface> {
     const apiUrl: string = this.getsourcecodeURL(address)
+
     if (!apiUrl) {
       return generateSourceCodeError("API Endpoint not found")
     }
@@ -44,37 +46,30 @@ export class RoninChainClient extends BaseScan implements ExplorerInterface {
       sources: {},
     }
 
-    // Note the current Ronin API doesn't provide the contract path, hence compilation won't work that well.
-    // We need to use the metadata API to get the contract name and resolve the contract paths
-    ;(data.result || []).forEach((element: any) => {
-      sourceInput.sources[element.name] = {
-        content: element.content,
-      }
-    })
+      // Note the current Ronin API doesn't provide the contract path, hence compilation won't work that well.
+      // We need to use the metadata API to get the contract name and resolve the contract paths
+      ; (data.result || []).forEach((element: any) => {
+        sourceInput.sources[element.name] = {
+          content: element.content,
+        }
+      })
 
-    const metadata = await fetch(
+    const metadataResponse = await fetch(
       `https://explorer-kintsugi.roninchain.com/v2/${this.chainId}/contract/${address}/metadata`
     )
-    if (metadata.ok) {
-      const metadataData = await metadata.json()
+    if (metadataResponse.ok) {
+      const metadata = await metadataResponse.json()
       if (data.message !== "ok" || !data.result) {
         return generateSourceCodeError("Error loading metadata")
       }
 
-      if (metadataData.result.settings) {
-        if (metadataData.result.settings.compilationTarget) {
-          // Since API doesn't provide the contract name we can just get it from the compilationTarget
-          results.ContractName =
-            Object.keys(metadataData.result.settings.compilationTarget).pop() ||
-            ""
-          // Here we want to turn the contract source into a .sol path
-          if (!results.ContractName.endsWith(".sol")) {
-            results.ContractName = results.ContractName.concat(".sol")
-          }
+      if (metadata.result.settings) {
+        if (metadata.result.settings.compilationTarget) {
+          results.ContractName = this.appendExtension(
+            SolidityMetadata.contractName(metadata.result))
 
-          const absoluteContract = `${
-            metadataData.result.settings.compilationTarget[results.ContractName]
-          }.sol`
+          // This has been refactored
+          const absoluteContract = results.ContractName
 
           const resolver = new RoninFileResolver(sourceInput.sources)
           const resolvedSources = await resolver.getSources(
@@ -88,37 +83,20 @@ export class RoninChainClient extends BaseScan implements ExplorerInterface {
             content: baseContent,
           }
 
-          results.ContractName = this.appendExtension(absoluteContract)
-
-          delete metadataData.result.settings.compilationTarget
         }
 
-        if (metadataData.result.settings.libraries) {
-          delete metadataData.result.settings.libraries
-        }
-
-        if (metadataData.result.settings.remappings) {
-          delete metadataData.result.settings.remappings
-        }
-
-        sourceInput.settings = metadataData.result.settings
+        sourceInput.settings = SolidityMetadata.settings(metadata.result)
       }
 
-      if (metadataData.result.language) {
-        results.Language = metadataData.result.language
-      }
-
-      if (metadataData.result.compiler?.version) {
-        // Found a valid version as per sourcify can just be a version number
-        const compilerVersion = compilerVersions.find((element: string) =>
-          element.includes(metadataData.result.compiler.version)
-        )
-        results.CompilerVersion = compilerVersion || solcVersion // Fall back to default if not found
-      }
+      results.Language = SolidityMetadata.language(metadata.result)
+      results.CompilerVersion = this.formatVersion(
+        SolidityMetadata.compilerVersion(metadata)
+      )
     }
 
     results.SourceCode = `{${JSON.stringify(sourceInput)}}`
     // console.log(results);
+
     return {
       status: "1",
       message: "OK",
@@ -138,7 +116,6 @@ class RoninFileResolver {
     let dependencies: ContractDependency[] = []
     try {
       dependencies = await this.extractImports(base, path, [])
-      console.log(dependencies.length)
       dependencies.forEach((dependency) => {
         const { paths, originalContents } = dependency
         sources[paths.filePath] = { content: originalContents }
@@ -196,7 +173,6 @@ class RoninFileResolver {
 
   async resolve(filePath: string): Promise<{ fileContents: string }> {
     const parsedPath = path.basename(filePath)
-    console.log(filePath, parsedPath)
     const fileContents = this.files[parsedPath]?.content || ""
     return { fileContents } as any
   }

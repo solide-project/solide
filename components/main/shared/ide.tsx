@@ -2,10 +2,10 @@ import { useEffect, useState } from "react"
 import Editor, { useMonaco } from "@monaco-editor/react"
 import { useTheme } from "next-themes"
 
-import { SolideFile } from "@/lib/client/solide-file-system"
 import { useFileSystem } from "@/components/file-provider"
 
 import { EditorLoading } from "../compile/loading"
+import { SolideFile } from "@/lib/services/file-system"
 
 interface IDEProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultLanguage?: string

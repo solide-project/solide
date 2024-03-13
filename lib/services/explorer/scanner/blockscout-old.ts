@@ -16,7 +16,7 @@ export class BlockScoutOldClient extends BaseScan implements ExplorerInterface {
     }
 
     const result = data.result[0] as any;
-    if (ethers.utils.isAddress(result.ImplementationAddress)) {
+    if (ethers.isAddress(result.ImplementationAddress)) {
       data = await this.call(result.ImplementationAddress)
       // return data;
     }

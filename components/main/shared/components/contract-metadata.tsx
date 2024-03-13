@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { BigNumber, ethers } from "ethers"
-import { ChevronDown, ChevronLeft, ChevronUp, DollarSign } from "lucide-react"
+import { ChevronDown, ChevronUp } from "lucide-react"
 
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Collapsible,
   CollapsibleContent,

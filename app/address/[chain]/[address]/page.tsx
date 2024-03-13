@@ -30,6 +30,7 @@ export default async function Page({
         title={data.result[0].ContractName}
         content={data.result[0].SourceCode}
         version={data.result[0].CompilerVersion}
+        bytecodeId={data.result[0].BytcodeContract}
       />
     </EVMProvider>
   )

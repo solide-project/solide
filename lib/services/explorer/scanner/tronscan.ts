@@ -61,29 +61,21 @@ export class TronScanClient extends BaseScan implements ExplorerInterface {
       sources: {},
     }
 
-    ;(data.data?.contract_code || []).forEach((element: any) => {
-      sourceInput.sources[element.name] = {
-        content: atob(element.code),
-      }
-    })
+      ; (data.data?.contract_code || []).forEach((element: any) => {
+        sourceInput.sources[element.name] = {
+          content: atob(element.code),
+        }
+      })
     results.SourceCode = `{${JSON.stringify(sourceInput)}}`
 
     results.ABI = data.data.abi || ""
     results.OptimizationUsed = data.data.optimizer || "0"
     results.Runs = data.data.optimizer_runs || "0"
     results.LicenseType = data.data.license || "0"
-    results.ContractName = data.data.contract_name || ""
     const match = (data.data.compiler || "").match(/tron-(\d+\.\d+\.\d+)/)
     const versionNumber = match ? match[1] : null
-    if (versionNumber) {
-      // Found a valid version as per sourcify can just be a version number
-      const compilerVersion = compilerVersions.find((element: string) =>
-        element.includes(versionNumber)
-      )
-      results.CompilerVersion = compilerVersion || solcVersion // Fall back to default if not found
-    }
-
-    results.ContractName = this.appendExtension(results.ContractName)
+    results.CompilerVersion = this.formatVersion(versionNumber)
+    results.ContractName = this.appendExtension(data.data.contract_name || "")
 
     return {
       status: "1",

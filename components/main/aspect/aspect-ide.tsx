@@ -182,7 +182,7 @@ export function SolideAspectIDE({
     const encoder = new TextEncoder()
     const props: Service.Aspect.KVPair[] = Object.entries(properties).map(([key, val]) => ({
       key,
-      value: ethers.utils.isAddress(val as string)
+      value: ethers.isAddress(val as string)
         ? val
         : encoder.encode(val as string),
     }))
@@ -207,7 +207,7 @@ export function SolideAspectIDE({
   }
 
   const upgrade = async () => {
-    if (!ethers.utils.isAddress(contractAddress)) return
+    if (!ethers.isAddress(contractAddress)) return
     if (compiledWasm === undefined) return
 
     const props: Service.Aspect.KVPair[] = generateProperties();
@@ -323,13 +323,13 @@ export function SolideAspectIDE({
                       <Button
                         size="sm"
                         onClick={
-                          ethers.utils.isAddress(contractAddress)
+                          ethers.isAddress(contractAddress)
                             ? upgrade
                             : deploy
                         }
                         variant="default"
                       >
-                        {ethers.utils.isAddress(contractAddress)
+                        {ethers.isAddress(contractAddress)
                           ? "Upgrade"
                           : "Deploy"}
                       </Button>

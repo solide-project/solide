@@ -1,174 +1,176 @@
 import { ChainID } from "./chain-id"
 
-export const getIconByChainId = (chainId: string): string => {
+export const getIconByChainId = (chainId: string): string =>
+  `https://raw.githubusercontent.com/solide-project/icons/master/crypto/${getIcon(chainId)}`
+
+const getIcon = (chainId: string): string => {
   switch (chainId) {
     case ChainID.ETHEREUM_MAINNET:
     case ChainID.ETHEREUM_GOERLI:
     case ChainID.ETHEREUM_SEPOLIA:
     case ChainID.ETHEREUM_HOLESKY:
-      return "https://www.ankr.com/rpc/static/media/eth.4ca298ae.svg"
+      return "eth.svg"
     case ChainID.METIS_ANDROMEDA:
     case ChainID.METIS_SEPOLIA:
-      return "https://www.ankr.com/rpc/static/media/metis.77fe8764.svg"
+      return "metis.svg"
     case ChainID.ARBITRUM_ONE:
     case ChainID.ARBITRUM_GOERLI:
-      return "https://www.ankr.com/rpc/static/media/arbitrum.5e332f88.svg"
+      return "arbitrum.svg"
     case ChainID.ARBITRUM_NOVA:
-      return "https://www.ankr.com/rpc/static/media/arbitrum-nova.b93b7dfa.svg"
+      return "arbitrum-nova.svg"
     case ChainID.OASIS_EMERALD:
     case ChainID.OASIS_SAPPHIRE:
     case ChainID.OASIS_SAPPHIRE_TESTNET:
-      return "/icons/rose.svg"
+      return "rose.svg"
     case ChainID.IMMUTABLE_MAINNET:
     case ChainID.IMMUTABLE_TESTNET:
-      return "https://assets-global.website-files.com/646557ee455c3e16e4a9bcb3/646557ee455c3e16e4a9bed1_immutable-icon-grey.svg"
-
+      return "immutable.svg"
     case ChainID.AVALANCHE_FUJI:
     case ChainID.AVALANCHE_MAINNET:
-      return "https://www.ankr.com/rpc/static/media/avax.04d124b0.svg"
+      return "avax.svg"
     case ChainID.POLYGON_MAINNET:
     case ChainID.POLYGON_MUMBAI:
-      return "https://www.ankr.com/rpc/static/media/polygon-zkevm.8c6d01fe.svg"
+      return "polygon.svg"
     case ChainID.OPTIMISM_MAINNET:
     case ChainID.OPTIMISM_SEPOLIA:
-      return "https://www.ankr.com/rpc/static/media/optimism.53b7f574.svg"
+      return "optimism.svg"
     case ChainID.FANTOM_MAINNET:
     case ChainID.FANTOM_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/ftm.c92e9c29.svg"
+      return "fantom.svg"
     case ChainID.BASE_MAINNET:
     case ChainID.BASE_SEPOLIA:
-      return "/icons/base.svg"
+      return "base.svg"
     case ChainID.BNB_MAINNET:
     case ChainID.BNB_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/bsc.e1bfba92.svg"
+      return "bsc.svg"
     case ChainID.LINEA_MAINNET:
     case ChainID.LINEA_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/linea.9d7e0cfa.svg"
+      return "linea.svg"
     case ChainID.MOONBEAM_MAINNET:
     case ChainID.MOONBASE_ALPHA:
-      return "https://www.ankr.com/rpc/static/media/moonbeam.3983fccc.svg"
+      return "moonbeam.svg"
     case ChainID.MOONRIVER_MAINNET:
-      return "/icons/moonriver.svg"
+      return "moonriver.svg"
     case ChainID.CELO_MAINNET:
     case ChainID.CELO_ALFAJORES:
-      return "https://www.ankr.com/rpc/static/media/celo.11c5d71f.svg"
+      return "celo.svg"
     case ChainID.GNOSIS_MAINNET:
-      return "https://www.ankr.com/rpc/static/media/gnosis.682dc52c.svg"
+      return "gnosis.svg"
     case ChainID.CRONOS_MAINNET:
-      return "/icons/cronos.svg"
+      return "cronos.svg"
     case ChainID.SCROLL_MAINNET:
     case ChainID.SCROLL_SEPOLIA:
-      return "/icons/scroll.svg"
+      return "scroll.svg"
     case ChainID.MANTLE_MAINNET:
     case ChainID.MANTLE_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/mantle.23c992b8.svg"
+      return "mantle.svg"
     case ChainID.BITTORRENT_MAINNET:
     case ChainID.BITTORRENT_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/bttc.0f8fb66b.svg"
+      return "bttc.svg"
     case ChainID.XDC_MAINNET:
-      return "/icons/xdc.svg"
+      return "xdc.svg"
     case ChainID.CANTO_MAINNET:
     case ChainID.CANTO_TESTNET:
-      return "/icons/canto.svg"
+      return "canto.svg"
     case ChainID.KAVA_MAINNET:
     case ChainID.KAVA_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/kava.241a8db1.svg"
+      return "kava.svg"
     case ChainID.ROLLUX_MAINNET:
     case ChainID.ROLLUX_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/rollux.284a0151.svg"
+      return "rollux.svg"
     case ChainID.SYSCOIN_MAINNET:
     case ChainID.SYSCOIN_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/syscoin.b8d43b12.svg"
+      return "syscoin.svg"
     case ChainID.BOBA_ETHEREUM:
-      return "/icons/boba.svg"
+      return "boba.svg"
     case ChainID.MANTA_PACIFIC:
     case ChainID.MANTA_TESTNET:
-      return "/icons/manta.svg"
+      return "manta.svg"
     case ChainID.WEMIX_MAINNET:
     case ChainID.WEMIX_TESTNET:
-      return "/icons/wemix.svg"
+      return "wemix.svg"
     case ChainID.ASTAR_MAINNET:
     case ChainID.SHUBIYA_TESTNET:
-      return "/icons/astar.svg"
+      return "astar.svg"
     case ChainID.SHIDEN_MAINNET:
-      return "/icons/shiden.svg"
+      return "shiden.svg"
     case ChainID.ZETACHAIN_MAINNET:
     case ChainID.ZETACHAIN_TESTNET:
-      return "https://www.ankr.com/rpc/static/media/zetachain.380fd8f3.svg"
+      return "zetachain.svg"
     case ChainID.FLARE_MAINNET:
     case ChainID.FLARE_COSTON:
     case ChainID.FLARE_COSTON2:
-      return "https://www.ankr.com/rpc/static/media/flare.f8cd041e.svg"
+      return "flare.svg"
     case ChainID.FUSE_MAINNET:
     case ChainID.FUSE_SPARK:
-      return "/icons/fuse.svg"
+      return "fuse.svg"
     case ChainID.SHIBARIUM_MAINNET:
     case ChainID.PUPPYNET_TESTNET:
-      return "/icons/shibarium.svg"
+      return "shibarium.svg"
     case ChainID.CONFLUX_MAINNET:
     case ChainID.CONFLUX_TESTNET:
-      return "/icons/conflux.svg"
+      return "conflux.svg"
     case ChainID.FILECOIN_MAINNET:
     case ChainID.FILECOIN_CALIBRATION:
-      return "https://www.ankr.com/rpc/static/media/filecoin.f71f157a.svg"
+      return "filecoin.svg"
     case ChainID.ENERGY_WEB_CHAIN:
     case ChainID.ENERGY_WEB_CHAIN_TESTNET:
-      return "/icons/energyweb.svg"
+      return "energyweb.svg"
     case ChainID.LUKSO_MAINNET:
     case ChainID.LUKSO_TESTNET:
-      return "/icons/lukso.svg"
+      return "lukso.svg"
     case ChainID.ACALA_MAINNET:
     case ChainID.MANDALA_TESTNET:
-      return "/icons/acala.svg"
+      return "acala.svg"
     case ChainID.REI_MAINNET:
     case ChainID.REI_TESTNET:
-      return "/icons/rei.svg"
+      return "rei.svg"
     case ChainID.ZORA_NETWORK_MAINNET:
-      return "/icons/zora.svg"
+      return "zora.svg"
     case ChainID.CALLISTO_MAINNET:
-      return "/icons/callisto.svg"
+      return "callisto.svg"
     case ChainID.ZKSYNC_MAINNET:
     case ChainID.ZKSYNC_SEPOLIA:
-      return "/icons/zksync.svg"
+      return "zksync.svg"
     case ChainID.NEON_MAINNET:
     case ChainID.NEON_TESTNET:
-      return "/icons/neon.svg"
+      return "neon.svg"
     case ChainID.AURORA_MAINNET:
     case ChainID.AURORA_TESTNET:
-      return "/icons/aurora.svg"
+      return "aurora.svg"
     case ChainID.RONIN_MAINNET:
     case ChainID.RONIN_SAIGON_TESTNET:
-      return "/icons/ronin.svg"
+      return "ronin.svg"
     case ChainID.TRON_MAINNET:
     case ChainID.TRON_SHASTA_TESTNET:
-      return "/icons/tron.svg"
+      return "tron.svg"
     case ChainID.BEAM_MAINNET:
-      return "/icons/beam.png"
+      return "beam.png"
     case ChainID.CARBON_EVM_MAINNET:
     case ChainID.CARBON_EVM_TESTNET:
-      return "/icons/carbon.svg"
+      return "carbon.svg"
     case ChainID.ARTELA_TESTNET:
-      return "/icons/artela.svg"
+      return "artela.svg"
     case ChainID.BERACHAIN_TESTNET:
-      return "/icons/berachain.svg"
+      return "berachain.svg"
     case ChainID.VICTION_MAINNET:
     case ChainID.VICTION_TESTNET:
-      return "/icons/viction.svg"
+      return "viction.svg"
     case ChainID.PALM_MAINNET:
     case ChainID.PALM_TESTNET:
-      return "/icons/palm.svg"
+      return "palm.svg"
     case ChainID.METER_MAINNET:
     case ChainID.METER_TESTNET:
-      return "/icons/meter.svg"
+      return "meter.svg"
     case ChainID.PUBLIC_GOOD_NETWORK:
     case ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA:
-      return "/icons/pgn.svg"
+      return "pgn.svg"
     case ChainID.ROOTSTOCK_MAINNET:
     case ChainID.ROOTSTOCK_TESTNET:
-      return "/icons/rootstock.svg"
+      return "rootstock.svg"
     case ChainID.LIGHTLINK_PHOENIX_MAINNET:
     case ChainID.LIGHTLINK_PEGASUS_TESTNET:
-      return "/icons/lightlink.svg"
+      return "lightlink.svg"
     default:
       return ""
   }

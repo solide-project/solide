@@ -38,12 +38,14 @@ export namespace Service {
          */
         export function abiParameterToNative(input: ABIParameter, value: any = ""): any {
             let data: any = value.toString();
-            console.log(input, value)
             if (input.type.includes("int")) {
                 data = parseInt(value)
             } else if (input.type.includes("bool")) {
                 data = value === "true"
             } else if (input.type.includes("tuple")) {
+                data = JSON.parse(value)
+            } else if (input.type.includes("[]")) {
+                console.log(input, value)
                 data = JSON.parse(value)
             }
 

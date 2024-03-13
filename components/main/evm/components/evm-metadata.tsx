@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 import { DollarSign } from "lucide-react"
 
 import { CopyText, CopyTextItem } from "@/components/main/shared/copy-text"
@@ -17,8 +17,8 @@ export function EVMMetadata({ contractAddress, items }: EVMMetadataProps) {
   const [balance, setBalance] = useState<string>("")
 
   const displayBalance = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const balance: BigNumber = await provider.getBalance(contractAddress)
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    const balance: BigInt = await provider.getBalance(contractAddress)
     setBalance(balance.toString())
   }
   return (

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Generate unique id for compilation,
-  const id = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(content))
+  const id = ethers.keccak256(ethers.toUtf8Bytes(content))
 
   const mainDir = `${TEMP_DIR}/${id}`
   const srcDir = `${mainDir}/src/${dir}`

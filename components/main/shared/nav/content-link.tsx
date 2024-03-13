@@ -23,7 +23,7 @@ export function ContentLink({
 
   useEffect(() => {
     const updateExplorerPath = () => {
-      if (ethers.utils.isAddress(url) || isTronAddress(url)) {
+      if (ethers.isAddress(url) || isTronAddress(url)) {
         const explorer = getExplorer(chainId)
         let addressPath = ""
 
@@ -49,14 +49,14 @@ export function ContentLink({
 
   return (
     <Link
-      href={!ethers.utils.isAddress(url) ? url : explorerPath}
+      href={!ethers.isAddress(url) ? url : explorerPath}
       target="_blank"
       className={cn(
         buttonVariants({ size: "icon", variant: "ghost" }),
         "cursor-pointer border-0"
       )}
     >
-      {!ethers.utils.isAddress(url) ? (
+      {!ethers.isAddress(url) ? (
         <Github />
       ) : (
         <Box />

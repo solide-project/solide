@@ -26,6 +26,9 @@ export interface ContractInfo {
     Proxy: string;
     Implementation: string;
     SwarmSource: string;
+
+    // This is addon for Solide
+    BytcodeContract?: string;        // This is the id of the contract provided by Solide
 }
 
 export const generateSourceCodeError = (

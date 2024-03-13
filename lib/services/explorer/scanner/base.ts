@@ -2,6 +2,7 @@ import { getAPI, getAPIKey } from "@/lib/chains"
 import { solcVersion } from "@/lib/utils"
 import { ethers } from "ethers"
 import { generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface } from "@/lib/services/explorer/scanner/explorer-service"
+import { compilerVersions } from "@/lib/versions"
 
 /**
  * Base of Etherscan implementation, other scanner will have these overrides
@@ -55,7 +56,7 @@ export class BaseScan {
     }
 
     const result = data.result[0] as any;
-    if (ethers.utils.isAddress(result.Implementation)) {
+    if (ethers.isAddress(result.Implementation)) {
       data = await this.call(result.Implementation)
       // return data;
     }
@@ -79,6 +80,16 @@ export class BaseScan {
     }
 
     return payload
+  }
+
+  formatVersion = (version: string): string => {
+    if (version) {
+      // Found a valid version as per sourcify can just be a version number
+      const compilerVersion = compilerVersions.find((i: string) => i.includes(version))
+      return compilerVersion || solcVersion // Fall back to default if not found
+    }
+
+    return solcVersion
   }
 
   generateDefaultResult = (): ContractInfo => {

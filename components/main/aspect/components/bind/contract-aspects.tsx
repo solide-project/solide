@@ -16,7 +16,7 @@ export function ContractAspects({ contractAddress }: ContractAspectsProps) {
 
   const getContractAspects = async () => {
     setContractAspects(null)
-    if (!ethers.utils.isAddress(contractAddress)) return
+    if (!ethers.isAddress(contractAddress)) return
 
     try {
       const aspects = await aspectSDK.getAspect(contractAddress)

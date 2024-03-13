@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -82,7 +82,7 @@ export function ContractInvoke({
 
       if (entry.outputs && entry.outputs.length > 0) {
         if (entry.outputs[0].type.includes("int")) {
-          result = result.toString() as BigNumber
+          result = result.toString() as BigInt
         } else {
           result = result as string
         }
@@ -120,8 +120,8 @@ export function ContractInvoke({
       let params: any[] = formatParameters(entry, method);
 
       setRet({ ...ret, [method]: "Waiting Transaction ..." })
-      console.log(contract, method, params)
-      result = await contract.callStatic[method](...params);
+      result = await contract[method].staticCall(...params)
+      console.log(result)
       setRet({ ...ret, [method]: result })
     } catch (error: any) {
       setRet({

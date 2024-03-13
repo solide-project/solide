@@ -30,10 +30,10 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
   const handleContractAddress = async (address: string) => {
     setContractAddress(address)
 
-    if (ethers.utils.isAddress(address) && isABI) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
+    if (ethers.isAddress(address) && isABI) {
+      const provider = new ethers.BrowserProvider(window.ethereum)
       await provider.send("eth_requestAccounts", [])
-      const signer = provider.getSigner() as Signer
+      const signer = await provider.getSigner() as Signer
 
       setContract(new ethers.Contract(address, JSON.parse(abi || "[]"), signer))
     }
@@ -48,10 +48,10 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
         setError("")
         setIsABI(true)
 
-        if (ethers.utils.isAddress(contractAddress)) {
-          const provider = new ethers.providers.Web3Provider(window.ethereum)
+        if (ethers.isAddress(contractAddress)) {
+          const provider = new ethers.BrowserProvider(window.ethereum)
           await provider.send("eth_requestAccounts", [])
-          const signer = provider.getSigner() as Signer
+          const signer = await provider.getSigner() as Signer
 
           setContract(new ethers.Contract(contractAddress, JSON.parse(abi), signer))
         }
@@ -99,7 +99,7 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
 
       <ContractMetadata name="Contract Tools">
         <div className="space-y-2">
-          {ethers.utils.isAddress(contractAddress || "") && (
+          {ethers.isAddress(contractAddress || "") && (
             <LoadEVMContract contractAddress={contractAddress} />
           )}
           <ContractAspects contractAddress={contractAddress} />
@@ -107,7 +107,7 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
       </ContractMetadata>
 
       <ContractMetadata name="ABI">
-        {ethers.utils.isAddress(contractAddress || "") && (
+        {ethers.isAddress(contractAddress || "") && (
           <div>
             <div className="my-2">ABI</div>
             <textarea
@@ -117,7 +117,7 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
           </div>
         )}
 
-        {isABI && ethers.utils.isAddress(contractAddress) &&
+        {isABI && ethers.isAddress(contractAddress) &&
           <ContractInvoke contract={contract} abi={JSON.parse(abi)} />}
       </ContractMetadata>
 
@@ -126,13 +126,13 @@ export function ContractBind({ aspectAddress, className }: ContractBindProps) {
         variant="destructive"
         disabled={
           !(
-            ethers.utils.isAddress(aspectAddress || "") &&
-            ethers.utils.isAddress(contractAddress || "")
+            ethers.isAddress(aspectAddress || "") &&
+            ethers.isAddress(contractAddress || "")
           )
         }
         onClick={bind}
       >
-        {!ethers.utils.isAddress(aspectAddress || "")
+        {!ethers.isAddress(aspectAddress || "")
           ? "Deploy Aspect to bind"
           : "Bind"}
       </Button>
