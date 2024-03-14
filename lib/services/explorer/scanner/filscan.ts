@@ -47,6 +47,14 @@ export class FilScanClient extends BaseScan implements ExplorerInterface {
       sources: {},
     }
 
+    if (!data.data.source_codes || data.data.source_codes.length === 0) {
+      return {
+        status: "1",
+          message: "OK",
+            result: [results],
+      }
+    }
+
     sourceInput.sources = await this.fetchSources(data.data.source_codes)
 
     // Same implementation as blockscout's explorer that uses sourcify except here the metadata is available in API

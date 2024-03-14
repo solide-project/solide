@@ -33,11 +33,13 @@ export const getSourceCode = async (
         if (!source) {
             const rpc = getRPC(chain)
             if (rpc) {
+                console.log("rpc", rpc)
                 const provider: ethers.JsonRpcProvider = new ethers.JsonRpcProvider(rpc);
                 const bytecode = await provider.getCode(address)
                 if (bytecode !== null && bytecode !== "0x") {
                     const hash = ethers.id(bytecode.slice(2))
 
+                    console.log("hash", hash)
                     const databaseService = new GlacierService()
                     const results = await databaseService.find(hash);
                     if (!databaseService.exist(results)) {
