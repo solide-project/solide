@@ -1,11 +1,8 @@
-import { getSolidityContract } from "@/lib/server/source-loader"
 import { getTypescriptContract } from "@/lib/server/typescript/typescript-loader"
-import { solcVersion } from "@/lib/utils"
-import { compilerVersions } from "@/lib/versions"
+import { solcVersion, compilerVersions } from "@/lib/versions"
 import { InvalidMessage } from "@/components/invalid-message"
 import { SolideAspectIDE } from "@/components/main/aspect/aspect-ide"
 import { AspectProvider } from "@/components/main/aspect/provider/aspect-provider"
-import { SolideIDE } from "@/components/main/evm/evm-ide"
 
 interface SearchParams {
   params: { slug: string }

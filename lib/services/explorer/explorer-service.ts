@@ -10,10 +10,12 @@ import { TronScanClient } from "./scanner/tronscan"
 import { ChainLensClient } from "./scanner/chain-lens"
 import { EtherScanClient } from "./scanner/etherscan"
 import { ethers } from "ethers"
-import { solcVersion } from "@/lib/utils"
-import { ChainID, getRPC } from "@/lib/chains"
+import { solcVersion } from "@/lib/versions"
+import { ChainID, getRPC, getTronRPC } from "@/lib/chains"
 import { BTFSGateway, GlacierService } from "@/lib/services/solidity-db"
-import { SolidityMetadata } from "@/lib/services/solidity-metadata"
+import { sEthers } from "@/lib/services/ethers"
+import TronWeb from 'tronweb';
+import { sWeb3 } from "../web3"
 
 export const getSourceCode = async (
     chain: string,
@@ -31,55 +33,63 @@ export const getSourceCode = async (
     if (typeof data.result !== "string") {
         const source = (data.result[0] as ContractInfo).SourceCode;
         if (!source) {
-            const rpc = getRPC(chain)
-            if (rpc) {
-                console.log("rpc", rpc)
-                const provider: ethers.JsonRpcProvider = new ethers.JsonRpcProvider(rpc);
-                const bytecode = await provider.getCode(address)
-                if (bytecode !== null && bytecode !== "0x") {
-                    const hash = ethers.id(bytecode.slice(2))
+            let contractBytecode: string = "";
 
-                    console.log("hash", hash)
-                    const databaseService = new GlacierService()
-                    const results = await databaseService.find(hash);
-                    if (!databaseService.exist(results)) {
-                        console.log("address not found in database")
-                        return data;
-                    }
-                    if (results && results.length > 1) {
-                        console.log("multiple results found. Note this should not happen")
-                    }
-
-                    const response = await fetch(`${BTFSGateway}/${results[0].input}`);
-                    const metadata = await response.json();
-
-                    const contractName = SolidityMetadata.contractName(metadata)
-                    const compilerVersion = SolidityMetadata.compilerVersion(metadata)
-
-                    const result = {
-                        SourceCode: `{${JSON.stringify(metadata)}}`,
-                        ABI: "",
-                        ContractName: contractName,
-                        CompilerVersion: compilerVersion || solcVersion,
-                        OptimizationUsed: "0",
-                        Runs: "200",
-                        ConstructorArguments: "",
-                        EVMVersion: "default",
-                        Library: "",
-                        LicenseType: "0",
-                        Proxy: "",
-                        Implementation: "",
-                        SwarmSource: "",
-                        BytcodeContract: results[0].input
-                    }
-
-                    data.result = [result]
+            if (chain === ChainID.TRON_MAINNET || chain === ChainID.TRON_NILE_TESTNET || chain === ChainID.TRON_SHASTA_TESTNET) {
+                const rpc = getTronRPC(chain)
+                if (rpc) {
+                    contractBytecode = await sWeb3.tron.getCode(address, rpc);
                 }
+            } else {
+                const rpc = getRPC(chain)
+                if (rpc) {
+                    const provider: ethers.JsonRpcProvider = new ethers.JsonRpcProvider(rpc)
+                    contractBytecode = await provider.getCode(address)
+                }
+            }
+
+            if (contractBytecode && contractBytecode !== "0x") {
+                const hash = ethers.id(contractBytecode.slice(2))
+
+                console.log("hash", hash)
+                const databaseService = new GlacierService()
+                const results = await databaseService.find(hash);
+                if (!databaseService.exist(results)) {
+                    console.log("address not found in database")
+                    return data;
+                }
+                if (results && results.length > 1) {
+                    console.log("multiple results found. Note this should not happen")
+                }
+
+                const response = await fetch(`${BTFSGateway}/${results[0].input}`);
+                const metadata = await response.json();
+
+                const contractName = sEthers.metadata.contractName(metadata)
+                const compilerVersion = sEthers.metadata.compilerVersion(metadata)
+
+                const result = {
+                    SourceCode: `{${JSON.stringify(metadata)}}`,
+                    ABI: "",
+                    ContractName: contractName,
+                    CompilerVersion: compilerVersion || solcVersion,
+                    OptimizationUsed: "0",
+                    Runs: "200",
+                    ConstructorArguments: "",
+                    EVMVersion: "default",
+                    Library: "",
+                    LicenseType: "0",
+                    Proxy: "",
+                    Implementation: "",
+                    SwarmSource: "",
+                    BytcodeContract: results[0].input
+                }
+
+                data.result = [result]
             }
         }
     }
 
-    // console.log("getSourceCode", data)
     return data;
 }
 
@@ -142,6 +152,7 @@ const getScanner = (chainId: string): ExplorerInterface | undefined => {
         case ChainID.FILECOIN_CALIBRATION:
             return new FilScanClient(chainId)
         case ChainID.TRON_MAINNET:
+        case ChainID.TRON_NILE_TESTNET:
         case ChainID.TRON_SHASTA_TESTNET:
             return new TronScanClient(chainId)
         case ChainID.VICTION_MAINNET:

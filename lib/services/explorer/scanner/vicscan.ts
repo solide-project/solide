@@ -1,7 +1,7 @@
-import { solcVersion } from "@/lib/utils";
+import { solcVersion } from "@/lib/versions"
 import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
-  generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
+    generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
 } from "@/lib/services/explorer/scanner/explorer-service"
 
 

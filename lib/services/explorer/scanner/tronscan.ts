@@ -1,5 +1,3 @@
-import { solcVersion } from "@/lib/utils";
-import { compilerVersions } from "@/lib/versions";
 import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
   generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
@@ -59,14 +57,17 @@ export class TronScanClient extends BaseScan implements ExplorerInterface {
     let results: any = this.generateDefaultResult()
     let sourceInput: any = {
       sources: {},
-    }
+    };
 
-      ; (data.data?.contract_code || []).forEach((element: any) => {
+    results.SourceCode = ''
+    if (data.data?.contract_code) {
+      data.data?.contract_code.forEach((element: any) => {
         sourceInput.sources[element.name] = {
           content: atob(element.code),
         }
       })
-    results.SourceCode = `{${JSON.stringify(sourceInput)}}`
+      results.SourceCode = `{${JSON.stringify(sourceInput)}}`
+    }
 
     results.ABI = data.data.abi || ""
     results.OptimizationUsed = data.data.optimizer || "0"

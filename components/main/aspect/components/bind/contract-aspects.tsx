@@ -20,7 +20,6 @@ export function ContractAspects({ contractAddress }: ContractAspectsProps) {
 
     try {
       const aspects = await aspectSDK.getAspect(contractAddress)
-      console.log(aspects)
       setContractAspects(aspects)
     } catch (error) {
       console.log(error)

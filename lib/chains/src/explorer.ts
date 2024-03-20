@@ -93,6 +93,7 @@ const data: { [key: string]: string } = {
   [ChainID.RONIN_MAINNET]: "https://app.roninchain.com",
   [ChainID.RONIN_SAIGON_TESTNET]: "https://saigon-app.roninchain.com",
   [ChainID.TRON_MAINNET]: "https://tronscan.org/#",
+  [ChainID.TRON_NILE_TESTNET]: "https://nile.tronscan.org/#",
   [ChainID.TRON_SHASTA_TESTNET]: "https://shasta.tronscan.org/#",
   [ChainID.BEAM_MAINNET]: "https://avascan.info/blockchain/beam",
   [ChainID.CARBON_EVM_MAINNET]: "https://evm-scan.carbon.network",
@@ -114,3 +115,23 @@ const data: { [key: string]: string } = {
 }
 
 export const getExplorer = (network: string): string => data[network] || ""
+
+export const getContractExplorer = (network: string, contract: string): string => {
+  const explorer = getExplorer(network)
+  let addressPath = ""
+
+  switch (network) {
+    case ChainID.TRON_MAINNET:
+    case ChainID.TRON_SHASTA_TESTNET:
+      addressPath = `contract/${contract}`
+    case ChainID.PALM_MAINNET:
+    case ChainID.PALM_TESTNET:
+      addressPath = `contracts/${contract}`
+      break
+    default:
+      addressPath = `address/${contract}`
+      break
+  }
+
+  return `${explorer}/${addressPath}`
+}

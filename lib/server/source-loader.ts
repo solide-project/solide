@@ -173,12 +173,20 @@ export async function getEntryDetails(output: any, entry: string) {
     Object.keys(output.contracts).forEach((contractSource) => {
       if (contractSource === entry) {
         for (var contractName in output.contracts[entry]) {
-          resolve(output.contracts[contractSource][contractName])
+          resolve({
+            data: output.contracts[contractSource][contractName],
+            targetCompilation: contractSource,
+            target: contractName,
+          })
         }
       }
       Object.keys(output.contracts[contractSource]).forEach((contractName) => {
         if (contractName === entry) {
-          resolve(output.contracts[contractSource][entry])
+          resolve({
+            data: output.contracts[contractSource][entry],
+            targetCompilation: contractSource,
+            target: contractName,
+          })
         }
       })
     })

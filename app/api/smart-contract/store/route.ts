@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ethers } from "ethers";
 import { BTFSService, GlacierService } from "@/lib/services/solidity-db";
+import { SolidityDatabaseRegistry } from "@/lib/services/registry/tron-contract";
 
 export async function POST(request: NextRequest) {
     const databaseService = new GlacierService()
     const storageService = new BTFSService()
-
     const formData: FormData = await request.formData()
 
     // We check if there bytecodes in our payload, no point continuing if there isn't
@@ -35,6 +35,9 @@ export async function POST(request: NextRequest) {
     const databaseId: string[] = []
     payload.bytecodes.forEach(async (raw: string) => {
         const bytecode = ethers.id(raw)     // Hashed version of bytecode
+        databaseId.push(bytecode)
+
+        // Glacier
         const exist: boolean = databaseService.exist(
             await databaseService.find(bytecode))
 
@@ -46,8 +49,16 @@ export async function POST(request: NextRequest) {
             bytecode,
             input,
         })
-        databaseId.push(insert.insertedId)
     })
+
+    try {
+        // Store onchain
+        const contract = new SolidityDatabaseRegistry({})
+        await contract.load()
+        contract.adds(databaseId, input)
+    } catch (error) {
+        console.log(error)
+    }
 
     return NextResponse.json({
         id: storageUploadData?.data?.file_hash,

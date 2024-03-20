@@ -13,8 +13,6 @@ import {
 
 import { CompileError, CompileInput, CompileResult } from "@/lib/interfaces"
 import {
-  GetSolidityJsonInputFormat,
-  JSONParse,
   cn,
 } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -44,7 +42,7 @@ import { DeployProperties } from "./components/deploy-properties"
 import { JointsList } from "./components/joints-list"
 import { useAspect } from "./provider/aspect-provider"
 import { Service } from "@/lib/services/aspect/aspect-service"
-import { FileDownloader } from "@/lib/helpers/file-downloader"
+import { sHelper } from "@/lib/helpers"
 
 interface SolideAspectIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   url?: string
@@ -97,7 +95,7 @@ export function SolideAspectIDE({
       if (!content) return
 
       //#region Check if the smart contract is JSON format
-      const input: CompileInput = GetSolidityJsonInputFormat(content)
+      const input: CompileInput = sHelper.parser.compiler(content)
 
       if (input) {
         setSolidityInput(input)
@@ -107,7 +105,7 @@ export function SolideAspectIDE({
           initIDE(input.sources, title)
         }
       } else {
-        let data: CompileInput = JSONParse(content) as CompileInput
+        let data: CompileInput = sHelper.parser.json(content) as CompileInput
         if (!data) {
           data = {
             language: "Aspect",
@@ -223,8 +221,7 @@ export function SolideAspectIDE({
 
   const downloadFile = async () => {
     const sourceBlob: Blob = await fs.download()
-    const downloader = new FileDownloader()
-    downloader.downloadFile({
+    sHelper.downloader.downloadFile({
       source: sourceBlob,
       name: "contract.zip",
     })

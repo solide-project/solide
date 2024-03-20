@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 
-import { solcVersion } from "@/lib/utils"
+import { solcVersion } from "@/lib/versions"
 
 export type SolidityReleases = {
   builds: any

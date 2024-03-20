@@ -112,26 +112,26 @@ export function SelectedContract({
                     <CommandInput placeholder="Search framework..." />
                     <CommandEmpty>No framework found.</CommandEmpty>
                     <CommandGroup>
-                        {Object.entries(output.contracts).map(([contractName, contract]) => {
-                            return Object.entries(contract).map(([contractKey, contractValue]) => {
+                        {Object.entries(output.contracts).map(([targetCompilation, contract]) => {
+                            return Object.entries(contract).map(([target, contractValue]) => {
                                 return (
                                     <CommandItem
-                                        key={`${contractName}-${contractKey}`
+                                        key={`${targetCompilation}-${target}`
                                         }
-                                        value={contractKey}
+                                        value={target}
                                         onSelect={(val: string) => {
-                                            setValue(val)
-                                            onSet(contractValue)
+                                            setValue(target)
+                                            onSet(targetCompilation, target, contractValue)
                                             setOpen(false)
                                         }}
                                     >
                                         <Check
                                             className={cn(
                                                 "mr-2 h-4 w-4",
-                                                value === contractKey ? "opacity-100" : "opacity-0"
+                                                value === target ? "opacity-100" : "opacity-0"
                                             )}
                                         />
-                                        {contractKey}
+                                        {target}
                                     </CommandItem>
                                 );
                             });

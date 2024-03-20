@@ -5,39 +5,62 @@ import { ethers } from "ethers"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Service } from "@/lib/services/abi/abi-service"
+import { sEthers } from "@/lib/services/ethers"
+import { sWeb3 } from "@/lib/services/web3"
+import { Environment } from "./selected-environment"
 
 interface ContractInvokeProps extends React.HTMLAttributes<HTMLDivElement> {
   setConstructorArgs: Function
-  contract: ethers.Contract | undefined
+  environment?: Environment,
+  contractAddress: string
   abi: any[]
   msgValue: string
 }
 
 export function ContractInvoke({
   setConstructorArgs,
-  contract,
+  environment = Environment.METAMASK,
+  contractAddress,
   abi,
   msgValue = "",
 }: ContractInvokeProps) {
+  const [contract, setContract] = useState<any>(undefined)
   const [isContractLoaded, setIsContractLoaded] = useState<boolean>(false)
   const [ret, setRet] = useState<{
     [key: string]: any
   }>({})
 
   useEffect(() => {
-    setIsContractLoaded(contract ? true : false)
-
     // This is a workaround to handle the case where the parameters are not named for the method
-    abi = abi.map((method: Service.ABIService.ABIEntry) => {
+    abi = abi.map((method: sEthers.types.ABIEntry) => {
       if (method.type === "function" && method.inputs) {
-        method.inputs.forEach((input: Service.ABIService.ABIParameter, index: number) => {
+        method.inputs.forEach((input: sEthers.types.ABIParameter, index: number) => {
           input.name = input.name === "" ? `input${index}` : input.name;
         });
       }
       return method;
     });
-  }, [contract, abi])
+  }, [abi])
+
+  useEffect(() => {
+    setIsContractLoaded(contract ? true : false)
+  }, [contract])
+
+  useEffect(() => {
+    (async () => {
+      if (!sEthers.ethers.isAddress(contractAddress)) {
+        console.log("Invalid contract address")
+      }
+
+      setContract(null)
+
+      if (environment === Environment.METAMASK && ethers.isAddress(contractAddress)) {
+        setContract(await sWeb3.evm.getContract(contractAddress, abi))
+      } else if (environment === Environment.TRONLINK && sEthers.ethers.isTronAddress(contractAddress)) {
+        setContract(await sWeb3.tron.getContract(contractAddress, abi))
+      }
+    })();
+  }, [contractAddress, environment])
 
   const handleSetConstructorArgs = (e: any, index: number) => {
     setConstructorArgs((prev: any) => {
@@ -64,12 +87,24 @@ export function ContractInvoke({
   //#endregion 
 
   //#region Contract Invoke
+
+  const sendMethod = async (method: string, options: any = {}, params: any) => {
+    if (environment === Environment.METAMASK) {
+      return await contract[method](...params, options);
+    } else if (environment === Environment.TRONLINK) {
+
+      return await contract[method](...params).send(options)
+    }
+
+    return null;
+  }
+
   const invokeContract = async (method: string) => {
     if (!contract) {
       return;
     }
 
-    const entry: Service.ABIService.ABIEntry | undefined = abi
+    const entry: sEthers.types.ABIEntry | undefined = abi
       .filter((m) => m.type === "function")
       .find((n) => n.name === method)
 
@@ -89,11 +124,11 @@ export function ContractInvoke({
 
       setRet({ ...ret, [method]: "Waiting Transaction ..." })
       if (msgValue === "" || msgValue === "0") {
-        result = await contractMethod(...params)
+        result = await sendMethod(method, {}, params)
       } else {
-        result = await contractMethod(...params, {
+        result = await sendMethod(method, {
           value: ethers.parseEther(msgValue),
-        })
+        }, params)
       }
 
       if (entry.outputs && entry.outputs.length > 0) {
@@ -103,7 +138,6 @@ export function ContractInvoke({
           result = result as string
         }
 
-        console.log(result)
         setRet({ ...ret, [method]: result })
       } else {
         setRet({ ...ret, [method]: "Completed!" })
@@ -115,6 +149,16 @@ export function ContractInvoke({
       })
       console.error(error)
     }
+  }
+
+  const callMethod = async (method: string, ...params: any[]) => {
+    if (environment === Environment.METAMASK) {
+      return await contract[method].staticCall(...params);
+    } else if (environment === Environment.TRONLINK) {
+      return await contract[method](...params).call();
+    }
+
+    return null;
   }
 
   const handleStaticCall = async (method: string) => {
@@ -136,8 +180,8 @@ export function ContractInvoke({
       let params: any[] = formatParameters(entry, method);
 
       setRet({ ...ret, [method]: "Waiting Transaction ..." })
-      result = await contract[method].staticCall(...params)
-      console.log(result)
+
+      result = await callMethod(method, ...params)
       setRet({ ...ret, [method]: result })
     } catch (error: any) {
       setRet({
@@ -150,9 +194,9 @@ export function ContractInvoke({
   //#endregion
 
   //#region Component Utils
-  const formatParameters = (entry: Service.ABIService.ABIEntry, method: string) => {
-    return entry.inputs.map((input: Service.ABIService.ABIParameter) => {
-      const val: any = Service.ABIService
+  const formatParameters = (entry: sEthers.types.ABIEntry, method: string) => {
+    return entry.inputs.map((input: sEthers.types.ABIParameter) => {
+      const val: any = sEthers.abi
         .abiParameterToNative(input, args[method][input.name])
       return val
     })
@@ -219,7 +263,7 @@ export function ContractInvoke({
             </div>
 
             <div>
-              {abi.inputs.map((input: Service.ABIService.ABIParameter, abiIndex: number) => {
+              {abi.inputs.map((input: sEthers.types.ABIParameter, abiIndex: number) => {
                 return <div key={abiIndex} className="flex items-center space-x-2 py-1">
                   <div>{input.name}</div>
                   <Input

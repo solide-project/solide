@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 
-import { cn, solcVersion } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -19,6 +19,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { SolidityReleases, useEVM } from "../../evm/provider/evm-provider"
+import { solcVersion } from "@/lib/versions"
 
 function extractVersion(buildFormat: string) {
   if (!buildFormat) return buildFormat
@@ -86,8 +87,8 @@ export function SolVersion({ version }: SolVersionProps) {
         <Command>
           <CommandInput placeholder="Search framework..." className="h-9" />
           <CommandEmpty>No framework found.</CommandEmpty>
-          <CommandGroup>
-            <ScrollArea className="h-[200px]">
+          <ScrollArea className="h-[200px]">
+            <CommandGroup>
               {Object.keys(releases?.releases || {}).map(
                 (version: string, index: any) => (
                   <CommandItem
@@ -104,8 +105,8 @@ export function SolVersion({ version }: SolVersionProps) {
                   </CommandItem>
                 )
               )}
-            </ScrollArea>
-          </CommandGroup>
+            </CommandGroup>
+          </ScrollArea>
         </Command>
       </PopoverContent>
     </Popover>

@@ -2,9 +2,7 @@ import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
   generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
 } from "@/lib/services/explorer/scanner/explorer-service"
-import { compilerVersions } from "@/lib/versions"
-import { solcVersion } from "@/lib/utils"
-import { SolidityMetadata } from "../../solidity-metadata"
+import { sEthers } from "@/lib/services/ethers"
 
 
 export class FilScanClient extends BaseScan implements ExplorerInterface {
@@ -50,8 +48,8 @@ export class FilScanClient extends BaseScan implements ExplorerInterface {
     if (!data.data.source_codes || data.data.source_codes.length === 0) {
       return {
         status: "1",
-          message: "OK",
-            result: [results],
+        message: "OK",
+        result: [results],
       }
     }
 
@@ -69,15 +67,15 @@ export class FilScanClient extends BaseScan implements ExplorerInterface {
       // }
 
       results.SourceCode = `{${JSON.stringify(sourceInput)}}`
-      results.ABI = SolidityMetadata.abi(metadata)
-      results.Language = SolidityMetadata.language(metadata)
+      results.ABI = sEthers.metadata.abi(metadata)
+      results.Language = sEthers.metadata.language(metadata)
       results.ContractName = this.appendExtension(
-        SolidityMetadata.contractName(metadata))
+        sEthers.metadata.contractName(metadata))
       results.CompilerVersion = this.formatVersion(
-        SolidityMetadata.compilerVersion(metadata)
+        sEthers.metadata.compilerVersion(metadata)
       )
 
-      sourceInput.settings = SolidityMetadata.settings(metadata)
+      sourceInput.settings = sEthers.metadata.settings(metadata)
 
       return {
         status: "1",

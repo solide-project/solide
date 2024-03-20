@@ -91,6 +91,7 @@ const data: { [key: string]: string } = {
   [ChainID.RONIN_MAINNET]: "Ronin Network",
   [ChainID.RONIN_SAIGON_TESTNET]: "Ronin Saigon Testnet",
   [ChainID.TRON_MAINNET]: "Tron Mainnet",
+  [ChainID.TRON_NILE_TESTNET]: "Tron Mainnet",
   [ChainID.TRON_SHASTA_TESTNET]: "Tron Shasta Testnet",
   [ChainID.BEAM_MAINNET]: "Beam",
   [ChainID.CARBON_EVM_MAINNET]: "Carbon EVM",

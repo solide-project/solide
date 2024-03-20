@@ -5,7 +5,7 @@ import { DBSoliditySchema } from "../models/glacier-solidity-schema";
 const SOLIDE_NAMESPACE = "solide";
 const SOLIDE_TEST_DATASET = "test";
 const SOLIDE_MAIN_DATASET = "main";
-const SOLIDE_COLLECTION = "v0";
+const SOLIDE_COLLECTION = "v1";
 
 /**
  * Swap these two lines to switch between test and main dataset
@@ -25,7 +25,7 @@ export class GlacierService {
         this.dataset = SOLIDE_DATASET;
         this.collection = SOLIDE_COLLECTION;
         this.client = new GlacierClient(gateway, {
-            privateKey: process.env.GLACIER_ACCOUNT,
+            privateKey: process.env.SIGNER_WALLET,
         });
     }
 

@@ -1,8 +1,7 @@
 import { getAPI, getAPIKey } from "@/lib/chains"
-import { solcVersion } from "@/lib/utils"
 import { ethers } from "ethers"
 import { generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface } from "@/lib/services/explorer/scanner/explorer-service"
-import { compilerVersions } from "@/lib/versions"
+import { solcVersion, compilerVersions } from "@/lib/versions"
 
 /**
  * Base of Etherscan implementation, other scanner will have these overrides

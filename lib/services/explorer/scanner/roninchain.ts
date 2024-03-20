@@ -1,13 +1,11 @@
 import path from "path"
 import { ContractDependency } from "@/lib/interfaces"
 import { ContractPaths } from "@/lib/solide/contract-paths"
-import { compilerVersions } from "@/lib/versions"
-import { solcVersion } from "@/lib/utils"
 import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
   generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
 } from "@/lib/services/explorer/scanner/explorer-service"
-import { SolidityMetadata } from "../../solidity-metadata"
+import { sEthers } from "@/lib/services/ethers"
 
 export class RoninChainClient extends BaseScan implements ExplorerInterface {
   constructor(chainId: string) {
@@ -66,7 +64,7 @@ export class RoninChainClient extends BaseScan implements ExplorerInterface {
       if (metadata.result.settings) {
         if (metadata.result.settings.compilationTarget) {
           results.ContractName = this.appendExtension(
-            SolidityMetadata.contractName(metadata.result))
+            sEthers.metadata.contractName(metadata.result))
 
           // This has been refactored
           const absoluteContract = results.ContractName
@@ -82,15 +80,14 @@ export class RoninChainClient extends BaseScan implements ExplorerInterface {
           sourceInput.sources[results.ContractName] = {
             content: baseContent,
           }
-
         }
 
-        sourceInput.settings = SolidityMetadata.settings(metadata.result)
+        sourceInput.settings = sEthers.metadata.settings(metadata.result)
       }
 
-      results.Language = SolidityMetadata.language(metadata.result)
+      results.Language = sEthers.metadata.language(metadata.result)
       results.CompilerVersion = this.formatVersion(
-        SolidityMetadata.compilerVersion(metadata)
+        sEthers.metadata.compilerVersion(metadata)
       )
     }
 

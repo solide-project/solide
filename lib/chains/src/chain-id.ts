@@ -89,6 +89,7 @@ export enum ChainID {
   RONIN_MAINNET = "2020",
   RONIN_SAIGON_TESTNET = "2021",
   TRON_MAINNET = "tron",
+  TRON_NILE_TESTNET = "tron_nile",
   TRON_SHASTA_TESTNET = "tron_shasta",
   BEAM_MAINNET = "4337",
   CARBON_EVM_MAINNET = "9790",

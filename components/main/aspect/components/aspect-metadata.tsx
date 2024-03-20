@@ -3,7 +3,7 @@
 import { Download } from "lucide-react"
 
 import { ContractMetadata } from "@/components/main/shared/components/contract-metadata"
-import { FileDownloader } from "@/lib/helpers/file-downloader"
+import { sHelper } from "@/lib/helpers"
 
 interface AspectMetadataProps extends React.HTMLAttributes<HTMLDivElement> {
   contractWasm: Blob | undefined
@@ -14,8 +14,7 @@ export function AspectMetadata({
 }: AspectMetadataProps) {
   const downloadWasm = () => {
     if (!contractWasm) return
-    const downloader = new FileDownloader()
-    downloader.downloadFile({
+    sHelper.downloader.downloadFile({
       source: contractWasm,
       name: "aspect.wasm",
     })

@@ -1,11 +1,8 @@
 import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
-    generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
+    generateSourceCodeError, EthGetSourceCodeInterface, ExplorerInterface
 } from "@/lib/services/explorer/scanner/explorer-service"
-import { solcVersion } from "@/lib/utils";
-import { compilerVersions } from "@/lib/versions";
-import { SolidityMetadata } from "../../solidity-metadata";
-
+import { sEthers } from "@/lib/services/ethers";
 
 interface FileMetadata {
     name: string;
@@ -85,14 +82,14 @@ export class ChainLensClient extends BaseScan implements ExplorerInterface {
             const metadata = JSON.parse(metadataFile.content)
 
             if (!results.ContractName) {
-                results.ContractName = SolidityMetadata.contractName(metadata)
+                results.ContractName = sEthers.metadata.contractName(metadata)
             }
             results.ContractName = this.appendExtension(results.ContractName)
 
-            results.Language = SolidityMetadata.language(metadata)
+            results.Language = sEthers.metadata.language(metadata)
             results.CompilerVersion = this.formatVersion(
-                SolidityMetadata.compilerVersion(metadata))
-            results.ABI = SolidityMetadata.abi(metadata)
+                sEthers.metadata.compilerVersion(metadata))
+            results.ABI = sEthers.metadata.abi(metadata)
         }
 
         return {

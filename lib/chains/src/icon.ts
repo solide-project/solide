@@ -142,6 +142,7 @@ const getIcon = (chainId: string): string => {
     case ChainID.RONIN_SAIGON_TESTNET:
       return "ronin.svg"
     case ChainID.TRON_MAINNET:
+    case ChainID.TRON_NILE_TESTNET:
     case ChainID.TRON_SHASTA_TESTNET:
       return "tron.svg"
     case ChainID.BEAM_MAINNET:

@@ -13,7 +13,7 @@ export interface CompileResponse {
 
 export interface CompileResult {
   data: CompileResponse
-  flattenContract: string
+  flattenContract?: string
 }
 
 export interface CompileInput {

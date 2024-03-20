@@ -4,8 +4,7 @@ import path from "path"
 import { promisify } from "util"
 import { NextRequest, NextResponse } from "next/server"
 import { ethers } from "ethers"
-
-import { JSONParse } from "@/lib/utils"
+import { sHelper } from "@/lib/helpers"
 
 const writeFileAsync = promisify(fs.writeFile)
 const exec = promisify(childProcess.exec)
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest) {
   const content: string = await contract.text()
 
   const { dir, base, name } = path.parse(contract.name) || "aspect.ts" // This will be the entry point of the aspect
-  const solidityInput: any = JSONParse(content)
+  const solidityInput: any = sHelper.parser.json(content)
 
   if (!solidityInput || !solidityInput.sources) {
     return NextResponseError("Invalid contract input")

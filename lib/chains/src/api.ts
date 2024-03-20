@@ -99,6 +99,8 @@ const data: { [key: string]: string } = {
   [ChainID.RONIN_SAIGON_TESTNET]: "https://explorer-kintsugi.roninchain.com",
   [ChainID.TRON_MAINNET]:
     "https://apilist.tronscanapi.com/api/solidity/contract/info",
+  [ChainID.TRON_NILE_TESTNET]:
+    "https://nileapi.tronscan.org/api/solidity/contract/info",
   [ChainID.TRON_SHASTA_TESTNET]:
     "https://shastapi.tronscan.org/api/solidity/contract/info",
   [ChainID.BEAM_MAINNET]:

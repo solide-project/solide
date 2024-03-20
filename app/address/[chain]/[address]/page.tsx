@@ -3,6 +3,7 @@ import { SolideIDE } from "@/components/main/evm/evm-ide"
 import { EVMProvider } from "@/components/main/evm/provider/evm-provider"
 import { getSourceCode } from "@/lib/services/explorer/explorer-service"
 import { EthGetSourceCodeInterface } from "@/lib/services/explorer/scanner/explorer-service"
+import { ethers } from "ethers"
 
 export default async function Page({
   params,
