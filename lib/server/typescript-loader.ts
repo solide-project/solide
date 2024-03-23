@@ -1,10 +1,8 @@
-import fs from "fs"
-import path from "path"
 import { GithubResolver } from "@resolver-engine/imports/build/resolvers/githubresolver"
 
-import { ContractDependency } from "../../interfaces"
-import { ContractPaths } from "../../solide/contract-paths"
-import { resolve } from "../source-loader"
+import { ContractDependency } from "../interfaces"
+import { ContractPaths } from "../helpers/paths"
+import { GITHUBUSERCONTENT_REGEX, resolve } from "./utils"
 
 /**
  * Main function to get the solidity contract source code
@@ -12,11 +10,11 @@ import { resolve } from "../source-loader"
  * @returns
  */
 export const getTypescriptContract = async (url: string) => {
-  const loader = new TypescriptContractLoader(url)
+  const loader = new TypescriptLoader(url)
   return await loader.generateSource()
 }
 
-class TypescriptContractLoader {
+class TypescriptLoader {
   source: string
   constructor(source: string) {
     this.source = source
@@ -34,11 +32,7 @@ class TypescriptContractLoader {
     if (!response.ok) return "Failed to fetch the source code"
 
     const content = await response.text() // Main source code
-
-    const sourceName = raw.replace(
-      /https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//,
-      ""
-    )
+    const sourceName = raw.replace(GITHUBUSERCONTENT_REGEX, "")
 
     let dependencies: ContractDependency[] = []
     let sources: any = {}
@@ -104,14 +98,10 @@ async function extractImports(
     if (libraries.includes(contractPath.filePath)) {
       continue
     }
-
     libraries.push(contractPath.filePath.toString())
 
     // Get the source code either from node_modules or relative github path
-    const { fileContents } = await resolve(
-      contractPath.filePath,
-      contractPath.isRelative
-    )
+    const { fileContents } = await resolve(contractPath.filePath)
 
     matches.push({
       paths: contractPath,

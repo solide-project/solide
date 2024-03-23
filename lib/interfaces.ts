@@ -1,4 +1,4 @@
-import { ContractPaths } from "./solide/contract-paths"
+import { ContractPaths } from "./helpers/paths"
 
 export interface ContractDependency {
   fileContents: string

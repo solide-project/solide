@@ -1,9 +1,9 @@
-import fs from "fs"
 import path from "path"
 import { GithubResolver } from "@resolver-engine/imports/build/resolvers/githubresolver"
 
 import { ContractDependency } from "../interfaces"
-import { ContractPaths } from "../solide/contract-paths"
+import { ContractPaths } from "../helpers/paths"
+import { GITHUBUSERCONTENT_REGEX, resolve } from "./utils"
 
 /**
  * Main function to get the solidity contract source code
@@ -11,13 +11,13 @@ import { ContractPaths } from "../solide/contract-paths"
  * @returns
  */
 export const getSolidityContract = async (url: string, remappings: Record<string, string>) => {
-  const loader = new SolideContractLoader(url)
+  const loader = new SolidityLoader(url)
   return await loader.generateSource({
     remappings,
   })
 }
 
-class SolideContractLoader {
+class SolidityLoader {
   source: string
   constructor(source: string) {
     this.source = source
@@ -25,8 +25,6 @@ class SolideContractLoader {
 
   async generateSource({ remappings }: { remappings?: Record<string, string> }): Promise<any | string> {
     if (!this.isValidURL()) return "Invalid Github URL Path"
-
-    // Resolve the raw path to get the source code
 
     const resolver = GithubResolver()
     const raw = (await resolver(this.source, { resolver: "" })) || ""
@@ -37,11 +35,7 @@ class SolideContractLoader {
     if (!response.ok) return "Failed to fetch the source code"
 
     const content = await response.text() // Main source code
-
-    const sourceName = raw.replace(
-      /https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//,
-      ""
-    )
+    const sourceName = raw.replace(GITHUBUSERCONTENT_REGEX, "")
 
     let dependencies: ContractDependency[] = []
     try {
@@ -102,24 +96,16 @@ async function extractImports(
     }
     libraries.push(contractPath.filePath.toString())
 
-    // Get the source code either from node_modules or relative github path
-    const maps: string[] = Object.keys(remappings) || []
-    let remapper: string = ""
-    for (const map of maps) {
-      if (contractPath.filePath.startsWith(map)) {
-        remapper = map;
-        break;
-      }
-    }
+    // Handle remappings if provided
+    const maps: string[] = Object.keys(remappings) || [];
+    const remapper: string = maps.find(map =>
+      contractPath.filePath.startsWith(map)) || "";
 
     const fileToResolve: string = remapper
       ? contractPath.filePath.replace(remapper, remappings[remapper])
       : contractPath.filePath
 
-    const { fileContents } = await resolve(
-      fileToResolve, // contractPath.filePath,
-      contractPath.isRelative
-    )
+    const { fileContents } = await resolve(fileToResolve)
     let codeContent = fileContents
 
     // Handle alias imports; ie. import { A as B, C as D } from "Z"
@@ -135,7 +121,6 @@ async function extractImports(
       })
     }
 
-    // console.log("compiled", contractPath.originalFilePath, contractPath.filePath, "from", mainPath)
     matches.push({
       paths: contractPath,
       fileContents: codeContent,
@@ -194,58 +179,6 @@ export async function getEntryDetails(output: any, entry: string) {
     // If the entryContractName is not found, you might want to reject the promise
     reject(new Error("Entry contract not found"))
   })
-}
-
-/**
- * Get the source code either from node_modules or relative github path
- * @param importPath
- * @param isRelative
- * @returns
- */
-export async function resolve(
-  importPath: string,
-  isRelative: boolean = false
-): Promise<{ fileContents: string }> {
-  // Using node_modules, only works for locally (npm run dev)
-  // const resolver = ImportsFsEngine()
-  // const filePath = await resolver.resolve(importPath);
-
-  // Using relative GH path
-  if (importPath.startsWith("http")) {
-    const fileContents = await fetchGithubSource(importPath) // Note this can be empty if the URL is invalid
-    return { fileContents }
-  }
-
-  // Using library
-  const filePath = path.resolve("./public", importPath)
-  const fileContents = fs.readFileSync(filePath).toString()
-  return { fileContents }
-}
-
-/**
- * fetch the source code from github raw file
- * @param url
- * @returns
- */
-export const fetchGithubSource = async (url: string) => {
-
-  if (url.startsWith("https://github.com/")) {
-    const resolver = GithubResolver()
-    url = await resolver(url, { resolver: "" }) || url
-  }
-  var myHeaders = new Headers();
-  myHeaders.append("Authorization", `Bearer ${process.env.GITHUB_API_KEY}`);
-
-  var requestOptions: any = {
-    method: 'GET',
-    headers: myHeaders,
-  };
-
-  const response = await fetch(url, requestOptions)
-  if (!response.ok) return ""
-
-  const content = await response.text()
-  return content
 }
 
 /**

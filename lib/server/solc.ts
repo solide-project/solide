@@ -1,5 +1,9 @@
-import { Solc } from "./interface"
 var solc = require("solc")
+
+export interface Solc {
+  version(): any
+  compile(input: string): any
+}
 
 /**
  * This will persist for a session

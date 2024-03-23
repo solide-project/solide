@@ -1,4 +1,4 @@
-import { getTypescriptContract } from "@/lib/server/typescript/typescript-loader"
+import { getTypescriptContract } from "@/lib/server/typescript-loader"
 import { solcVersion, compilerVersions } from "@/lib/versions"
 import { InvalidMessage } from "@/components/invalid-message"
 import { SolideAspectIDE } from "@/components/main/aspect/aspect-ide"

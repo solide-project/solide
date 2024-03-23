@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { useFileSystem } from "@/components/file-provider"
+import { useFileSystem } from "@/components/main/file-explorer/file-provider"
 
 interface IDEHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 

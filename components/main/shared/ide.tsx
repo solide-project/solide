@@ -2,10 +2,10 @@ import { useEffect, useState } from "react"
 import Editor, { useMonaco } from "@monaco-editor/react"
 import { useTheme } from "next-themes"
 
-import { useFileSystem } from "@/components/file-provider"
+import { useFileSystem } from "@/components/main/file-explorer/file-provider"
 
 import { EditorLoading } from "../compile/loading"
-import { SolideFile } from "@/lib/services/file-system"
+import { SolideFile } from "@/lib/services/file"
 
 interface IDEProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultLanguage?: string
@@ -65,7 +65,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
       if (selection && !selection.isEmpty()) {
         const selectedText = model.getValueInRange(selection);
         // console.log('Text is highlighted:', selectedText);
-        window.parent.postMessage({ data: { selectedText }, target: 'solide-highlight' } || "", 'http://localhost:3000/' || 'https://solide.vercel.app');
+        window.parent.postMessage({ data: { selectedText }, target: 'solide-highlight' } || "", "https://solide-dapp.vercel.app/" || "http://localhost:3001/");
         // You can perform further actions here with the selected text
       }
     }

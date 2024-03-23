@@ -1,9 +1,9 @@
 "use client"
 
-import path, { basename } from "path"
+import path from "path"
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
-import { Code, Download, File, FunctionSquare, Star } from "lucide-react"
+import { Code, Download, File, FunctionSquare } from "lucide-react"
 
 import { CompileError, CompileInput, CompileResult } from "@/lib/interfaces"
 import {
@@ -19,28 +19,27 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { CompileErrors } from "@/components/main/compile/errors"
 import { ContractInvoke } from "@/components/main/evm/components/contract-invoke"
-import { FileTree } from "@/components/main/file-tree"
+import { FileTree } from "@/components/main/file-explorer/file-tree"
 import { ContentLink } from "@/components/main/shared/nav/content-link"
 import { SelectedChain } from "@/components/main/shared/nav/selected-chain"
 import { ThemeToggle } from "@/components/theme-toggle"
 
-import { useFileSystem } from "../../file-provider"
+import { useFileSystem } from "../file-explorer/file-provider"
 import { IDE } from "../shared/ide"
 import { IDEHeader } from "../shared/ide-header"
 import { useResizables } from "../shared/use-resizeable.hook"
 import { EVMMetadata } from "./components/evm-metadata"
 import { EVMSettings } from "./components/evm-settings"
 import { useEVM } from "./provider/evm-provider"
-import { DecompileOutput, SelectedContract } from "./components/selected-contract"
+import { DecompileOutput } from "./components/selected-contract"
 // import { Service } from "@/lib/services/abi/src/abi-service"
 import { ByteCodeContract } from "./components/bytecode-contract"
-import TronWeb from "tronweb"
 import { sEthers } from "@/lib/services/ethers"
 import { sHelper } from "@/lib/helpers"
 import { sWeb3 } from "@/lib/services/web3"
 import { solcVersion } from "@/lib/versions"
 import { Environment, SelectedEnvironment } from "./components/selected-environment"
-import { SolidityDatabaseRegistry } from "@/lib/services/registry/tron-contract"
+import { download } from "@/lib/services/file"
 
 interface SolideIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -293,7 +292,8 @@ export function SolideIDE({
   }
 
   const downloadFile = async () => {
-    const sourceBlob: Blob = await fs.download()
+    const sources = await fs.generateSources()
+    const sourceBlob: Blob = await download(sources)
     sHelper.downloader.downloadFile({
       source: sourceBlob,
       name: "contract.zip",

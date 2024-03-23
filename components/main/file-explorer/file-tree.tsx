@@ -3,10 +3,10 @@
 import { useState } from "react"
 import { ChevronDown, ChevronRight, FileBox } from "lucide-react"
 
-import { SolideFile, isSolideFile } from "@/lib/services/file-system"
+import { SolideFile, isSolideFile } from "@/lib/services/file"
 import { cn } from "@/lib/utils"
 
-import { useFileSystem } from "../file-provider"
+import { useFileSystem } from "./file-provider"
 
 interface FileTreeNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string

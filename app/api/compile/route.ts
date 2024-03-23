@@ -1,15 +1,13 @@
 import path from "path"
 import { NextRequest, NextResponse } from "next/server"
-import { sHelper } from "@/lib/helpers"
 import { ContractDependency, SolcError } from "@/lib/interfaces"
 import {
   Solc,
-  flattenContracts,
   getSolcByVersion,
   removeContractHeaders,
 } from "@/lib/server"
 import { getEntryDetails } from "@/lib/server/source-loader"
-import { ContractPaths } from "@/lib/solide/contract-paths"
+import { ContractPaths } from "@/lib/helpers/paths"
 import { solcVersion, compilerVersions } from "@/lib/versions"
 
 export async function POST(request: NextRequest) {

@@ -3,8 +3,11 @@
 import path from "path"
 import React, { createContext, useContext, useState } from "react"
 
-import { SolideFile, SolideFileSystem } from "@/lib/services/file-system"
-import { CompileSource } from "@/lib/interfaces"
+import { SolideFile, SolideFileSystem } from "@/lib/services/file"
+
+interface CompileSource {
+  content: string
+}
 
 /**
  * VFS Provider to handle files and folders in the IDE

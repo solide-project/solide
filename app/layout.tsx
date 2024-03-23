@@ -4,7 +4,7 @@ import { Space_Grotesk } from "next/font/google"
 
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { FileSystemProvider } from "@/components/file-provider"
+import { FileSystemProvider } from "@/components/main/file-explorer/file-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {

@@ -23,9 +23,9 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { Separator } from "@/components/ui/separator"
-import { useFileSystem } from "@/components/file-provider"
+import { useFileSystem } from "@/components/main/file-explorer/file-provider"
 import { CompileErrors } from "@/components/main/compile/errors"
-import { FileTree } from "@/components/main/file-tree"
+import { FileTree } from "@/components/main/file-explorer/file-tree"
 import { ContentLink } from "@/components/main/shared/nav/content-link"
 import { SelectedChain } from "@/components/main/shared/nav/selected-chain"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -43,6 +43,7 @@ import { JointsList } from "./components/joints-list"
 import { useAspect } from "./provider/aspect-provider"
 import { Service } from "@/lib/services/aspect/aspect-service"
 import { sHelper } from "@/lib/helpers"
+import { download } from "@/lib/services/file"
 
 interface SolideAspectIDEProps extends React.HTMLAttributes<HTMLDivElement> {
   url?: string
@@ -220,7 +221,8 @@ export function SolideAspectIDE({
   }
 
   const downloadFile = async () => {
-    const sourceBlob: Blob = await fs.download()
+    const sources = await fs.generateSources()
+    const sourceBlob: Blob = await download(sources)
     sHelper.downloader.downloadFile({
       source: sourceBlob,
       name: "contract.zip",

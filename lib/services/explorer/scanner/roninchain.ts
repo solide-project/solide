@@ -1,6 +1,6 @@
 import path from "path"
 import { ContractDependency } from "@/lib/interfaces"
-import { ContractPaths } from "@/lib/solide/contract-paths"
+import { ContractPaths } from "@/lib/helpers/paths"
 import { BaseScan } from "@/lib/services/explorer/scanner/base"
 import {
   generateSourceCodeError, ContractInfo, EthGetSourceCodeInterface, ExplorerInterface
