@@ -83,6 +83,7 @@ const data: { [key: string]: string } = {
   [ChainID.REI_MAINNET]: "https://scan.rei.network",
   [ChainID.REI_TESTNET]: "https://scan-test.rei.network",
   [ChainID.ZORA_NETWORK_MAINNET]: "https://explorer.zora.energy",
+  [ChainID.ZORA_NETWORK_TESTNET]: "https://sepolia.explorer.zora.energy",
   [ChainID.CALLISTO_MAINNET]: "https://explorer.callisto.network",
   [ChainID.ZKSYNC_MAINNET]: "https://explorer.zksync.io",
   [ChainID.ZKSYNC_SEPOLIA]: "https://sepolia.explorer.zksync.io",
@@ -112,6 +113,14 @@ const data: { [key: string]: string } = {
   [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
   [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",
   [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "https://pegasus.lightlink.io",
+  [ChainID.ETHERLINK_TESTNET]: "https://testnet-explorer.etherlink.com",
+  [ChainID.SHARDEUM_SPHINX_1_X]: "https://explorer-sphinx.shardeum.org",
+  [ChainID.VELAS_MAINNET]: "https://evmexplorer.velas.com",
+  [ChainID.MODE_MAINNET]: "https://explorer.mode.network",
+  [ChainID.MODE_SEPOLIA]: "https://sepolia.explorer.mode.network",
+  [ChainID.MORPH_TESTNET]: "https://explorer-testnet.morphl2.io",
+  [ChainID.BLAST_MAINNET]: "https://api.blastscan.io",
+  [ChainID.BLAST_SEPOLIA]: "https://api-sepolia.blastscan.io",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""
@@ -127,6 +136,9 @@ export const getContractExplorer = (network: string, contract: string): string =
     case ChainID.PALM_MAINNET:
     case ChainID.PALM_TESTNET:
       addressPath = `contracts/${contract}`
+      break
+    case ChainID.SHARDEUM_SPHINX_1_X:
+      addressPath = `account/${contract}`
       break
     default:
       addressPath = `address/${contract}`

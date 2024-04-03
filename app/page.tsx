@@ -22,7 +22,7 @@ export default async function IndexPage({ searchParams }: SearchParams) {
     searchParams?.remappings.split(',').forEach((remapping: string) => {
       const [to, from] = remapping.split('=')
       if (!to || !from) return <InvalidMessage>{"Remapping Issue"}</InvalidMessage>
-
+      console.log(remapping, to, from)
       remappings[to] = from
     })
   }

@@ -139,6 +139,10 @@ const getScanner = (chainId: string): ExplorerInterface | undefined => {
         case ChainID.ROOTSTOCK_TESTNET:
         case ChainID.LIGHTLINK_PHOENIX_MAINNET:
         case ChainID.LIGHTLINK_PEGASUS_TESTNET:
+        case ChainID.ETHERLINK_TESTNET:
+        case ChainID.MODE_MAINNET:
+        case ChainID.MODE_SEPOLIA:
+        case ChainID.MORPH_TESTNET:
             return new BlockScoutClient(chainId)
         case ChainID.XDC_MAINNET:
             return new XdcScanClient(chainId)

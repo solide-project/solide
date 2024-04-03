@@ -88,6 +88,7 @@ const data: { [key: string]: string } = {
   [ChainID.REI_MAINNET]: "https://scan.rei.network",
   [ChainID.REI_TESTNET]: "https://scan-test.rei.network",
   [ChainID.ZORA_NETWORK_MAINNET]: "https://explorer.zora.energy",
+  [ChainID.ZORA_NETWORK_TESTNET]: "https://sepolia.explorer.zora.energy",
   [ChainID.CALLISTO_MAINNET]: "https://explorer.callisto.network",
   [ChainID.ZKSYNC_MAINNET]: "https://block-explorer-api.mainnet.zksync.io",
   [ChainID.ZKSYNC_SEPOLIA]: "https://block-explorer-api.mainnet.zksync.io",
@@ -110,7 +111,7 @@ const data: { [key: string]: string } = {
   [ChainID.ARTELA_TESTNET]: "https://betanet-scan.artela.network",
   [ChainID.BERACHAIN_TESTNET]: "https://api.routescan.io/v2/network/testnet/evm/80085/etherscan",
   [ChainID.VICTION_MAINNET]: "https://www.vicscan.xyz",
-  [ChainID.VICTION_TESTNET]: "https://testnet.vicscan.xyz",
+  [ChainID.VICTION_TESTNET]: "https://scan-api-testnet.viction.xyz",
   [ChainID.PALM_MAINNET]: "https://sourcify.sirato.xyz/mesh/11297108109",
   [ChainID.PALM_TESTNET]: "https://sourcify.sirato.xyz/mesh/11297108099",
   [ChainID.METER_MAINNET]: "https://api.meter.io:8000/api/cfile",
@@ -121,6 +122,13 @@ const data: { [key: string]: string } = {
   [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
   [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",
   [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "https://pegasus.lightlink.io",
+  [ChainID.ETHERLINK_TESTNET]: "https://testnet-explorer.etherlink.com",
+  [ChainID.VELAS_MAINNET]: "https://evmexplorer.velas.com",
+  [ChainID.MODE_MAINNET]: "https://explorer.mode.network",
+  [ChainID.MODE_SEPOLIA]: "https://sepolia.explorer.mode.network",
+  [ChainID.MORPH_TESTNET]: "https://explorer-testnet.morphl2.io",
+  [ChainID.BLAST_MAINNET]: "https://blastscan.io",
+  [ChainID.BLAST_SEPOLIA]: "https://sepolia.blastscan.io",
 }
 
 export const getAPI = (network: string): string => data[network] || ""

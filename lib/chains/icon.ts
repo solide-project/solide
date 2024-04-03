@@ -126,6 +126,7 @@ const getIcon = (chainId: string): string => {
     case ChainID.REI_TESTNET:
       return "rei.svg"
     case ChainID.ZORA_NETWORK_MAINNET:
+    case ChainID.ZORA_NETWORK_TESTNET:
       return "zora.svg"
     case ChainID.CALLISTO_MAINNET:
       return "callisto.svg"
@@ -172,6 +173,20 @@ const getIcon = (chainId: string): string => {
     case ChainID.LIGHTLINK_PHOENIX_MAINNET:
     case ChainID.LIGHTLINK_PEGASUS_TESTNET:
       return "lightlink.svg"
+    case ChainID.ETHERLINK_TESTNET:
+      return "etherlink.svg"
+    case ChainID.SHARDEUM_SPHINX_1_X:
+      return "shardeum.svg"
+    case ChainID.VELAS_MAINNET:
+      return "velas.svg"
+    case ChainID.MODE_MAINNET:
+    case ChainID.MODE_SEPOLIA:
+      return "mode.svg"
+    case ChainID.MORPH_TESTNET:
+      return "morph.svg"
+    case ChainID.BLAST_MAINNET:
+    case ChainID.BLAST_SEPOLIA:
+      return "blast.svg"
     default:
       return ""
   }

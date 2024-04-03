@@ -105,6 +105,7 @@ async function extractImports(
       ? contractPath.filePath.replace(remapper, remappings[remapper])
       : contractPath.filePath
 
+    // console.log(contractPath.filePath, fileToResolve)
     const { fileContents } = await resolve(fileToResolve)
     let codeContent = fileContents
 

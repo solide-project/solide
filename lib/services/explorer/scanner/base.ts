@@ -39,6 +39,7 @@ export class BaseScan {
       return generateSourceCodeError("API Endpoint not found")
     }
 
+    console.log("API URL", apiUrl)
     const response = await fetch(apiUrl)
     if (!response || !response.ok) {
       return generateSourceCodeError("Error fetching contract")

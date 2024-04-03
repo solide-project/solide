@@ -65,7 +65,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
       if (selection && !selection.isEmpty()) {
         const selectedText = model.getValueInRange(selection);
         // console.log('Text is highlighted:', selectedText);
-        window.parent.postMessage({ data: { selectedText }, target: 'solide-highlight' } || "", "https://solide-dapp.vercel.app/" || "http://localhost:3001/");
+        window.parent.postMessage({ data: { selectedText }, target: 'solide-highlight' } || "", "https://dapp.solide0x.tech/" || "http://localhost:3001/");
         // You can perform further actions here with the selected text
       }
     }
@@ -82,7 +82,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
       defaultValue={file.content || ""}
       options={{ fontSize: editorFontSize }}
       onMount={(editor, monaco) => {
-        editor.onDidChangeCursorPosition((event) => {
+        editor.onDidChangeCursorPosition((event: any) => {
           console.log('Cursor position changed:', event.position);
           // You can perform actions when the cursor position changes here
         });

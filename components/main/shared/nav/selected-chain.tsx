@@ -5,8 +5,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import { AlertTriangle } from "lucide-react"
 
-import { getNetworkNameFromChainID } from "@/lib/chains"
-import { getIconByChainId } from "@/lib/chains/src/icon"
+import { getIconByChainId, getNetworkNameFromChainID } from "@/lib/chains"
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
