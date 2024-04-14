@@ -1,6 +1,6 @@
 "use client";
 
-import { browserSolidityCompiler } from './worker'
+import { browserSolidityCompiler } from './worker-1'
 import { createCompileInput } from './helpers'
 
 const worker = new Worker(URL.createObjectURL(new Blob([`(${browserSolidityCompiler})()`], { type: 'module' })));

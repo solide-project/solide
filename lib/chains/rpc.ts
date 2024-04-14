@@ -61,7 +61,7 @@ const data: { [key: string]: string } = {
     [ChainID.SHUBIYA_TESTNET]: "https://evm.shibuya.astar.network",
     [ChainID.ZETACHAIN_MAINNET]: "",
     [ChainID.ZETACHAIN_TESTNET]: "https://zetachain-athens-evm.blockpi.network/v1/rpc/public",
-    [ChainID.FLARE_MAINNET]: "https://rpc.ftso.au/flare",
+    [ChainID.FLARE_MAINNET]: "https://flare-api.flare.network/ext/bc/C/rpc",
     [ChainID.FLARE_COSTON]: "https://coston-api.flare.network/ext/C/rpc",
     [ChainID.FLARE_COSTON2]: "https://coston2-api.flare.network/ext/C/rpc",
     [ChainID.FUSE_MAINNET]: "https://fuse.drpc.org",
@@ -116,6 +116,19 @@ const data: { [key: string]: string } = {
     [ChainID.MORPH_TESTNET]: "https://rpc-testnet.morphl2.io",
     [ChainID.BLAST_MAINNET]: "https://rpc.blast.io",
     [ChainID.BLAST_SEPOLIA]: "https://sepolia.blast.io",
+    [ChainID.SYNDICATE_FRAME_MAINNET]: "https://rpc-frame.syndicate.io",
+    [ChainID.DOS_MAINNET]: "https://main.doschain.com",
+    [ChainID.DOS_TESTNET]: "https://test.doschain.com",
+    [ChainID.DEGEN_MAINNET]: "https://rpc.degen.tips",
+    [ChainID.TAIKO_KATLA_TESTNET]: "https://taiko-katla.drpc.org",
+    [ChainID.SHIMMER_MAINNET]: "https://json-rpc.evm.shimmer.network",
+    [ChainID.SHIMMER_TESTNET]: "https://json-rpc.evm.testnet.shimmer.network",
+    [ChainID.FRAXSCAN_MAINNET]: "https://rpc.frax.com",
+    [ChainID.FRAXSCAN_TESTNET]: "https://rpc.testnet.frax.com",
+    [ChainID.XRP_SIDECHAIN]: "https://rpc-evm-sidechain.xrpl.org",
+    [ChainID.CORE_MAINNET]: "https://rpc.coredao.org",
+    [ChainID.ZKEVM_POLYGON]: "https://zkevm-rpc.com",
+    [ChainID.ZKEVM_POLYGON_CARDONA]: "https://etherscan.cardona.zkevm-rpc.com"
 }
 
 export const getRPC = (network: string): string =>

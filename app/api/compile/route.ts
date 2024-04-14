@@ -1,19 +1,16 @@
 import path from "path"
 import { NextRequest, NextResponse } from "next/server"
-import { ContractDependency, SolcError } from "@/lib/interfaces"
-import {
-  Solc,
-  getSolcByVersion,
-  removeContractHeaders,
-} from "@/lib/server"
+
+import { ContractPaths, ContractDependency } from "@/lib/core"
+import { SolcError } from "@/lib/evm"
+import { Solc, getSolcByVersion, removeContractHeaders } from "@/lib/server"
 import { getEntryDetails } from "@/lib/server/source-loader"
-import { ContractPaths } from "@/lib/helpers/paths"
-import { solcVersion, compilerVersions } from "@/lib/versions"
+import { compilerVersions, solcVersion } from "@/lib/versions"
 
 export async function POST(request: NextRequest) {
   const version = request.nextUrl.searchParams.get("version")
   if (version && !compilerVersions.includes(version)) {
-    return NextResponseError("Invalid compiler version");
+    return NextResponseError("Invalid compiler version")
   }
 
   const compilerVersion: string = decodeURI(version || solcVersion)
@@ -48,7 +45,7 @@ export async function POST(request: NextRequest) {
   console.log("Run using CLI", viaIR)
   console.log("Optimizer", optimizer)
 
-  const { input, title } = await request.json();
+  const { input, title } = await request.json()
   const solidityInput: any = input
 
   // Check if the content is a (Solidity Standard Json-Input format)

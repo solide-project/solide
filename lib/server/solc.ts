@@ -13,8 +13,8 @@ const solcCache: Record<string, Solc> = {}
 /**
  * Load solc by version, this will cache the solc instance for the session
  * If throws an error, it will return the default solc instance
- * @param solcVersion 
- * @returns 
+ * @param solcVersion
+ * @returns
  */
 export const getSolcByVersion = async (solcVersion: string): Promise<Solc> => {
   if (solcCache[solcVersion]) {
@@ -22,17 +22,14 @@ export const getSolcByVersion = async (solcVersion: string): Promise<Solc> => {
   }
 
   return new Promise((resolve, reject) => {
-    solc.loadRemoteVersion(
-      solcVersion,
-      (err: any, solcInstance: Solc) => {
-        if (err) {
-          console.error(err)
-          resolve(solc)
-        } else {
-          solcCache[solcVersion] = solcInstance
-          resolve(solcInstance)
-        }
+    solc.loadRemoteVersion(solcVersion, (err: any, solcInstance: Solc) => {
+      if (err) {
+        console.error(err)
+        resolve(solc)
+      } else {
+        solcCache[solcVersion] = solcInstance
+        resolve(solcInstance)
       }
-    )
+    })
   })
 }

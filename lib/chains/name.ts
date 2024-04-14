@@ -119,6 +119,19 @@ const data: { [key: string]: string } = {
   [ChainID.MORPH_TESTNET]: "Morph Testnet",
   [ChainID.BLAST_MAINNET]: "Blast Mainnet",
   [ChainID.BLAST_SEPOLIA]: "Blast Seoplia",
+  [ChainID.SYNDICATE_FRAME_MAINNET]: "Syndicate Frame Chain",
+  [ChainID.DOS_MAINNET]: "DOS Chain",
+  [ChainID.DOS_TESTNET]: "DOS Testnet",
+  [ChainID.DEGEN_MAINNET]: "Degen Chain",
+  [ChainID.TAIKO_KATLA_TESTNET]: "Taike Katla Testnet",
+  [ChainID.SHIMMER_MAINNET]: "Shimmer Mainnet",
+  [ChainID.SHIMMER_TESTNET]: "Shimmer Testnet",
+  [ChainID.FRAXSCAN_MAINNET]: "Fraxscan Mainnet",
+  [ChainID.FRAXSCAN_TESTNET]: "Fraxscan Holesky",
+  [ChainID.XRP_SIDECHAIN]: "XRP Sidechain",
+  [ChainID.CORE_MAINNET]: "Core",
+  [ChainID.ZKEVM_POLYGON]: "Polygon zkEVM",
+  [ChainID.ZKEVM_POLYGON_CARDONA]: "Polygon zkEVM Cardona",
 }
 
 export const getNetworkNameFromChainID = (network: string): string =>

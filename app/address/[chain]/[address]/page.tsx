@@ -1,9 +1,8 @@
-import { InvalidMessage } from "@/components/invalid-message"
-import { SolideIDE } from "@/components/main/evm/evm-ide"
-import { EVMProvider } from "@/components/main/evm/provider/evm-provider"
-import { getSourceCode } from "@/lib/services/explorer/explorer-service"
-import { EthGetSourceCodeInterface } from "@/lib/services/explorer/scanner/explorer-service"
-import { ethers } from "ethers"
+import { getSourceCode } from "@/lib/evm/explorer"
+import { EthGetSourceCodeInterface } from "@/lib/evm"
+import { EVMProvider } from "@/components/evm/evm-provider"
+import { EvmIDE } from "@/components/evm/ide"
+import { InvalidMessage } from "@/components/core/components/invalid-message"
 
 export default async function Page({
   params,
@@ -25,7 +24,7 @@ export default async function Page({
 
   return (
     <EVMProvider>
-      <SolideIDE
+      <EvmIDE
         url={params.address}
         chainId={params.chain}
         title={data.result[0].ContractName}

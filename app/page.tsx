@@ -1,8 +1,8 @@
 import { getSolidityContract } from "@/lib/server/source-loader"
-import { solcVersion, compilerVersions } from "@/lib/versions"
-import { InvalidMessage } from "@/components/invalid-message"
-import { SolideIDE } from "@/components/main/evm/evm-ide"
-import { EVMProvider } from "@/components/main/evm/provider/evm-provider"
+import { compilerVersions, solcVersion } from "@/lib/versions"
+import { InvalidMessage } from "@/components/core/components/invalid-message"
+import { EVMProvider } from "@/components/evm/evm-provider"
+import { EvmIDE } from "@/components/evm/ide"
 
 interface SearchParams {
   params: { slug: string }
@@ -19,9 +19,10 @@ export default async function IndexPage({ searchParams }: SearchParams) {
 
   let remappings: Record<string, string> = {}
   if (searchParams?.remappings) {
-    searchParams?.remappings.split(',').forEach((remapping: string) => {
-      const [to, from] = remapping.split('=')
-      if (!to || !from) return <InvalidMessage>{"Remapping Issue"}</InvalidMessage>
+    searchParams?.remappings.split(",").forEach((remapping: string) => {
+      const [to, from] = remapping.split("=")
+      if (!to || !from)
+        return <InvalidMessage>{"Remapping Issue"}</InvalidMessage>
       console.log(remapping, to, from)
       remappings[to] = from
     })
@@ -34,7 +35,7 @@ export default async function IndexPage({ searchParams }: SearchParams) {
 
   return (
     <EVMProvider>
-      <SolideIDE
+      <EvmIDE
         url={url}
         content={JSON.stringify(data)}
         version={version}

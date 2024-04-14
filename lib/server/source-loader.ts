@@ -1,8 +1,7 @@
 import path from "path"
 import { GithubResolver } from "@resolver-engine/imports/build/resolvers/githubresolver"
 
-import { ContractDependency } from "../interfaces"
-import { ContractPaths } from "../helpers/paths"
+import { ContractPaths, ContractDependency } from "@/lib/core"
 import { GITHUBUSERCONTENT_REGEX, resolve } from "./utils"
 
 /**
@@ -10,7 +9,10 @@ import { GITHUBUSERCONTENT_REGEX, resolve } from "./utils"
  * @param url
  * @returns
  */
-export const getSolidityContract = async (url: string, remappings: Record<string, string>) => {
+export const getSolidityContract = async (
+  url: string,
+  remappings: Record<string, string>
+) => {
   const loader = new SolidityLoader(url)
   return await loader.generateSource({
     remappings,
@@ -23,7 +25,11 @@ class SolidityLoader {
     this.source = source
   }
 
-  async generateSource({ remappings }: { remappings?: Record<string, string> }): Promise<any | string> {
+  async generateSource({
+    remappings,
+  }: {
+    remappings?: Record<string, string>
+  }): Promise<any | string> {
     if (!this.isValidURL()) return "Invalid Github URL Path"
 
     const resolver = GithubResolver()
@@ -75,7 +81,7 @@ async function extractImports(
   content: any,
   mainPath: any = "",
   libraries: string[] = [],
-  remappings: Record<string, string> = {},
+  remappings: Record<string, string> = {}
 ): Promise<ContractDependency[]> {
   // Regex to extract import information
   const regex =
@@ -97,9 +103,9 @@ async function extractImports(
     libraries.push(contractPath.filePath.toString())
 
     // Handle remappings if provided
-    const maps: string[] = Object.keys(remappings) || [];
-    const remapper: string = maps.find(map =>
-      contractPath.filePath.startsWith(map)) || "";
+    const maps: string[] = Object.keys(remappings) || []
+    const remapper: string =
+      maps.find((map) => contractPath.filePath.startsWith(map)) || ""
 
     const fileToResolve: string = remapper
       ? contractPath.filePath.replace(remapper, remappings[remapper])
@@ -128,7 +134,12 @@ async function extractImports(
       originalContents: fileContents,
     })
     matches.push(
-      ...(await extractImports(fileContents, contractPath.filePath, libraries, remappings))
+      ...(await extractImports(
+        fileContents,
+        contractPath.filePath,
+        libraries,
+        remappings
+      ))
     )
   }
 

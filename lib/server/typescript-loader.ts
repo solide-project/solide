@@ -1,7 +1,6 @@
 import { GithubResolver } from "@resolver-engine/imports/build/resolvers/githubresolver"
 
-import { ContractDependency } from "../interfaces"
-import { ContractPaths } from "../helpers/paths"
+import { ContractPaths, ContractDependency } from "@/lib/core"
 import { GITHUBUSERCONTENT_REGEX, resolve } from "./utils"
 
 /**

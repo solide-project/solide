@@ -121,6 +121,19 @@ const data: { [key: string]: string } = {
   [ChainID.MORPH_TESTNET]: "https://explorer-testnet.morphl2.io",
   [ChainID.BLAST_MAINNET]: "https://api.blastscan.io",
   [ChainID.BLAST_SEPOLIA]: "https://api-sepolia.blastscan.io",
+  [ChainID.SYNDICATE_FRAME_MAINNET]: "https://explorer-frame.syndicate.io",
+  [ChainID.DOS_MAINNET]: "https://doscan.io",
+  [ChainID.DOS_TESTNET]: "https://test.doscan.io",
+  [ChainID.DEGEN_MAINNET]: "https://explorer.degen.tips",
+  [ChainID.TAIKO_KATLA_TESTNET]: "https://explorer.katla.taiko.xyz",
+  [ChainID.SHIMMER_MAINNET]: "https://explorer.evm.shimmer.network",
+  [ChainID.SHIMMER_TESTNET]: "https://explorer.evm.testnet.shimmer.network",
+  [ChainID.FRAXSCAN_MAINNET]: "https://fraxscan.com",
+  [ChainID.FRAXSCAN_TESTNET]: "https://holesky.fraxscan.com",
+  [ChainID.XRP_SIDECHAIN]: "https://evm-sidechain.xrpl.org",
+  [ChainID.CORE_MAINNET]: "https://scan.coredao.org",
+  [ChainID.ZKEVM_POLYGON]: "https://zkevm.polygonscan.com",
+  [ChainID.ZKEVM_POLYGON_CARDONA]: "https://cardona-zkevm.polygonscan.com"
 }
 
 export const getExplorer = (network: string): string => data[network] || ""
