@@ -102,6 +102,53 @@ export const getSourceCode = async (
         data.result = [result]
       }
     }
+  } else if (data.result === "API Endpoint not found") {
+    let contractBytecode: string = ""
+    const rpc = getRPC(chain)
+    if (rpc) {
+      const web3 = new Web3(
+        new Web3.providers.HttpProvider(rpc));
+      contractBytecode = await web3.eth.getCode(address)
+    }
+
+    if (contractBytecode && contractBytecode !== "0x") {
+      const hash = utils.sha3(contractBytecode.slice(2)) || ""
+
+      const databaseService = new GlacierService()
+      const results = await databaseService.find(hash)
+      if (!databaseService.exist(results)) {
+        console.log("address not found in database")
+        return data
+      }
+      if (results && results.length > 1) {
+        console.log("multiple results found. Note this should not happen")
+      }
+
+      const response = await fetch(`${BTFSGateway}/${results[0].input}`)
+      const metadata = await response.json()
+
+      const contractName = metadataUtil.contractName(metadata)
+      const compilerVersion = metadataUtil.compilerVersion(metadata)
+
+      const result = {
+        SourceCode: `{${JSON.stringify(metadata)}}`,
+        ABI: "",
+        ContractName: contractName,
+        CompilerVersion: compilerVersion || solcVersion,
+        OptimizationUsed: "0",
+        Runs: "200",
+        ConstructorArguments: "",
+        EVMVersion: "default",
+        Library: "",
+        LicenseType: "0",
+        Proxy: "",
+        Implementation: "",
+        SwarmSource: "",
+        BytcodeContract: results[0].input,
+      }
+
+      data.result = [result]
+    }
   }
 
   return data

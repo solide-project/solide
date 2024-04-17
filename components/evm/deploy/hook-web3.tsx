@@ -31,6 +31,8 @@ export const useWeb3Hook = () => {
 
     const receipt = await contract.methods[method](...args).send({
       from: account,
+      gas: '1000000',
+      gasPrice: '1000000000',
     })
 
     return { receipt }
