@@ -2,15 +2,14 @@
 
 import * as React from "react"
 import { useEffect } from "react"
-import { AlertCircle, AlertTriangle } from "lucide-react"
-
+import { utils } from "web3"
 import { CopyText } from "@/components/core/components/copy-text"
 
 import { useEVM } from "../evm-provider"
 
-interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function ContractOverview({}: ContractOverviewProps) {
+export function ContractOverview({ }: ContractOverviewProps) {
   const evm = useEVM()
 
   const [abiFunction, setAbiFunction] = React.useState<string>("")
@@ -45,17 +44,30 @@ export function ContractOverview({}: ContractOverviewProps) {
       )}
 
       {evm.selectedCompiledContract?.evm?.bytecode?.object && (
-        <ContractOverviewItem
-          data={
-            <CopyText
-              title="Bytecode"
-              payload={
-                evm.selectedCompiledContract?.evm?.bytecode?.object || ""
-              }
-            />
-          }
-          payload={evm.selectedCompiledContract?.evm?.bytecode?.object || ""}
-        />
+        <>
+          <ContractOverviewItem
+            data={
+              <CopyText
+                title="Bytecode"
+                payload={
+                  evm.selectedCompiledContract?.evm?.bytecode?.object || ""
+                }
+              />
+            }
+            payload={evm.selectedCompiledContract?.evm?.bytecode?.object || ""}
+          />
+          <ContractOverviewItem
+            data={
+              <CopyText
+                title="DB ID"
+                payload={
+                  utils.sha3(evm.selectedCompiledContract?.evm?.bytecode?.object || "") || ""
+                }
+              />
+            }
+            payload={utils.sha3(evm.selectedCompiledContract?.evm?.bytecode?.object || "") || ""}
+          />
+        </>
       )}
 
       {evm.selectedCompiledContract?.abi && (

@@ -13,11 +13,26 @@ export type SolidityReleases = {
   latestRelease: string
 }
 
+export type EVMVersion = 'homestead' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople' | 'petersburg' | 'istanbul' | 'berlin' | 'london' | 'paris' | 'shanghai' | 'cancun' | null
+export const evmVersionArray: EVMVersion[] = [
+  'homestead',
+  'tangerineWhistle',
+  'spuriousDragon',
+  'byzantium',
+  'constantinople',
+  'petersburg',
+  'istanbul',
+  'berlin',
+  'london',
+  'paris',
+  'shanghai',
+  'cancun'
+];
+
 export const EVMProvider = ({ children }: EVMProviderProps) => {
   const [solidityVersions, setSolidityVersions] = useState<SolidityReleases>(
     {} as SolidityReleases
   )
-
   const [errors, setErrors] = useState<CompileError>({} as CompileError)
   const [output, setOutput] = useState<DecompileOutput>({} as DecompileOutput)
 
@@ -28,6 +43,7 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
     {} as any
   )
 
+  const [evmVersions, setEVMVersions] = useState<EVMVersion>(null)
   const [compilerVersion, setCompilerVersion] = useState<string>(solcVersion)
   const [compilerOptimised, setCompilerOptimised] = useState<boolean>(false)
   const [compilerRuns, setCompilerRuns] = useState<number>(200)
@@ -37,7 +53,7 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
   )
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (solidityVersions.latestRelease) {
         return
       }
@@ -82,6 +98,8 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
         setSelectedContract,
         compilerVersion,
         setCompilerVersion,
+        evmVersions,
+        setEVMVersions,
         compilerOptimised,
         setCompilerOptimised,
         compilerRuns,
@@ -101,11 +119,11 @@ interface EVMProviderProps extends React.HTMLAttributes<HTMLDivElement> {
 export const EVMContext = createContext({
   solidityVersions: {} as SolidityReleases,
   errors: {} as CompileError,
-  setErrors: (errors: CompileError) => {},
+  setErrors: (errors: CompileError) => { },
   output: {} as DecompileOutput,
-  setOutput: (output: DecompileOutput) => {},
+  setOutput: (output: DecompileOutput) => { },
   environment: Environment.METAMASK,
-  setEnvironment: (env: Environment) => {},
+  setEnvironment: (env: Environment) => { },
   target: "",
   targetCompiltion: "",
   selectedCompiledContract: {} as any,
@@ -113,14 +131,16 @@ export const EVMContext = createContext({
     targetCompilation: string,
     target: string,
     info: any
-  ) => {},
+  ) => { },
   compilerVersion: solcVersion,
-  setCompilerVersion: (version: string) => {},
+  setCompilerVersion: (version: string) => { },
+  evmVersions: null as EVMVersion,
+  setEVMVersions: (version: EVMVersion) => { },
   compilerOptimised: false,
-  setCompilerOptimised: (enabled: boolean) => {},
+  setCompilerOptimised: (enabled: boolean) => { },
   compilerRuns: 200,
-  setCompilerRuns: (runs: number) => {},
-  resetBuild: () => {},
+  setCompilerRuns: (runs: number) => { },
+  resetBuild: () => { },
 })
 
 export const useEVM = () => useContext(EVMContext)

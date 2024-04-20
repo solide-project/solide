@@ -23,7 +23,6 @@ export default async function IndexPage({ searchParams }: SearchParams) {
       const [to, from] = remapping.split("=")
       if (!to || !from)
         return <InvalidMessage>{"Remapping Issue"}</InvalidMessage>
-      console.log(remapping, to, from)
       remappings[to] = from
     })
   }

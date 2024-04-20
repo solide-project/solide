@@ -116,6 +116,11 @@ export function EvmIDE({
         .addParam("optimizer", evm.compilerOptimised)
         .addParam("runs", evm.compilerRuns.toString())
     }
+
+    if (evm.evmVersions) {
+      queryBuilder
+        .addParam("evm", evm.evmVersions)
+    }
     // if (viaIR) {
     //     queryBuilder.addParam('viaIR', viaIR)
     // }

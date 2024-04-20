@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
     request.nextUrl.searchParams.get("optimizer") === "true"
   const runs: number =
     parseInt(request.nextUrl.searchParams.get("runs") || "-1") || -1
+  const evmVersion: string | null = request.nextUrl.searchParams.get("evmVersion") || null
 
   let optimizer = {}
   if (enabled && runs > 0) {
@@ -90,6 +91,11 @@ export async function POST(request: NextRequest) {
     if (optimizer) {
       solidityInput.settings.optimizer = optimizer
     }
+
+    if (evmVersion) {
+      solidityInput.settings.evmVersion = evmVersion
+    }
+
     // Since our backend doesn't have CLI and will timeout for large files, will disable for now but looking to implementation
     if (solidityInput.settings && solidityInput.settings.viaIR) {
       delete solidityInput.settings.viaIR

@@ -235,6 +235,11 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       return
     }
 
+    let shouldUpload = true
+    if (contractAddress) {
+      shouldUpload = false
+    }
+
     try {
       const args = contractAddress
         ? []
@@ -256,7 +261,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         } else {
           logger.error(`Error deploying contract: ${result.transactionHash}`)
         }
-      } else if (contractAddress && evm.environment === Environment.TRONLINK) {
+      } else if (evm.environment === Environment.TRONLINK) {
         const result = await tronHook.doDeploy({
           contractAddress,
           abi: evm.selectedCompiledContract?.abi,
@@ -266,6 +271,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         })
 
         if (result.contract) {
+          setContractAddress(window.tronWeb.address.fromHex(result.contract.address || ""))
           setLoadedContractEnvironment(evm.environment)
           logger.success(`Contract deployed at ${result.contract.address}`)
         } else {
@@ -274,7 +280,10 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       // Upload to SolidityDB
-      await uploadToSolidityDB()
+      if (shouldUpload) {
+        await uploadToSolidityDB()
+      }
+
     } catch (error: any) {
       logger.error(handleError(error))
     }
@@ -290,12 +299,6 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       return false
     }
 
-    console.log(
-      "processedConstructor",
-      Object.values(contractArguments[CONSTRUCTOR_METHOD] || {}).every(
-        (x: string) => x
-      )
-    )
     if (
       processedConstructor &&
       processedConstructor.type === CONSTRUCTOR_METHOD &&
@@ -360,6 +363,10 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
     metadata.settings.compilationTarget = {
       [evm.targetCompiltion]: evm.target,
+    }
+
+    if (evm.evmVersions) {
+      metadata.settings.evmVersion = evm.evmVersions
     }
 
     const blob = new Blob([JSON.stringify(metadata)], {

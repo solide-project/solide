@@ -36,7 +36,8 @@ export const deploy = async (
 }
 
 export const load = (abi: any, address: string) => {
-  return window.tronWeb.contract(abi, window.tronWeb.address.toHex(address))
+  // return window.tronWeb.contract(abi, window.tronWeb.address.toHex(address))
+  return window.tronWeb.contract(abi, address)
 }
 
 export const toEVMAddress = (address: string) => {
