@@ -167,10 +167,11 @@ export function EvmIDE({
 
   const generateURL = () => {
     if (chainId && isAddress(url || "")) {
-      getContractExplorer(url || "", chainId)
+      return getContractExplorer(url || "", chainId)
     }
-    return ""
+    return url || ""
   }
+
   return (
     <div className="min-w-screen max-w-screen flex max-h-screen min-h-screen">
       <div className="py-2 pl-2">
