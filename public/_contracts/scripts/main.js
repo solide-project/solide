@@ -9,7 +9,7 @@ console.log(`Current directory: ${currentDirectory}`);
 const packageJson = fs.readFileSync('./package.json', 'utf8');
 const packageData = JSON.parse(packageJson);
 
-// Copy all dependencies to the public folder
+// Process dev dependencies
 Object.entries(packageData.dependencies).forEach(([package, value]) => {
     const info = packageInfo(package)
     const name = packageName(info);
@@ -18,13 +18,13 @@ Object.entries(packageData.dependencies).forEach(([package, value]) => {
     if (info.name.includes('solmate')) {
         package = `${package}/src`
     }
-    
+
     console.log(package, name);
     copyFolderSync(`./node_modules/${package}`, `../${name}`)
     deleteEmptyFolders(`../${name}`)
 });
 
-// Delete all non Solidity files
+// Process dev dependencies
 Object.entries(packageData.devDependencies).forEach(([package, value]) => {
     const info = packageInfo(package)
     const name = packageName(info);
@@ -32,3 +32,10 @@ Object.entries(packageData.devDependencies).forEach(([package, value]) => {
     copyFolderSync(`./node_modules/${package}`, `../${name}`)
     deleteEmptyFolders(`../${name}`)
 });
+
+[
+    "@uniswap/v4-core",
+    "@uniswap/v4-periphery",
+].forEach((package) => {
+    deleteEmptyFolders(`../${name}`)
+})
