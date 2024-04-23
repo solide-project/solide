@@ -6,6 +6,7 @@ import { FileSystemProvider } from "@/components/core/providers/file-provider"
 import { LoggerProvider } from "@/components/core/providers/logger-provider"
 import { NavProvider } from "@/components/core/providers/navbar-provider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 export interface SolideProvidersProps {
     nonce?: string;
@@ -22,7 +23,9 @@ export function SolideProviders({ children, ...props }: SolideProvidersProps) {
         <LoggerProvider>
             <FileSystemProvider>
                 <EditorProvider>
-                    <NavProvider>{children}</NavProvider>
+                    <TooltipProvider delayDuration={0}>
+                        <NavProvider>{children}</NavProvider>
+                    </TooltipProvider>
                 </EditorProvider>
             </FileSystemProvider>
         </LoggerProvider>

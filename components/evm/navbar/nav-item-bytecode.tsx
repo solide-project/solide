@@ -28,7 +28,7 @@ function maskString(input: string, maskChar: string = "."): string {
 
 export function NavItemBytecode({ id }: NavItemBytecodeProps) {
     return (
-        <HoverCard>
+        <HoverCard openDelay={0}>
             <HoverCardTrigger>
                 <Button size="icon" variant="ghost">
                     <AlertTriangle color="orange" />

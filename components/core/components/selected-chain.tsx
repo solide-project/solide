@@ -20,7 +20,7 @@ interface SelectedChainProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function SelectedChain({ name, src }: SelectedChainProps) {
   return (
-    <HoverCard>
+    <HoverCard openDelay={0}>
       <HoverCardTrigger>
         <Image
           width={50}

@@ -40,7 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <SolideProviders>
-            {children}
+              {children}
           </SolideProviders>
         </body >
       </html >

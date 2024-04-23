@@ -8,7 +8,7 @@ import {
   VFSNode,
   isVFSFile,
 } from "@/lib/core/utils/interface"
-import { parse } from "path"
+import path, { parse } from "path"
 
 /**
  * VFS Provider to handle files and folders in the IDE
@@ -50,14 +50,11 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
     const pathArray = path.split("/")
     let currentLocation = files
 
-    console.log(currentLocation)
     for (const folder of pathArray) {
-      const { name } = parse(folder)
-      console.log(name)
-      if (!currentLocation[folder] || !currentLocation[name]) {
+      if (!currentLocation[folder]) {
         return undefined
       }
-      currentLocation = (currentLocation[folder] || currentLocation[name]) as VFSNode
+      currentLocation = currentLocation[folder] as VFSNode
     }
 
     return currentLocation[pathArray[pathArray.length - 1]] as VFSFile
@@ -69,6 +66,23 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
     Object.entries(sources).forEach(([key, val]) => {
       writeFile(key, val.content)
     })
+  }
+
+  const initAndFoundEntry = async (sources: { [key: string]: { content: string } }, entry: string) => {
+    await init(sources)
+
+    const entryFile = Object.entries(sources).find(([key, _]) =>
+      path.basename(key).startsWith(path.basename(entry))
+    )
+
+    if (entryFile) {
+      return {
+        content: entryFile[1].content.toString(),
+        filePath: entryFile[0],
+      } as VFSFile
+    }
+
+    return undefined
   }
 
   const generateSources = (): Sources => {
@@ -124,6 +138,7 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
         writeFile,
         readFile,
         init,
+        initAndFoundEntry,
         generateSources,
         count,
       }}
@@ -139,10 +154,11 @@ interface FileSystemProviderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const FileContext = createContext({
   files: {},
-  clear: () => {},
-  writeFile: (path: string, content: Buffer | string) => {},
+  clear: () => { },
+  writeFile: (path: string, content: Buffer | string) => { },
   readFile: (path: string): VFSFile | undefined => undefined,
-  init: (sources: { [key: string]: { content: string } }) => {},
+  init: (sources: { [key: string]: { content: string } }) => { },
+  initAndFoundEntry: async (sources: { [key: string]: { content: string } }, entry: string): Promise<VFSFile | undefined> => undefined,
   generateSources: (): Sources => ({}),
   count: (): number => 0,
 })

@@ -76,9 +76,7 @@ export function EvmIDE({
 
       const input: CompileInput = parseInput(content)
       setInput(input)
-      fs.init(input.sources)
-      console.log(title)
-      const entryFile = fs.readFile(title || "")
+      const entryFile = await fs.initAndFoundEntry(input.sources, title || "")
       if (entryFile) {
         ide.selectFile(entryFile)
       }
@@ -167,7 +165,7 @@ export function EvmIDE({
 
   const generateURL = () => {
     if (chainId && isAddress(url || "")) {
-      return getContractExplorer(url || "", chainId)
+      return getContractExplorer(chainId, url || "")
     }
     return url || ""
   }

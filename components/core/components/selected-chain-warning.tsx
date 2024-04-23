@@ -17,7 +17,7 @@ interface EVMSelectedChainWarningProps
 
 export function EVMSelectedChainWarning({}: EVMSelectedChainWarningProps) {
   return (
-    <HoverCard>
+    <HoverCard openDelay={0}>
       <HoverCardTrigger>
         <Button size="icon" variant="ghost">
           <AlertTriangle color="orange" />
