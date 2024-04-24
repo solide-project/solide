@@ -128,7 +128,13 @@ const data: { [key: string]: string } = {
     [ChainID.XRP_SIDECHAIN]: "https://rpc-evm-sidechain.xrpl.org",
     [ChainID.CORE_MAINNET]: "https://rpc.coredao.org",
     [ChainID.ZKEVM_POLYGON]: "https://zkevm-rpc.com",
-    [ChainID.ZKEVM_POLYGON_CARDONA]: "https://etherscan.cardona.zkevm-rpc.com"
+    [ChainID.ZKEVM_POLYGON_CARDONA]: "https://etherscan.cardona.zkevm-rpc.com",
+    [ChainID.BITLAYER_MAINNET]: "https://rpc.bitlayer.org",
+    [ChainID.BITLAYER_TESTNET]: "https://testnet-rpc.bitlayer.org",
+    [ChainID.ETHEREUM_CLASSIC_MAINNET]: "https://geth-de.etc-network.info",
+    [ChainID.ETHEREUM_CLASSIC_TESTNET]: "https://rpc.mordor.etccooperative.org",
+    [ChainID.STABILITY_MAINNET]: "https://gtn.stabilityprotocol.com",
+    [ChainID.STABILITY_TESTNET]: "https://free.testnet.stabilityprotocol.com",
 }
 
 export const getRPC = (network: string): string =>

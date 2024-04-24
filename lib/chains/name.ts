@@ -132,6 +132,12 @@ const data: { [key: string]: string } = {
   [ChainID.CORE_MAINNET]: "Core",
   [ChainID.ZKEVM_POLYGON]: "Polygon zkEVM",
   [ChainID.ZKEVM_POLYGON_CARDONA]: "Polygon zkEVM Cardona",
+  [ChainID.BITLAYER_MAINNET]: "Bitlayer Mainnet",
+  [ChainID.BITLAYER_TESTNET]: "Bitlayer Testnet",
+  [ChainID.ETHEREUM_CLASSIC_MAINNET]: "Etheruem Classic",
+  [ChainID.ETHEREUM_CLASSIC_TESTNET]: "Etheruem Classic Testnet",
+  [ChainID.STABILITY_MAINNET]: "Global Trust Network",
+  [ChainID.STABILITY_TESTNET]: "Stability Testnet",
 }
 
 export const getNetworkNameFromChainID = (network: string): string =>

@@ -142,6 +142,13 @@ const data: { [key: string]: string } = {
   [ChainID.CORE_MAINNET]: "https://scan.coredao.org",
   [ChainID.ZKEVM_POLYGON]: "https://api-zkevm.polygonscan.com",
   [ChainID.ZKEVM_POLYGON_CARDONA]: "https://api-testnet-zkevm.polygonscan.com",
+  [ChainID.BITLAYER_MAINNET]: "https://api.btrscan.com",
+  [ChainID.BITLAYER_TESTNET]: "https://api-testnet.btrscan.com",
+  [ChainID.ETHEREUM_CLASSIC_MAINNET]: "https://etc.blockscout.com",
+  [ChainID.ETHEREUM_CLASSIC_TESTNET]: "https://etc-mordor.blockscout.com",
+  [ChainID.STABILITY_MAINNET]: "https://stability.blockscout.com",
+  [ChainID.STABILITY_TESTNET]: "https://stability-testnet.blockscout.com",
+
 }
 
 export const getAPI = (network: string): string => data[network] || ""

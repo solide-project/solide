@@ -133,7 +133,13 @@ const data: { [key: string]: string } = {
   [ChainID.XRP_SIDECHAIN]: "https://evm-sidechain.xrpl.org",
   [ChainID.CORE_MAINNET]: "https://scan.coredao.org",
   [ChainID.ZKEVM_POLYGON]: "https://zkevm.polygonscan.com",
-  [ChainID.ZKEVM_POLYGON_CARDONA]: "https://cardona-zkevm.polygonscan.com"
+  [ChainID.ZKEVM_POLYGON_CARDONA]: "https://cardona-zkevm.polygonscan.com",
+  [ChainID.BITLAYER_MAINNET]: "https://www.btrscan.com",
+  [ChainID.BITLAYER_TESTNET]: "https://testnet-scan.bitlayer.org",
+  [ChainID.ETHEREUM_CLASSIC_MAINNET]: "https://etc.blockscout.com",
+  [ChainID.ETHEREUM_CLASSIC_TESTNET]: "https://etc-mordor.blockscout.com",
+  [ChainID.STABILITY_MAINNET]: "https://stability.blockscout.com",
+  [ChainID.STABILITY_TESTNET]: "https://stability-testnet.blockscout.com",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""

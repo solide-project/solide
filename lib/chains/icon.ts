@@ -208,6 +208,15 @@ const getIcon = (chainId: string): string => {
       return "xrp.svg"
     case ChainID.CORE_MAINNET:
       return "core.svg"
+    case ChainID.BITLAYER_MAINNET:
+    case ChainID.BITLAYER_TESTNET:
+      return "bitlayer.png"
+    case ChainID.ETHEREUM_CLASSIC_MAINNET:
+    case ChainID.ETHEREUM_CLASSIC_TESTNET:
+      return "etc.svg"
+    case ChainID.STABILITY_MAINNET:
+    case ChainID.STABILITY_TESTNET:
+      return "free.svg"
     default:
       return ""
   }
