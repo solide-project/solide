@@ -66,6 +66,7 @@ export function EvmIDE({
 
   React.useEffect(() => {
     ; (async () => {
+      console.log("EvmIDE", bytecodeId)
       if (version) {
         evm.setCompilerVersion(version)
       }

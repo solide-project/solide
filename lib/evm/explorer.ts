@@ -6,6 +6,7 @@ import { getCode } from "@/lib/tron"
 import { metadataUtil } from "@/lib/evm"
 import { ChainID, getAPIKey, getRPC, getTronRPC } from "@/lib/chains"
 import { BTFSGateway, GlacierService } from "@/lib/solidity-db"
+import { SolidityDatabaseRegistry } from "../solidity-db/tron-contract"
 
 export interface EthGetSourceCodeInterface {
   status: string
@@ -66,17 +67,14 @@ export const getSourceCode = async (
       if (contractBytecode && contractBytecode !== "0x") {
         const hash = utils.sha3(contractBytecode.slice(2)) || ""
 
-        const databaseService = new GlacierService()
+        const databaseService = new SolidityDatabaseRegistry({})
+        await databaseService.load()
         const results = await databaseService.find(hash)
-        if (!databaseService.exist(results)) {
+        if (!results || !results.id) {
           console.log("address not found in database")
           return data
         }
-        if (results && results.length > 1) {
-          console.log("multiple results found. Note this should not happen")
-        }
-
-        const response = await fetch(`${BTFSGateway}/${results[0].input}`)
+        const response = await fetch(`${BTFSGateway}/${results.id}`)
         const metadata = await response.json()
 
         const contractName = metadataUtil.contractName(metadata)
@@ -96,7 +94,7 @@ export const getSourceCode = async (
           Proxy: "",
           Implementation: "",
           SwarmSource: "",
-          BytcodeContract: results[0].input,
+          BytcodeContract: results.id,
         }
 
         data.result = [result]
@@ -114,17 +112,14 @@ export const getSourceCode = async (
     if (contractBytecode && contractBytecode !== "0x") {
       const hash = utils.sha3(contractBytecode.slice(2)) || ""
 
-      const databaseService = new GlacierService()
+      const databaseService = new SolidityDatabaseRegistry({})
+      await databaseService.load()
       const results = await databaseService.find(hash)
-      if (!databaseService.exist(results)) {
+      if (!results || !results.id) {
         console.log("address not found in database")
         return data
       }
-      if (results && results.length > 1) {
-        console.log("multiple results found. Note this should not happen")
-      }
-
-      const response = await fetch(`${BTFSGateway}/${results[0].input}`)
+      const response = await fetch(`${BTFSGateway}/${results.id}`)
       const metadata = await response.json()
 
       const contractName = metadataUtil.contractName(metadata)
@@ -144,7 +139,7 @@ export const getSourceCode = async (
         Proxy: "",
         Implementation: "",
         SwarmSource: "",
-        BytcodeContract: results[0].input,
+        BytcodeContract: results.id,
       }
 
       data.result = [result]

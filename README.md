@@ -35,6 +35,72 @@ Explore these contract hubs and interactive demos:
 - [TokenPaymaster.sol from @account-abstraction/contracts](https://solidewidget.azurewebsites.net/?url=https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/samples/TokenPaymaster.sol)
 - [Aspect IDE](https://solidewidget.azurewebsites.net/aspect)
 
+## Getting Started
+To run Solide locally, follow these steps:
+
+### Clone the Repository
+First, clone the Solide repository to your local machine using Git:
+```bash
+git clone https://github.com/solide-project/solide
+```
+
+### Install Dependencies
+Navigate into the cloned repository directory and install the required npm packages:
+```bash
+cd solide
+npm install
+```
+
+### Install Smart Contract Libraries
+Next, install the support smart contracts for loading smart contract dependencies and remappings:
+```bash
+cd public/_contracts
+npm install --legacy-peer-deps
+npm run start
+```
+
+### Configure Environment Variables
+Create a `.env.local` file in the root directory of the project and use the following template to fill in the required variables:
+```plaintext
+ETHERSCAN_API_KEY=
+POLYSCAN_API_KEY=
+OPTIMISTICSCAN_API_KEY=
+FTMSCAN_API_KEY=
+ARBISCAN_API_KEY=
+NOVAARBISCAN_API_KEY=
+BSCSCAN_API_KEY=
+BASESCAN_API_KEY=
+LINEASCAN_API_KEY=
+MOONBEAM_API_KEY=
+MOONRIVER_API_KEY=
+CELOSCAN_API_KEY=
+GNOSISSCAN_API_KEY=
+CRONOSSCAN_API_KEY=
+SCROLLSCAN_API_KEY=
+BTTCSCAN_API_KEY=
+WEMIXSCAN_API_KEY=
+BLASTSCAN_API_KEY=
+FRAXSCAN_API_KEY=
+ZKEVM_POLYSCAN_API_KEY=
+
+GITHUB_API_KEY=
+  
+SIGNER_WALLET=
+TRON_WALLET=
+```
+
+- **Explorers API Keys**: Fill in the respective API keys for explorers like Etherscan, Polyscan, etc., which are required for loading contracts on selected chains.
+- **Github API Key**: Optional but necessary when the rate limit for GitHub API requests is reached
+- **Solidity DB Service**: To use this service, request a TRON address to be added to the Solidity Registry and set `TRON_WALLET` as the private key to store smart contract information. Email solide-project@proton.me for the request.
+
+### Running Solide
+After configuring the environment variables, start the Solide IDE:
+```bash
+npm start
+```
+
+This command will launch the Solide IDE in your default web browser.
+
 ## Contribution Guidelines
 
 We welcome contributions from the community to enhance Solide further. If you have suggestions, bug reports, or want to contribute code, please follow our [Contribution Guidelines](link-to-contribution-guidelines).
