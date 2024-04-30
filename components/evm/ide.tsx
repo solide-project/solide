@@ -66,7 +66,6 @@ export function EvmIDE({
 
   React.useEffect(() => {
     ; (async () => {
-      console.log("EvmIDE", bytecodeId)
       if (version) {
         evm.setCompilerVersion(version)
       }
@@ -75,7 +74,18 @@ export function EvmIDE({
       setNavItemActive(FILE_KEY, true)
       setNavItemActive(CONSOLE_KEY, true)
 
-      const input: CompileInput = parseInput(content)
+      let input: CompileInput = parseInput(content)
+      if (!input) {
+        // This means is single file
+        input = {
+          language: "Solidity",
+          sources: {
+            [`${title}.sol`]: {
+              content: content,
+            },
+          },
+        }
+      }
       setInput(input)
       const entryFile = await fs.initAndFoundEntry(input.sources, title || "")
       if (entryFile) {
@@ -160,7 +170,6 @@ export function EvmIDE({
       data.data?.target,
       data.data?.data
     )
-    console.log(data)
     evm.setOutput(data.output)
   }
 

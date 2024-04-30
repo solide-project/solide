@@ -87,7 +87,6 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
 
   const generateSources = (): Sources => {
     let obj = { ...files } // Create a copy of the file system
-    console.log(obj)
     let sources: Sources = {}
 
     const traverse = (currentObj: any) => {
