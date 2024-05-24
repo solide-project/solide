@@ -58,10 +58,7 @@ export const useWeb3Hook = () => {
     bytecode: string
     args: any[]
   }) => {
-    console.log("Loading contract", abi, contractAddress)
-
     if (contractAddress) {
-      console.log("Loading contract", abi, contractAddress)
       const contract = await load(contractAddress, abi)
 
       if (contract) {

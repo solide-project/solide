@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
 
     if (exist) {
       console.log("Bytecode already exists in database")
+      databaseId.pop()
       return
     }
     const insert = await databaseService.insertOne({
@@ -62,9 +63,11 @@ export async function POST(request: NextRequest) {
 
   try {
     // Store onchain
-    const contract = new SolidityDatabaseRegistry({})
-    await contract.load()
-    contract.adds(databaseId, input)
+    if (databaseId && databaseId.length > 0) {
+      const contract = new SolidityDatabaseRegistry({})
+      await contract.load()
+      contract.adds(databaseId, input)
+    }
   } catch (error) {
     console.log(error)
   }

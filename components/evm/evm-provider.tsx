@@ -52,6 +52,8 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
     Environment.METAMASK
   )
 
+  const [useSolidityDB, setUseSolidityDB] = useState<boolean>(false)
+
   useEffect(() => {
     ; (async () => {
       if (solidityVersions.latestRelease) {
@@ -105,6 +107,8 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
         compilerRuns,
         setCompilerRuns,
         resetBuild,
+        useSolidityDB,
+        setUseSolidityDB,
       }}
     >
       {children}
@@ -141,6 +145,8 @@ export const EVMContext = createContext({
   compilerRuns: 200,
   setCompilerRuns: (runs: number) => { },
   resetBuild: () => { },
+  useSolidityDB: false,
+  setUseSolidityDB: (enabled: boolean) => { },
 })
 
 export const useEVM = () => useContext(EVMContext)

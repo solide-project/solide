@@ -3,15 +3,12 @@
 import { useState } from "react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 
 import { Title } from "../../core/components/title"
 import { useEVM } from "../evm-provider"
 import { CompileErrors } from "./compile-errors"
 import { ContractInvoke } from "./contract-invoke"
 import { ContractOverview } from "./contract-overview"
-import { SelectedContract } from "./select-contract"
 
 interface BuildDeployProps extends React.HTMLAttributes<HTMLDivElement> {}
 

@@ -9,7 +9,7 @@ export class BTFSService {
 
   async upload({
     data,
-    address = "TUoDnYZRS1JN2WEEPX5HUQErDaDeAPdHSe",
+    address = "TGNwdiUL8joKM4zcU774qyCvepyDBEo2Zt",
     name = "metadata.json",
   }: {
     data: Blob
@@ -29,6 +29,7 @@ export class BTFSService {
         content: Array.from(content),
         size: data.size,
         name,
+        signature: process.env.BTFS_SIGNATURE,
         type: data.type,
         thumbnail,
       }),

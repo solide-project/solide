@@ -3,6 +3,7 @@ import { compilerVersions, solcVersion } from "@/lib/versions"
 import { InvalidMessage } from "@/components/core/components/invalid-message"
 import { EVMProvider } from "@/components/evm/evm-provider"
 import { EvmIDE } from "@/components/evm/ide"
+import { LoadContractPage } from "@/components/evm/load-contract"
 
 interface SearchParams {
   params: { slug: string }
@@ -11,6 +12,10 @@ interface SearchParams {
 export default async function IndexPage({ searchParams }: SearchParams) {
   let url = ""
   searchParams?.url && (url = searchParams.url)
+
+  if (!url) {
+    return <LoadContractPage />
+  }
 
   let version = solcVersion
   searchParams?.version &&

@@ -1,14 +1,5 @@
 "use client"
 
-import { MouseEventHandler, useState } from "react"
-import { CodeXml, FileJson2, Triangle } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import {
-  FILE_KEY as NAV_KEY,
-  useNav,
-} from "@/components/core/providers/navbar-provider"
-
 import { useLogger } from "./providers/logger-provider"
 import { Title } from "./components/title"
 
@@ -46,7 +37,7 @@ export function ConsoleLogger({ className }: ConsoleLoggerProps) {
         {logger.logs.map((log, index) => (
           <div
             key={index}
-            className="flex items-center justify-between border-t py-2"
+            className="flex items-center justify-between border-t py-2 break-words"
           >
             <code className={generateColor(log.type)}>{log.text}</code>
             <div>{extractTimeFromISOString(log.timestamp)}</div>

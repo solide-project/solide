@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react"
 import { Send } from "lucide-react"
-import { Contract } from "web3"
 
 import { ABIEntry, Environment } from "@/lib/evm"
-import { deploy, load } from "@/lib/evm/ethers"
 import * as evmUtil from "@/lib/evm"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +12,9 @@ import { useTronHook } from "./hook-tronweb"
 import { useWeb3Hook } from "./hook-web3"
 import { SelectedEnvironment } from "./selected-environment"
 import { useFileSystem } from "@/components/core/providers/file-provider"
-import { language, settings } from "@/lib/evm/metadata"
+import { getRPC, getTronRPC } from "@/lib/chains"
+import { getCode } from "@/lib/tron"
+import Web3 from "web3"
 
 const CONSTRUCTOR_METHOD = "constructor"
 
@@ -94,7 +94,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
   }
 
   const formatParameters = (entry: evmUtil.ABIEntry, method: string) => {
-    console.log("formatParameters", entry, contractArguments[method])
+    // console.log("formatParameters", entry, contractArguments[method])
     if (!entry || !contractArguments.hasOwnProperty(method)) {
       return []
     }
@@ -209,9 +209,13 @@ export function ContractInvoke({ }: ContractInvokeProps) {
   const formatOutput = (entry: evmUtil.ABIEntry, result: any) => {
     console.log("formatOutput", entry, result)
     if (entry.outputs && entry.outputs.length > 0) {
-      if (entry.outputs[0].type.includes("int")) {
+      console.log("output is array", typeof result)
+      if (typeof result === "object") {
+        result = JSON.stringify(result, (_, v) => typeof v === 'bigint' ? v.toString() : v)
+      } else if (entry.outputs[0].type.includes("int")) {
         result = result.toString() as BigInt
       } else {
+        console.log("output is string", typeof result)
         result = result as string
       }
 
@@ -241,6 +245,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     }
 
     try {
+      let deployedAddress = ""
       const args = contractAddress
         ? []
         : formatParameters(processedConstructor, CONSTRUCTOR_METHOD)
@@ -253,11 +258,10 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         })
 
         if (result.contract) {
+          deployedAddress = result.contract.options.address || ""
           setContractAddress(result.contract.options.address || "")
           setLoadedContractEnvironment(evm.environment)
-          logger.success(
-            `Contract deployed at ${result.contract.options.address}`
-          )
+          logger.success(`Contract deployed at ${result.contract.options.address}`)
         } else {
           logger.error(`Error deploying contract: ${result.transactionHash}`)
         }
@@ -271,7 +275,8 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         })
 
         if (result.contract) {
-          setContractAddress(window.tronWeb.address.fromHex(result.contract.address || ""))
+          deployedAddress = window.tronWeb.address.fromHex(result.contract.address || "")
+          setContractAddress(deployedAddress)
           setLoadedContractEnvironment(evm.environment)
           logger.success(`Contract deployed at ${result.contract.address}`)
         } else {
@@ -280,10 +285,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       // Upload to SolidityDB
-      if (shouldUpload) {
-        await uploadToSolidityDB()
+      if (shouldUpload && evm.useSolidityDB) {
+        await uploadToSolidityDB(deployedAddress)
       }
-
     } catch (error: any) {
       logger.error(handleError(error))
     }
@@ -313,8 +317,28 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     return true
   }
 
-  const uploadToSolidityDB = async () => {
+  const uploadToSolidityDB = async (deployedAddress: string = "") => {
     const payload: { bytecodes: string[] } = { bytecodes: [] }
+
+    try {
+      // After Deploying the contract bytecode to be safe
+      if (deployedAddress) {
+        let contractBytecode: string = "0x"
+        if (evm.environment === Environment.TRONLINK) {
+          const { bytecode }: any = await window.tronWeb.trx.getContract(deployedAddress)
+          contractBytecode = bytecode.toString()
+        } else if (evm.environment === Environment.METAMASK) {
+          const web3 = new Web3(window.ethereum)
+          contractBytecode = await web3.eth.getCode(deployedAddress)
+        }
+        if (contractBytecode !== "0x") {
+          payload.bytecodes.push(contractBytecode.slice(2))
+        }
+      }
+    } catch (error) {
+      console.log("Error loading deployed contract bytecode", error)
+    }
+
     if (evm.selectedCompiledContract && evm.selectedCompiledContract?.evm?.bytecode?.object) {
       payload.bytecodes.push(evm.selectedCompiledContract?.evm?.bytecode?.object)
     }
@@ -377,6 +401,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     formData.append("file", blob)
     formData.append("payload", JSON.stringify(payload))
 
+    console.log("Uploading to SolidityDB")
     const response = await fetch("/api/smart-contract/store", {
       method: "POST",
       body: formData,
@@ -535,8 +560,10 @@ export function ContractInvoke({ }: ContractInvokeProps) {
                   }
                 )}
 
-                <div className="py-1">
-                  {ret[abi.name] !== undefined && ret[abi.name].toString()}
+                <div className="py-1 break-words">
+                  {ret[abi.name] !== undefined && <div className="max-h-[128px] overflow-y-auto">
+                    {ret[abi.name].toString()}
+                  </div>}
                 </div>
               </div>
             </div>
