@@ -140,6 +140,12 @@ const data: { [key: string]: string } = {
   [ChainID.ETHEREUM_CLASSIC_TESTNET]: "https://etc-mordor.blockscout.com",
   [ChainID.STABILITY_MAINNET]: "https://stability.blockscout.com",
   [ChainID.STABILITY_TESTNET]: "https://stability-testnet.blockscout.com",
+  [ChainID.ARBITRUM_SEPOLIA]: "https://sepolia.arbiscan.io",
+  [ChainID.KROMA_MAINNET]: "https://kromascan.com",
+  [ChainID.KROMA_SEPOLIA]: "https://sepolia.kromascan.com",
+  [ChainID.POLYGON_AMOY]: "https://amoy.polygonscan.com",
+  [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado.blockscout.com",
+  [ChainID.COTI_DEVNET]: "https://explorer-devnet.coti.io",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""
@@ -151,6 +157,7 @@ export const getContractExplorer = (network: string, contract: string): string =
   switch (network) {
     case ChainID.TRON_MAINNET:
     case ChainID.TRON_SHASTA_TESTNET:
+    case ChainID.COTI_DEVNET:
       addressPath = `contract/${contract}`
     case ChainID.PALM_MAINNET:
     case ChainID.PALM_TESTNET:

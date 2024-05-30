@@ -100,7 +100,7 @@ export const getSourceCode = async (
         data.result = [result]
       }
     }
-  } else if (data.result === "API Endpoint not found") {
+  } else if (data.result === "API Endpoint not found" || data.result === "Contract not verified") {
     let contractBytecode: string = ""
     const rpc = getRPC(chain)
     if (rpc) {

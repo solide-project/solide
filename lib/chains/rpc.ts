@@ -1,10 +1,10 @@
 import { ChainID } from "./chain-id"
 
 const data: { [key: string]: string } = {
-    [ChainID.ETHEREUM_MAINNET]: "https://eth-pokt.nodies.app",
+    [ChainID.ETHEREUM_MAINNET]: "https://eth.drpc.org",
     [ChainID.ETHEREUM_GOERLI]: "wss://goerli.gateway.tenderly.co",
-    [ChainID.ETHEREUM_SEPOLIA]: "https://endpoints.omniatech.io/v1/eth/sepolia/public",
-    [ChainID.ETHEREUM_HOLESKY]: "https://ethereum-holesky-rpc.publicnode.com",
+    [ChainID.ETHEREUM_SEPOLIA]: "https://ethereum-sepolia-rpc.publicnode.com",
+    [ChainID.ETHEREUM_HOLESKY]: "https://holesky.drpc.org",
     [ChainID.METIS_ANDROMEDA]: "https://metis.drpc.org",
     [ChainID.METIS_SEPOLIA]: "https://sepolia.metisdevops.link",
     [ChainID.ARBITRUM_ONE]: "https://arb1.arbitrum.io/rpc",
@@ -24,9 +24,9 @@ const data: { [key: string]: string } = {
     [ChainID.FANTOM_MAINNET]: "https://rpcapi.fantom.network",
     [ChainID.FANTOM_TESTNET]: "https://rpc.testnet.fantom.network",
     [ChainID.BASE_MAINNET]: "https://1rpc.io/base",
-    [ChainID.BASE_SEPOLIA]: "https://sepolia.base.org",
+    [ChainID.BASE_SEPOLIA]: "https://base-sepolia-rpc.publicnode.com",
     [ChainID.BNB_MAINNET]: "https://bsc-dataseed1.binance.org",
-    [ChainID.BNB_TESTNET]: "https://opbnb-mainnet-rpc.bnbchain.org",
+    [ChainID.BNB_TESTNET]: "https://bsc-testnet-rpc.publicnode.com",
     [ChainID.LINEA_MAINNET]: "https://rpc.linea.build",
     [ChainID.LINEA_TESTNET]: "https://rpc.goerli.linea.build",
     [ChainID.MOONBEAM_MAINNET]: "https://rpc.api.moonriver.moonbeam.network",
@@ -135,6 +135,12 @@ const data: { [key: string]: string } = {
     [ChainID.ETHEREUM_CLASSIC_TESTNET]: "https://rpc.mordor.etccooperative.org",
     [ChainID.STABILITY_MAINNET]: "https://gtn.stabilityprotocol.com",
     [ChainID.STABILITY_TESTNET]: "https://free.testnet.stabilityprotocol.com",
+    [ChainID.ARBITRUM_SEPOLIA]: "https://arbitrum-sepolia.drpc.org",
+    [ChainID.KROMA_MAINNET]: "https://api.kroma.network",
+    [ChainID.KROMA_SEPOLIA]: "https://api.sepolia.kroma.network",
+    [ChainID.POLYGON_AMOY]: "https://rpc-amoy.polygon.technology",
+    [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado-rpc.publicnode.com/",
+    [ChainID.COTI_DEVNET]: "https://devnet.coti.io/rpc",
 }
 
 export const getRPC = (network: string): string =>

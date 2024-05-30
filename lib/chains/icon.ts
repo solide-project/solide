@@ -15,6 +15,7 @@ const getIcon = (chainId: string): string => {
       return "metis.svg"
     case ChainID.ARBITRUM_ONE:
     case ChainID.ARBITRUM_GOERLI:
+    case ChainID.ARBITRUM_SEPOLIA:
       return "arbitrum.svg"
     case ChainID.ARBITRUM_NOVA:
       return "arbitrum-nova.svg"
@@ -30,6 +31,7 @@ const getIcon = (chainId: string): string => {
       return "avax.svg"
     case ChainID.POLYGON_MAINNET:
     case ChainID.POLYGON_MUMBAI:
+    case ChainID.POLYGON_AMOY:
     case ChainID.ZKEVM_POLYGON:
     case ChainID.ZKEVM_POLYGON_CARDONA:
       return "polygon.svg"
@@ -57,6 +59,7 @@ const getIcon = (chainId: string): string => {
     case ChainID.CELO_ALFAJORES:
       return "celo.svg"
     case ChainID.GNOSIS_MAINNET:
+    case ChainID.GNOSIS_CHIADO:
       return "gnosis.svg"
     case ChainID.CRONOS_MAINNET:
       return "cronos.svg"
@@ -217,6 +220,11 @@ const getIcon = (chainId: string): string => {
     case ChainID.STABILITY_MAINNET:
     case ChainID.STABILITY_TESTNET:
       return "free.svg"
+    case ChainID.KROMA_MAINNET:
+    case ChainID.KROMA_SEPOLIA:
+      return "kroma.svg"
+    case ChainID.COTI_DEVNET:
+      return "coti.svg"
     default:
       return ""
   }

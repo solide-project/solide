@@ -148,7 +148,12 @@ const data: { [key: string]: string } = {
   [ChainID.ETHEREUM_CLASSIC_TESTNET]: "https://etc-mordor.blockscout.com",
   [ChainID.STABILITY_MAINNET]: "https://stability.blockscout.com",
   [ChainID.STABILITY_TESTNET]: "https://stability-testnet.blockscout.com",
-
+  [ChainID.ARBITRUM_SEPOLIA]: "https://api-sepolia.arbiscan.io",
+  [ChainID.KROMA_MAINNET]: "https://api-sepolia.arbiscan.io",
+  [ChainID.KROMA_SEPOLIA]: "https://api-sepolia.kromascan.com",
+  [ChainID.POLYGON_AMOY]: "https://api-amoy.polygonscan.com",
+  [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado.blockscout.com",
+  [ChainID.COTI_DEVNET]: "https://ethernal.fly.dev",
 }
 
 export const getAPI = (network: string): string => data[network] || ""

@@ -20,7 +20,7 @@ const data: { [key: string]: string } = {
   [ChainID.POLYGON_MAINNET]: "Polygon Mainnet",
   [ChainID.POLYGON_MUMBAI]: "Polygon Mumbai",
   [ChainID.OPTIMISM_MAINNET]: "Optimism Mainnet",
-  [ChainID.OPTIMISM_SEPOLIA]: "Optimism Georli",
+  [ChainID.OPTIMISM_SEPOLIA]: "Optimism Seoplia",
   [ChainID.FANTOM_MAINNET]: "Fantom Mainnet",
   [ChainID.FANTOM_TESTNET]: "Fantom Testnet",
   [ChainID.BASE_MAINNET]: "Base Mainnet",
@@ -138,6 +138,12 @@ const data: { [key: string]: string } = {
   [ChainID.ETHEREUM_CLASSIC_TESTNET]: "Etheruem Classic Testnet",
   [ChainID.STABILITY_MAINNET]: "Global Trust Network",
   [ChainID.STABILITY_TESTNET]: "Stability Testnet",
+  [ChainID.ARBITRUM_SEPOLIA]: "Arbitrum Seoplia",
+  [ChainID.KROMA_MAINNET]: "Kroma Mainnet",
+  [ChainID.KROMA_SEPOLIA]: "Kroma Seoplia",
+  [ChainID.POLYGON_AMOY]: "Polygon Amoy",
+  [ChainID.GNOSIS_CHIADO]: "Gnosis Chiado",
+  [ChainID.COTI_DEVNET]: "Coti Devnet",
 }
 
 export const getNetworkNameFromChainID = (network: string): string =>
