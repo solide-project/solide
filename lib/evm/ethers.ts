@@ -76,6 +76,7 @@ export const deploy = async (
   // console.log(`Contract deployed at ${deployedContract.options.address}`)
   // ret.contract = new web3.eth.Contract(abi, deployedContract.options.address)
 
+
   const provider = new ethers.BrowserProvider(window.ethereum)
   const signer = await provider.getSigner()
 
@@ -84,9 +85,10 @@ export const deploy = async (
     bytecode,
     signer
   )
-  const contractInstance: ethers.BaseContract = await factory.deploy(...args);
+  const contractInstance = await factory.deploy(...args);
   const address = await contractInstance.getAddress()
-
+  await contractInstance.waitForDeployment();
+  
   ret.contract = new web3.eth.Contract(abi, address)
 
   return ret

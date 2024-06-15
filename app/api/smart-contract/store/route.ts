@@ -40,32 +40,38 @@ export async function POST(request: NextRequest) {
 
   // Store the bytecode hash in our database
   const databaseId: string[] = []
-  payload.bytecodes.forEach(async (raw: string) => {
+  const contract = new SolidityDatabaseRegistry({})
+  await contract.load()
+  for (const raw of payload.bytecodes) {
     const bytecode = utils.sha3(raw) // Hashed version of bytecode
-    if (!bytecode) return
-    databaseId.push(bytecode)
+    if (!bytecode) continue
 
     // Glacier
-    const exist: boolean = databaseService.exist(
-      await databaseService.find(bytecode)
-    )
+    // const exist: boolean = databaseService.exist(
+    //   await databaseService.find(bytecode)
+    // )
 
-    if (exist) {
+    const results = await contract.find(bytecode)
+
+    // if (exist) {
+    if (results && results?.id) {
       console.log("Bytecode already exists in database")
-      databaseId.pop()
-      return
+      continue
     }
+
+    databaseId.push(bytecode)
     const insert = await databaseService.insertOne({
       bytecode,
       input,
     })
-  })
+  }
 
   try {
     // Store onchain
     if (databaseId && databaseId.length > 0) {
-      const contract = new SolidityDatabaseRegistry({})
-      await contract.load()
+      // const contract = new SolidityDatabaseRegistry({})
+      // await contract.load()
+      console.log("Adding to contract", databaseId, input)
       contract.adds(databaseId, input)
     }
   } catch (error) {

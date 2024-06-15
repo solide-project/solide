@@ -159,7 +159,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         formatOutput(entry, result)
       }
     } catch (error: any) {
-      logger.error(handleError(error))
+      logger.error(handleError(error), true)
     }
   }
 
@@ -202,7 +202,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         formatOutput(entry, result)
       }
     } catch (error: any) {
-      logger.error(handleError(error))
+      logger.error(handleError(error), true)
     }
   }
 
@@ -239,12 +239,13 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       return
     }
 
-    let shouldUpload = true
-    if (contractAddress) {
-      shouldUpload = false
-    }
-
     try {
+      // Note empty contractAddress value means this is a new contract (deploying)
+      let shouldUpload = true
+      if (contractAddress) {
+        shouldUpload = false
+      }
+
       let deployedAddress = ""
       const args = contractAddress
         ? []
@@ -289,7 +290,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         await uploadToSolidityDB(deployedAddress)
       }
     } catch (error: any) {
-      logger.error(handleError(error))
+      logger.error(handleError(error), true)
     }
   }
 
@@ -418,7 +419,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       msg = error?.message.toString() || "Error deploying contract"
     }
 
-    return `❌ ${msg.toString()}`
+    return `${msg.toString()}`
   }
 
   return (

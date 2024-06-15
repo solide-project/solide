@@ -100,7 +100,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
           label: "Explain This",
           // keybindings: [monaco.KeyMod.CtrlCmd],
           contextMenuGroupId: "9_cutcopypaste",
-          run: (editor) => {
+          run: (editor: any) => {
             const model = editor.getModel()
             if (model) {
               const selection = editor.getSelection()

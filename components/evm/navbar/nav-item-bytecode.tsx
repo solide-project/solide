@@ -27,24 +27,22 @@ function maskString(input: string, maskChar: string = "."): string {
 }
 
 export function NavItemBytecode({ id }: NavItemBytecodeProps) {
-    return (
-        <HoverCard openDelay={0}>
-            <HoverCardTrigger>
-                <Button size="icon" variant="ghost">
-                    <AlertTriangle color="orange" />
-                </Button>
-            </HoverCardTrigger>
-            <HoverCardContent>
-                Contract is unverified, but there its bytecode matches one Solide&apos;s
-                Open Source Database:{" "}
-                <Link
-                    className="text-primary hover:cursor-pointer hover:underline"
-                    href={`https://gateway.btfs.io/btfs/${id}`}
-                    target="_blank"
-                >
-                    {maskString(id)}
-                </Link>
-            </HoverCardContent>
-        </HoverCard>
-    )
+    return <HoverCard openDelay={0}>
+        <HoverCardTrigger>
+            <Button size="icon" variant="ghost">
+                <AlertTriangle color="orange" />
+            </Button>
+        </HoverCardTrigger>
+        <HoverCardContent>
+            Contract is unverified, but there its bytecode matches one Solide&apos;s
+            Open Source Database:{" "}
+            <Link
+                className="text-primary hover:cursor-pointer hover:underline"
+                href={`https://gateway.btfs.io/btfs/${id}`}
+                target="_blank"
+            >
+                {maskString(id)}
+            </Link>
+        </HoverCardContent>
+    </HoverCard>
 }

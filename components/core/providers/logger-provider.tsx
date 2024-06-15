@@ -8,38 +8,42 @@ import React, { createContext, useContext, useState } from "react"
 export const LoggerProvider = ({ children }: LoggerProviderProps) => {
   const [logs, setLogs] = useState<LogEntry[]>([])
 
-  const log = (text: string | object, type: LogType) => {
+  const log = (text: string | object, type: LogType, icon: boolean = false) => {
     if (typeof text === "object") {
       text = JSON.stringify(
         text,
-        (key, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
+        (_, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
         2
       )
     }
+
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     setLogs((currentLogs: LogEntry[]) => [
       ...currentLogs,
       {
         text,
         type: type,
-        timestamp: new Date().toISOString(),
+        timestamp: now.toISOString(),
+        icon,
       } as LogEntry,
     ])
   }
 
-  const info = (text: string | object) => {
-    log(text, LogOptions.Info)
+  const info = (text: string | object, icon: boolean = false) => {
+    log(text, LogOptions.Info, icon)
   }
 
-  const warn = (text: string | object) => {
-    log(text, LogOptions.Warning)
+  const warn = (text: string | object, icon: boolean = false) => {
+    log(text, LogOptions.Warning, icon)
   }
 
-  const error = (text: string | object) => {
-    log(text, LogOptions.Error)
+  const error = (text: string | object, icon: boolean = true) => {
+    log(text, LogOptions.Error, icon)
   }
 
-  const success = (text: string | object) => {
-    log(text, LogOptions.Success)
+  const success = (text: string | object, icon: boolean = true) => {
+    log(text, LogOptions.Success, icon)
   }
 
   const clear = () => {
@@ -69,12 +73,12 @@ interface LoggerProviderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const LoggerContext = createContext({
   logs: [] as LogEntry[],
-  log: (text: string | object, type: LogType) => {},
-  info: (text: string | object) => {},
-  error: (text: string | object) => {},
-  warn: (text: string | object) => {},
-  success: (text: string | object) => {},
-  clear: () => {},
+  log: (text: string | object, type: LogType, icon: boolean = false) => { },
+  info: (text: string | object, icon: boolean = false) => { },
+  error: (text: string | object, icon: boolean = true) => { },
+  warn: (text: string | object, icon: boolean = false) => { },
+  success: (text: string | object, icon: boolean = false) => { },
+  clear: () => { },
 })
 
 export const useLogger = () => useContext(LoggerContext)
@@ -91,4 +95,5 @@ export interface LogEntry {
   text: string
   type: LogType
   timestamp: string
+  icon?: boolean
 }

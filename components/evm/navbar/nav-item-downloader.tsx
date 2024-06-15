@@ -31,15 +31,13 @@ export function NavItemDownloader({
         }
     }
 
-    return (
-        <Button
-            className="cursor-pointer border-0 hover:bg-grayscale-100"
-            size="icon"
-            variant="ghost"
-            onClick={handleOnClick}
-            {...props}
-        >
-            <Download />
-        </Button>
-    )
+    return <Button
+        className="cursor-pointer border-0 hover:bg-grayscale-100"
+        size="icon"
+        variant="ghost"
+        onClick={handleOnClick}
+        {...props}
+    >
+        <Download />
+    </Button>
 }

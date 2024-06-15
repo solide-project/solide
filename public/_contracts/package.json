@@ -32,7 +32,7 @@
     "@balancer-labs/v2-standalone-utils": "^2.0.0",
     "@balancer-labs/v2-vault": "^3.0.1",
     "@biconomy/ccmp-contracts": "^0.0.6",
-    "@chainlink/contracts": "^0.8.0",
+    "@chainlink/contracts": "^1.1.1",
     "@chainlink/contracts-ccip": "^1.2.1",
     "@chiru-labs/pbt": "^0.3.0",
     "@dydxprotocol/perpetual": "^1.2.1",

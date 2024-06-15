@@ -34,6 +34,7 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
     {} as SolidityReleases
   )
   const [errors, setErrors] = useState<CompileError>({} as CompileError)
+  const [input, setInput] = useState<any>({} as any)
   const [output, setOutput] = useState<DecompileOutput>({} as DecompileOutput)
 
   const [target, setTarget] = useState<string>("")
@@ -90,6 +91,8 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
         solidityVersions,
         errors,
         setErrors,
+        input,
+        setInput,
         output,
         setOutput,
         environment,
@@ -124,6 +127,8 @@ export const EVMContext = createContext({
   solidityVersions: {} as SolidityReleases,
   errors: {} as CompileError,
   setErrors: (errors: CompileError) => { },
+  input: {} as any,
+  setInput: (input: any) => { },
   output: {} as DecompileOutput,
   setOutput: (output: DecompileOutput) => { },
   environment: Environment.METAMASK,

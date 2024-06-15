@@ -12,6 +12,14 @@ export const zipSources = async (sources: Sources): Promise<Blob> => {
   return blob
 }
 
+export const downloadJSON = async (sources: any): Promise<Blob> => {
+  const blob = new Blob([JSON.stringify(sources)], {
+    type: "application/json",
+  })
+
+  return blob
+}
+
 export const downloadBlob = async ({
   source,
   name = "file",

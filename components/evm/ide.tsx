@@ -26,9 +26,11 @@ import {
 import { BuildDeploy } from "@/components/evm/deploy/build-deploy"
 import { useEVM } from "@/components/evm/evm-provider"
 import { EVMNavBar } from "@/components/evm/navbar/navbar"
-import { QueryHelper, zipSources } from "@/lib/core"
-import { CompileError, CompileInput, isAddress, metadataUtil, parseInput } from "@/lib/evm"
+import { QueryHelper } from "@/lib/core"
+import { CompileError, CompileInput, isAddress, parseInput } from "@/lib/evm"
 import { getContractExplorer } from "@/lib/chains"
+import { UTILITY_KEY } from "@/components/evm/navbar/nav-item-utility"
+import { UtiltyTab } from "@/components/evm/utils/utility-tab"
 
 export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
 
@@ -109,7 +111,7 @@ export function EvmIDE({
     }
 
     const end = performance.now()
-    logger.info(`Compiled in ${end - start} ms.`)
+    logger.success(`Compiled in ${end - start} ms.`, true)
     setCompiling(false)
 
     setNavItemActive(CODE_KEY, true)
@@ -159,10 +161,26 @@ export function EvmIDE({
       const data = (await response.json()) as CompileError
       evm.setErrors(data)
 
-      logger.error(`Compiled with ${data.details.length} errors.`)
+      logger.error(`Compiled with ${data.details.length} errors.`, true)
       // setCompilingState({ errors: data, })
       return
     }
+
+    evm.setInput({
+      language: "Solidity",
+      sources: sources,
+      settings: {
+        optimizer: {
+          enabled: evm.compilerOptimised,
+          runs: evm.compilerRuns
+        },
+        outputSelection: {
+          "*": {
+            "*": ["*"]
+          }
+        }
+      }
+    })
 
     const data = await response.json()
     evm.setSelectedContract(
@@ -202,6 +220,9 @@ export function EvmIDE({
             )}
             {isNavItemActive(CODE_KEY) && (
               <BuildDeploy className="rounded-lg bg-grayscale-025" />
+            )}
+            {isNavItemActive(UTILITY_KEY) && (
+              <UtiltyTab className="rounded-lg bg-grayscale-025" />
             )}
           </div>
         </ResizablePanel>

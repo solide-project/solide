@@ -5,17 +5,15 @@ import { NavItemContent } from "@/components/core/navbar/nav-item-content"
 import { NavItemEditor } from "@/components/core/navbar/nav-item-editor"
 import { NavItemFile } from "@/components/core/navbar/nav-item-file"
 import { NavItemTheme } from "@/components/core/navbar/nav-item-theme"
-
+import { NavItemUtility } from "@/components/evm/navbar/nav-item-utility"
 import { NavItemConsole } from "@/components/core/navbar/nav-item-console"
 import { EVMSelectedChain } from "@/components/evm/evm-selected-chain"
 import { EVMSettings } from "@/components/evm/settings/settings"
 import { NavItemBytecode } from "@/components/evm/navbar/nav-item-bytecode"
-import { useFileSystem } from "@/components/core/providers/file-provider"
 import { NavItemDownloader } from "@/components/evm/navbar/nav-item-downloader"
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
@@ -42,6 +40,9 @@ export function EVMNavBar({
       <NavTooltipItem tooltip="Console">
         <NavItemConsole />
       </NavTooltipItem>
+      <NavTooltipItem tooltip="Utility">
+        <NavItemUtility />
+      </NavTooltipItem>
       <NavTooltipItem tooltip="Source">
         <NavItemContent url={url} />
       </NavTooltipItem>
@@ -61,16 +62,14 @@ export function EVMNavBar({
 
 
 const NavTooltipItem = ({ children, tooltip }: { children: React.ReactNode, tooltip: string }) => {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild={true}>
-        <div>
-          {children}
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="right">
-        <p>{tooltip}</p>
-      </TooltipContent>
-    </Tooltip>
-  )
+  return <Tooltip>
+    <TooltipTrigger asChild={true}>
+      <div>
+        {children}
+      </div>
+    </TooltipTrigger>
+    <TooltipContent side="right">
+      <p>{tooltip}</p>
+    </TooltipContent>
+  </Tooltip>
 }

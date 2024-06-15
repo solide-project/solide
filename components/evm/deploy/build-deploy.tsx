@@ -10,7 +10,7 @@ import { CompileErrors } from "./compile-errors"
 import { ContractInvoke } from "./contract-invoke"
 import { ContractOverview } from "./contract-overview"
 
-interface BuildDeployProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface BuildDeployProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 enum Tab {
   OVERVIEW = "overview",
@@ -36,7 +36,7 @@ export function BuildDeploy({ className }: BuildDeployProps) {
       {evm.errors && evm.errors.details && <CompileErrors />}
       {/* {evm.output && evm.output.contracts && <SelectedContract />} */}
 
-      <div className="mx-2 my-4 flex items-center gap-x-4">
+      <div className="mx-2 my-4 flex items-center gap-x-4 text-sm">
         <div
           className={tabActive(Tab.OVERVIEW)}
           onClick={() => setActiveTab(Tab.OVERVIEW)}

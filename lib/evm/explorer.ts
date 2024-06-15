@@ -39,10 +39,18 @@ export const getSourceCode = async (
   chain: string,
   address: string
 ): Promise<EthGetSourceCodeInterface> => {
-  const data = await getSource(address, {
-    chainId: chain,
-    apiKey: getAPIKey(chain),
-  })
+  let data = {
+    result: "API Endpoint not found",
+  } as EthGetSourceCodeInterface
+  try {
+    data = await getSource(address, {
+      chainId: chain,
+      apiKey: getAPIKey(chain),
+    })
+  } catch (error) {
+    console.error(error)
+    // This is an error in the plugin, we will continue to use the Solidity DB
+  }
 
   // NEW: Solide Smart Contract Database Service to load unverified contracts
   if (typeof data.result !== "string") {
@@ -111,7 +119,7 @@ export const getSourceCode = async (
 
     if (contractBytecode && contractBytecode !== "0x") {
       const hash = utils.sha3(contractBytecode.slice(2)) || ""
-
+      console.log("hash", hash)
       const databaseService = new SolidityDatabaseRegistry({})
       await databaseService.load()
       const results = await databaseService.find(hash)

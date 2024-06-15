@@ -6,6 +6,7 @@ import { utils } from "web3"
 import { CopyText } from "@/components/core/components/copy-text"
 
 import { useEVM } from "../evm-provider"
+import { downloadBlob, downloadJSON } from "@/lib/core"
 
 interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> { }
 
@@ -27,6 +28,16 @@ export function ContractOverview({ }: ContractOverviewProps) {
       setABIPayload(JSON.stringify(abi || {}))
     }
   }, [evm.selectedCompiledContract])
+
+  const handleDownloadCompilerInput = async () => {
+    const blob = await downloadJSON(evm.input)
+
+    downloadBlob({
+      source: blob,
+      name: "input.json",
+    })
+  }
+
   return (
     <div className="h-full overflow-y-auto px-4">
       {evm.selectedCompiledContract?.evm?.bytecode?.opcodes && (
@@ -80,6 +91,10 @@ export function ContractOverview({ }: ContractOverviewProps) {
           <ContractOverviewItem data="Events" payload={abiEvents} />
         </>
       )}
+
+      {evm.input && <div onClick={handleDownloadCompilerInput}>
+        Download
+      </div>}
     </div>
   )
 }
