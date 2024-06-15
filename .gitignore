@@ -1,8 +1,14 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 Dockerfile
-.dockerignore
 tmp/
+
+# Ignore all files in public except certain
+public/**
+
+!public/favicon*
+!public/_*/
+!public/_*/**
 
 # dependencies
 node_modules/
@@ -38,9 +44,3 @@ yarn-error.log*
 
 .contentlayer
 .env
-
-public/**
-!public/favicon*
-!public/icons/
-!public/icons/**
-

@@ -34,7 +34,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts", "lib/pi.js", "public/_solc-worker/worker.ts", "lib/assemblyscript.js", "lib/services/abi/abi-entry.interface,ts",
+    ".next/types/**/*.ts", "lib/pi.js", "public/_solc-worker/worker-1.ts", "lib/assemblyscript.js", "lib/services/ethers/abi-entry.interface,ts", "components/evm/evm-selected-chainstsx", "test/components/evm-provider.test,tsx", "test/components/evm-settingstsx",
   ],
   "exclude": [
     "node_modules",

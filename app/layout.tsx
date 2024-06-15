@@ -1,18 +1,17 @@
-import "@/styles/globals.css"
 import { Metadata } from "next"
 import { Space_Grotesk } from "next/font/google"
 
-import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
-import { FileSystemProvider } from "@/components/file-provider"
-import { ThemeProvider } from "@/components/theme-provider"
+
+import "./globals.css"
+import { SolideProviders } from "@/components/providers"
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: "Solide | Solidity IDE",
+    template: `%s - Solide`,
   },
-  description: siteConfig.description,
+  description: "Lightweight Solide IDE",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
@@ -40,11 +39,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
             fontSpace.variable
           )}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <FileSystemProvider>{children}</FileSystemProvider>
-          </ThemeProvider>
-        </body>
-      </html>
+          <SolideProviders>
+              {children}
+          </SolideProviders>
+        </body >
+      </html >
     </>
   )
 }

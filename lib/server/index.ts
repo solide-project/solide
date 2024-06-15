@@ -1,5 +1,9 @@
-export type { Solc } from "./solc/interface"
-export { getSolcByVersion } from "./solc/solc"
+/**
+ * Dependencies
+ * - @resolver-engine/imports
+ */
+export { getSolcByVersion } from "./solc"
+export type { Solc } from "./solc"
 export {
   getSolidityContract,
   flattenContracts,
