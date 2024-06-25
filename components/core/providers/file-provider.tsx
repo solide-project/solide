@@ -129,6 +129,92 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
     return count
   }
 
+  const removeFile = (path: string) => {
+    setFiles(prevFiles => {
+      const parts = path.split('/');
+      let current: VFSNode | undefined = prevFiles;
+
+      // Traverse through the VFS to reach the parent directory of the file
+      for (let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i];
+        if (current && typeof current[part] === 'object') {
+          current = current[part] as VFSNode;
+        } else {
+          // Directory not found or invalid path
+          return prevFiles;
+        }
+      }
+
+      // Get the file name
+      const fileName = parts[parts.length - 1];
+
+      // Delete the file if it exists in the parent directory
+      if (current && typeof current[fileName] === 'object') {
+        delete current[fileName];
+      }
+
+      return { ...prevFiles }; // Return a new object to trigger state update
+    });
+  };
+
+  const writeFolder = (path: string) => {
+    console.log('writeFolder', path);
+    setFiles(prevFiles => {
+      const parts = path.split('/');
+      let current: VFSNode | undefined = prevFiles;
+
+      // Traverse through the VFS to reach the parent directory of the folder
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        if (current && typeof current[part] === 'object') {
+          current = current[part] as VFSNode;
+        } else {
+          current[part] = {};
+          current = current[part] as VFSNode;
+        }
+      }
+
+      return { ...prevFiles };
+    });
+  }
+
+  const renameFile = (path: string, name: string): void => {
+    setFiles(prevFiles => {
+      const parts = path.split('/');
+      const oldName = parts.pop();
+      const parentPath = parts.join('/');
+      let current: VFSNode | undefined = prevFiles;
+
+      // Traverse through the VFS to reach the parent directory of the node
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
+        if (current && typeof current[part] === 'object') {
+          current = current[part] as VFSNode;
+        } else {
+          return prevFiles; // Return previous state if path is invalid
+        }
+      }
+
+      if (current && oldName && current[oldName]) {
+        console.log('renameFile', current[oldName]);
+        const { ext } = parse(path)
+        const newName = `${name}${ext}`;
+        current[newName] = current[oldName];
+        delete current[oldName];
+
+        // Update filePath if it's a file
+        if ('filePath' in current[name]) {
+          console.log('renameFile', current[name]);
+          (current[name] as VFSFile).filePath = `${parentPath}/${newName}`;
+        }
+
+        return { ...prevFiles }; // Return new state with updated name
+      }
+
+      return prevFiles;
+    });
+  };
+
   return (
     <FileContext.Provider
       value={{
@@ -140,6 +226,9 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
         initAndFoundEntry,
         generateSources,
         count,
+        removeFile,
+        writeFolder,
+        renameFile,
       }}
     >
       {children}
@@ -160,6 +249,9 @@ export const FileContext = createContext({
   initAndFoundEntry: async (sources: { [key: string]: { content: string } }, entry: string): Promise<VFSFile | undefined> => undefined,
   generateSources: (): Sources => ({}),
   count: (): number => 0,
+  removeFile: (path: string) => { },
+  writeFolder: (path: string) => { },
+  renameFile: (path: string, name: string) => { },
 })
 
 export const useFileSystem = () => useContext(FileContext)
