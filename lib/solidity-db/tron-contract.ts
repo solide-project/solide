@@ -9,7 +9,7 @@ export class SolidityDatabaseRegistry {
   contract: any
 
   constructor({
-    rpc = getTronRPC(ChainID.TRON_NILE_TESTNET),
+    rpc = getTronRPC(ChainID.TRON_MAINNET),
   }: {
     rpc?: string
   }) {
