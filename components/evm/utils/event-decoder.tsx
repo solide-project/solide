@@ -47,7 +47,7 @@ export function EventDecoder({ }: EventDecoderProps) {
         })}
 
         <Input onChange={(e) => setData(e.target.value)} value={data} placeholder="data" />
-        <Button className="my-2" onClick={handleDecode}>Decode</Button>
+        <Button className="my-2" size="sm" onClick={handleDecode}>Decode</Button>
 
         <div className="break-words">
             {Object.entries(result).map(([key, value]) => {

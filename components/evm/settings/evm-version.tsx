@@ -32,7 +32,7 @@ export function EVMVersions({ }: EVMVersionsProps) {
 
     return (
         <Popover open={open} onOpenChange={setOpen} modal={true}>
-            <PopoverTrigger className={cn(buttonVariants({ variant: "default" }))}>
+            <PopoverTrigger className={cn(buttonVariants({ variant: "default" }), "!text-base")}>
                 {value ? value : "Default"}
             </PopoverTrigger>
             <PopoverContent className="p-0">

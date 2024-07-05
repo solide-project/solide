@@ -1,21 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import {
-  Check,
-  FileBox,
-  FilePlus,
-  FolderClosed,
-  FolderOpen,
-  FolderPlus,
-  Trash
-} from "lucide-react"
+import { useEffect, useState } from "react"
+import { Check, FileBox, FilePlus, FolderClosed, FolderOpen, FolderPlus, Trash } from "lucide-react"
 
-import { VFSFile, VFSNode, isVFSFile } from "@/lib/core"
-
-import { useEditor } from "../providers/editor-provider"
-import { useFileSystem } from "../providers/file-provider"
-import { Title } from "../components/title"
+import { isVFSFile, VFSFile, VFSNode } from "@/lib/core/file-system/interfaces"
+import path from "path"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -26,65 +15,85 @@ import {
   ContextMenuSubTrigger,
   ContextMenuShortcut,
 } from "@/components/ui/context-menu"
-import { Input } from "@/components/ui/input"
+import { Input } from "../../ui/input"
+import {
+  FileTreeContextMenuSubTrigger,
+  FileTreeContextMenuItem
+} from "@/components/core/file/fs-context-menu"
+import { Title } from "@/components/core/components/title"
 import { useLogger } from "@/components/core/providers/logger-provider"
+import { useFileSystem } from "@/components/core/providers/file-provider"
+import { useEditor } from "@/components/core/providers/editor-provider"
 
 interface FileTreeNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string
+  directory: string
   node: VFSNode | VFSFile
-  depth: number,
-  fullPath: string,
+  depth: number
 }
 
+const menuClass = "p-0 py-1 px-2"
 const iconsProps = {
   size: 18,
   className: "shrink-0",
 }
-const FileTreeNode = ({ name, node, depth, fullPath }: FileTreeNodeProps) => {
+const FileTreeNode = ({ name, directory, node, depth }: FileTreeNodeProps) => {
   const ide = useEditor()
+  const { vfs } = useFileSystem()
   const logger = useLogger()
-  const { removeFile, writeFile, writeFolder, renameFile } = useFileSystem()
-
   const [isExpanded, setIsExpanded] = useState(false)
-  const [newName, setNewName] = useState("")
+  const [newName, setName] = useState("")
+  const [fullPath, setFullPath] = useState("")
+
+  useEffect(() => {
+    setName(name)
+  }, [])
+
+  useEffect(() => {
+    setFullPath(directory + "/" + name)
+    // setName(name)
+  }, [path, name])
 
   if (isVFSFile(node)) {
     return <ContextMenu>
-      <ContextMenuTrigger>
-        <div onClick={() => ide.selectFile(node as VFSFile)}
-          className="group hover:bg-secondary flex items-center justify-between cursor-pointer pl-[16px] pr-[4px]">
-          <div className="flex items-center space-x-1">
-            <FileBox {...iconsProps} />
-            <div className="truncate">
-              {name} {fullPath} {depth}
-            </div>
+      <ContextMenuTrigger><div onClick={() => ide.selectFile(node as VFSFile)}>
+        <div
+          // style={getIndentStyle()}
+          className="hover:bg-secondary flex items-center cursor-pointer space-x-1 pl-[16px]">
+          <FileBox {...iconsProps} />
+          <div className="truncate">
+            {name}
           </div>
         </div>
-      </ContextMenuTrigger>
+      </div></ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuSub>
-          <ContextMenuSubTrigger>Rename</ContextMenuSubTrigger>
-          <ContextMenuSubContent className="flex items-center space-x-4">
-            <Input onChange={(e) => setNewName(e.target.value)} value={newName} />
-            <Check onClick={() => {
-              const isValid = /^[a-zA-Z0-9-_]+$/.test(newName);
+          <FileTreeContextMenuSubTrigger className={menuClass}>Rename</FileTreeContextMenuSubTrigger>
+          <ContextMenuSubContent className="flex items-center gap-2">
+            <Input className="h-8 border-none" onChange={(e) => setName(e.target.value)} value={newName} />
+            <Check size={16} className="hover:cursor-pointer hover:text-green-400" onClick={() => {
+              const isValid = /^[a-zA-Z0-9-_.]+$/.test(newName);
               if (!isValid) {
                 logger.error("Invalid file name. Only alphanumeric characters, dashes, and underscores are allowed.")
                 return;
               }
 
-              logger.info(`Renaming file ${node.filePath} to  ${newName} ...`)
-              renameFile(node.filePath, newName)
-              setNewName("")
+              const { dir } = path.parse(fullPath)
+              const file = vfs.cat(fullPath)
+              // console.log(file.content)
+              vfs.touch(path.join(dir, newName), file.content)
+              vfs.rm(fullPath)
+
+              setName("")
             }} />
           </ContextMenuSubContent>
         </ContextMenuSub>
-        <ContextMenuItem onClick={() => removeFile(node.filePath)}>
+        <FileTreeContextMenuItem className={menuClass} onClick={() => vfs.rm(fullPath)}>
           Delete
           <ContextMenuShortcut>
             <Trash size={14} />
           </ContextMenuShortcut>
-        </ContextMenuItem>
+        </FileTreeContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   }
@@ -99,7 +108,7 @@ const FileTreeNode = ({ name, node, depth, fullPath }: FileTreeNodeProps) => {
             <div className="flex items-center space-x-1">
               {isExpanded ? <FolderOpen {...iconsProps} /> : <FolderClosed {...iconsProps} />}
               <div className="truncate">
-                {name} {fullPath} {depth}
+                {name}
               </div>
             </div>
           </div>
@@ -107,61 +116,46 @@ const FileTreeNode = ({ name, node, depth, fullPath }: FileTreeNodeProps) => {
       </ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuSub>
-          <ContextMenuSubTrigger>Rename</ContextMenuSubTrigger>
-          <ContextMenuSubContent>
-            <Input />
-            <Check />
+          <FileTreeContextMenuSubTrigger>Rename</FileTreeContextMenuSubTrigger>
+          <ContextMenuSubContent className="flex items-center gap-2">
+            <Input className="h-8 border-none" onChange={(e) => setName(e.target.value)} value={newName} />
+            <Check size={16} className="hover:cursor-pointer hover:text-green-400" onClick={() => {
+              const { dir } = path.parse(fullPath)
+              vfs.mv(fullPath, path.join(dir, newName))
+            }} />
           </ContextMenuSubContent>
         </ContextMenuSub>
         <ContextMenuSub>
-          <ContextMenuSubTrigger>Add</ContextMenuSubTrigger>
+          <FileTreeContextMenuSubTrigger>Add</FileTreeContextMenuSubTrigger>
           <ContextMenuSubContent>
-            <ContextMenuItem onClick={() => {
-              let writePath = ""
-              if (depth === 0) {
-                writePath = ""
-              } else if (depth === 1) {
-                writePath = `${name}/`
-              } else {
-                writePath = `${fullPath}/${name}/`
-              }
-              writeFile(`${writePath}text.txt`, "")
+            <FileTreeContextMenuItem onClick={() => {
+              vfs.touch(path.join(fullPath, "text.txt"), "")
             }}>
               File
               <ContextMenuShortcut>
                 <FilePlus size={14} />
               </ContextMenuShortcut>
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => {
-              let writePath = ""
-              if (depth === 0) {
-                writePath = ""
-              } else if (depth === 1) {
-                writePath = `${name}/`
-              } else {
-                writePath = `${fullPath}/${name}/`
-              }
-              writeFolder(`${writePath}folder`)
-            }}>
+            </FileTreeContextMenuItem>
+            <FileTreeContextMenuItem onClick={() => vfs.mkdir(path.join(fullPath, "new-folder"))}>
               Folder
               <ContextMenuShortcut>
                 <FolderPlus size={14} />
               </ContextMenuShortcut>
-            </ContextMenuItem>
+            </FileTreeContextMenuItem>
           </ContextMenuSubContent>
         </ContextMenuSub>
-        <ContextMenuItem>
+        <FileTreeContextMenuItem onClick={() => vfs.rm(fullPath)}>
           Delete
           <ContextMenuShortcut>
             <Trash size={14} />
           </ContextMenuShortcut>
-        </ContextMenuItem>
+        </FileTreeContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
 
     {isExpanded && node && (<ul style={{ listStyleType: "none" }}>
       {Object.entries(node).map(([childName, childNode]) => <li key={childName}>
-        <FileTreeNode name={childName} node={childNode} depth={depth + 1} fullPath={depth > 0 ? `${name}/${childName}` : ""} />
+        <FileTreeNode name={childName} node={childNode} depth={depth + 1} directory={fullPath} />
       </li>)}
     </ul>)}
   </div >
@@ -172,22 +166,19 @@ interface FileTreeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const FileTree = ({ className, name = "root" }: FileTreeProps) => {
-  const { files } = useFileSystem()
-  // const [fileData, setFileData] = useState<VFSNode>(files);
+  const { vfs } = useFileSystem()
 
-  // useEffect(() => {
-  //   // To trigger render
-  //   console.log("FileTree: files changed");
-  //   setFileData(files);
-  // }, [files]);
-
-  if (!files) {
+  if (!vfs.vfs) {
     return <div className={className}>Empty</div>
   }
 
-  return <div className={className}>
-    <Title text="File Tree" />
-    <FileTreeNode name={name} node={files || {}} depth={0} fullPath="" />
-  </div>
+  return (
+    <div className={className}>
+      <Title text="File Tree" />
+      {/* <FileTreeNode name={name} node={vfs.vfs || {}} depth={0} path="" /> */}
+      {Object.keys(vfs.vfs).map((name, index) => {
+        return <FileTreeNode key={index} name={name} node={vfs.vfs[name] || {}} depth={0} directory="" />
+      })}
+    </div>
+  )
 }
-

@@ -89,6 +89,8 @@ export function EvmIDE({
         }
       }
       setInput(input)
+
+      console.log(input.sources)
       const entryFile = await fs.initAndFoundEntry(input.sources, title || "")
       if (entryFile) {
         ide.selectFile(entryFile)

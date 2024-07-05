@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
 }
 
-export const fontSpace = Space_Grotesk({
+const fontSpace = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space",
 })
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <SolideProviders>
-              {children}
+            {children}
           </SolideProviders>
         </body >
       </html >
