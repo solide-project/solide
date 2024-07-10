@@ -10,11 +10,8 @@ export const LoggerProvider = ({ children }: LoggerProviderProps) => {
 
   const log = (text: string | object, type: LogType, icon: boolean = false) => {
     if (typeof text === "object") {
-      text = JSON.stringify(
-        text,
-        (_, value) => (typeof value === "bigint" ? value.toString() : value), // return everything else unchanged
-        2
-      )
+      text = JSON.stringify(text,
+        (_, value) => (typeof value === "bigint" ? value.toString() : value), 2)
     }
 
     var now = new Date();

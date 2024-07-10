@@ -1,3 +1,9 @@
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'false',
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -10,14 +16,12 @@ const nextConfig = {
     config.externals.push({
       'utf-8-validate': 'commonjs utf-8-validate',
       'bufferutil': 'commonjs bufferutil',
-      'https://cdn.jsdelivr.net/npm/assemblyscript@latest/dist/sdk.js': 'https://cdn.jsdelivr.net/npm/assemblyscript@latest/dist/sdk.js'
     })
     config.experiments['buildHttp'] = [
-			'https://cdn.jsdelivr.net/npm/assemblyscript@latest/dist/sdk.js'
-		]
+      'https://cdn.jsdelivr.net/npm/assemblyscript@latest/dist/sdk.js'
+    ]
     return config
   },
-  transpilePackages: ['@chainlink/contracts'],
 }
 
-export default nextConfig
+export default bundleAnalyzer(nextConfig)

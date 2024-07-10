@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Send } from "lucide-react"
+import Web3 from "web3"
 
 import { ABIEntry, Environment } from "@/lib/evm"
 import * as evmUtil from "@/lib/evm"
@@ -7,14 +8,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useLogger } from "@/components/core/providers/logger-provider"
 
-import { useEVM } from "../evm-provider"
-import { useTronHook } from "./hook-tronweb"
-import { useWeb3Hook } from "./hook-web3"
-import { SelectedEnvironment } from "./selected-environment"
+import { useEVM } from "@/components/evm/evm-provider"
+import { useTronHook } from "@/components/evm/deploy/hook-tronweb"
+import { useWeb3Hook } from "@/components/evm/deploy/hook-web3"
+import { SelectedEnvironment } from "@/components/evm/deploy/selected-environment"
 import { useFileSystem } from "@/components/core/providers/file-provider"
-import { getRPC, getTronRPC } from "@/lib/chains"
-import { getCode } from "@/lib/tron"
-import Web3 from "web3"
+import { Sources } from "@/lib/core"
 
 const CONSTRUCTOR_METHOD = "constructor"
 
@@ -241,10 +240,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
     try {
       // Note empty contractAddress value means this is a new contract (deploying)
-      let shouldUpload = true
-      if (contractAddress) {
-        shouldUpload = false
-      }
+      let shouldUpload = contractAddress ? false : true
 
       let deployedAddress = ""
       const args = contractAddress
@@ -285,7 +281,6 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         }
       }
 
-      // Upload to SolidityDB
       if (shouldUpload && evm.useSolidityDB) {
         await uploadToSolidityDB(deployedAddress)
       }
@@ -340,74 +335,63 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       console.log("Error loading deployed contract bytecode", error)
     }
 
-    if (evm.selectedCompiledContract && evm.selectedCompiledContract?.evm?.bytecode?.object) {
-      payload.bytecodes.push(evm.selectedCompiledContract?.evm?.bytecode?.object)
-    }
-    if (evm.selectedCompiledContract && evm.selectedCompiledContract?.evm?.deployedBytecode?.object) {
-      payload.bytecodes.push(evm.selectedCompiledContract?.evm?.deployedBytecode?.object)
-    }
+    // if (evm.selectedCompiledContract && evm.selectedCompiledContract?.evm?.bytecode?.object) {
+    //   payload.bytecodes.push(evm.selectedCompiledContract?.evm?.bytecode?.object)
+    // }
+    // if (evm.selectedCompiledContract && evm.selectedCompiledContract?.evm?.deployedBytecode?.object) {
+    //   payload.bytecodes.push(evm.selectedCompiledContract?.evm?.deployedBytecode?.object)
+    // }
 
-    if (payload.bytecodes.length === 0) {
-      console.log("No bytecodes to upload")
-      return // Important uncomment this line
-    }
+    // Don't upload if no bytecode to upload
+    if (payload.bytecodes.length === 0)
+      throw new Error("Failed to process sources")
 
-    if (!evm.target || !evm.targetCompiltion) {
-      console.log("No target compilation")
-      return
-    }
+    const rawSources = await fs.generateSources()
+    const metadata = JSON.parse(evm.selectedCompiledContract.metadata)
+    if (!metadata)
+      throw new Error("No metadata found")
 
-    const sources = await fs.generateSources()
-    const metadata: any = {
-      language: "Solidity",
-      sources,
-      abi: evm.selectedCompiledContract.abi,
-      compiler: {
-        version: evm.compilerVersion
-      },
-      settings: {
-        optimizer: {
-          enabled: evm.compilerOptimised,
-          runs: evm.compilerRuns
-        },
-        outputSelection: {
-          "*": {
-            "*": ["*"]
-          }
-        }
-
+    // Remove hash from metadata
+    let processingSuccessful = true
+    const sources: Sources = {}
+    Object.keys(metadata.sources as Sources).forEach((source) => {
+      if (!rawSources[source]) {
+        processingSuccessful = false
+        return
       }
-    }
-    if (evm.selectedCompiledContract && evm.selectedCompiledContract.abi) {
-      metadata.abi = evm.selectedCompiledContract.abi as string
-    }
 
-    if (!metadata.settings) {
-      metadata.settings = {}
-    }
-
-    metadata.settings.compilationTarget = {
-      [evm.targetCompiltion]: evm.target,
-    }
-
-    if (evm.evmVersions) {
-      metadata.settings.evmVersion = evm.evmVersions
-    }
-
-    const blob = new Blob([JSON.stringify(metadata)], {
-      type: "application/json",
+      sources[source] = rawSources[source]
     })
 
+    if (!processingSuccessful)
+      throw new Error("Failed to process sources")
+
+    // Clean out metadata
+    metadata.sources = sources
+    if (metadata.metadata?.bytecodeHash) {
+      delete metadata.metadata.bytecodeHash
+    }
+
+    console.log("metadata", metadata)
+
+    // Transform to blob and send to Vaulidity
     const formData = new FormData()
-    formData.append("file", blob)
+    formData.append("file", new Blob([JSON.stringify(metadata)], {
+      type: "application/json",
+    }))
     formData.append("payload", JSON.stringify(payload))
 
-    console.log("Uploading to SolidityDB")
     const response = await fetch("/api/smart-contract/store", {
       method: "POST",
       body: formData,
     })
 
+    if (!response.ok) {
+      const { message } = await response.json()
+      throw new Error(message)
+    }
+
+    // Debugging in console
     const data = await response.json()
     console.log(data)
   }

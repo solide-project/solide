@@ -10,7 +10,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { ConsoleLogger } from "@/components/core/console"
-import { FileTree } from "@/components/core/file-tree"
+import { FileTree } from "@/components/core/file/file-tree"
 import { IDE } from "@/components/core/ide"
 import { IDEHeader } from "@/components/core/ide-header"
 import { useEditor } from "@/components/core/providers/editor-provider"
@@ -89,6 +89,7 @@ export function EvmIDE({
         }
       }
       setInput(input)
+
       const entryFile = await fs.initAndFoundEntry(input.sources, title || "")
       if (entryFile) {
         ide.selectFile(entryFile)

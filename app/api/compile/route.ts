@@ -2,7 +2,7 @@ import path from "path"
 import { NextRequest, NextResponse } from "next/server"
 
 import { ContractPaths, ContractDependency } from "@/lib/core"
-import { SolcError } from "@/lib/evm"
+import { filterSources, SolcError } from "@/lib/evm"
 import { Solc, getSolcByVersion, removeContractHeaders } from "@/lib/server"
 import { getEntryDetails } from "@/lib/server/source-loader"
 import { compilerVersions, solcVersion } from "@/lib/versions"
@@ -60,10 +60,11 @@ export async function POST(request: NextRequest) {
       return NextResponseError("Input sources is missing")
     }
 
+    // We have to ensure sources are Soldility files
+    solidityInput.sources = filterSources(solidityInput.sources)
+
     const { name } = path.parse(path.basename(title))
     // console.log("Contract Name", name)
-
-    // get the contract name from the compilation target
 
     if (!solidityInput.language) {
       solidityInput.language = "Solidity"

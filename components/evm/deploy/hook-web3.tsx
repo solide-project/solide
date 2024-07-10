@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Contract, utils } from "web3"
+import { Contract } from "web3"
+import { formatUnits } from "ethers"
 
 import { deploy, load } from "@/lib/evm/ethers"
 
@@ -11,29 +12,27 @@ export const useWeb3Hook = () => {
     args: any[],
     value: number = 0
   ) => {
-    const options: any = {}
-    if (value > 0) {
-      options.value = utils.fromWei(value, "wei")
-    }
-
-    if (!contract) {
-      throw new Error("Contract not loaded")
-    }
-
-    const accounts: string[] = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    })
+    const accounts: string[] = await window.ethereum.request({ method: "eth_requestAccounts", })
     const account = accounts[0]
 
     if (!account) {
       throw new Error("No account found")
     }
 
-    const receipt = await contract.methods[method](...args).send({
+    const options: any = {
       from: account,
       gas: '1000000',
       gasPrice: '1000000000',
-    })
+    }
+    if (value > 0) {
+      options.value = formatUnits(value, "wei")
+    }
+
+    if (!contract) {
+      throw new Error("Contract not loaded")
+    }
+
+    const receipt = await contract.methods[method](...args).send(options)
 
     return { receipt }
   }

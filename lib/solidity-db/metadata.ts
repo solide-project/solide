@@ -1,7 +1,7 @@
-// export const address = "0xD05e51C54decE71D82d0feb7Ea1456fFeE69Cc4C"
-// export const address = "TE43ModJ1frz3T9uv4bfaARGsTETuPzFnn"
-// export const address = "TVPaonF8QAWHAi59vcz3a93mQdNSATjnLP"     // Testnet
-export const address = "TX6Z6uChCQFK32CpRRnvCYUaUfS93ieMbF"     // Mainnet
+export const account = "TGNwdiUL8joKM4zcU774qyCvepyDBEo2Zt"
+
+// export const address = "TVPaonF8QAWHAi59vcz3a93mQdNSATjnLP"  // testnet
+export const address = "TX6Z6uChCQFK32CpRRnvCYUaUfS93ieMbF" // mainnet
 
 export const abi = [
     {

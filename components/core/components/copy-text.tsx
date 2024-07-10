@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Copy, CopyCheck, LucideIcon } from "lucide-react"
+import { Check, Copy } from "lucide-react"
 
 export interface CopyTextItem {
   title: string
@@ -15,10 +15,10 @@ interface CopyTextProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function CopyText({ title, payload }: CopyTextProps) {
   const CopyIcon = () => <Copy className="h-5 lg:w-5" />
-  const [icon, setIcon] = useState<JSX.Element>(CopyIcon())
+  const [icon, setIcon] = useState(CopyIcon())
 
-  function copyText(entryText: string) {
-    setIcon(<Check className="h-5 text-emerald-400 lg:w-5" />)
+  const copyText = (entryText: string) => {
+    setIcon(<Check className="text-emerald-400 h-5 lg:w-5" />)
     navigator.clipboard.writeText(entryText)
     setTimeout(() => {
       setIcon(CopyIcon())

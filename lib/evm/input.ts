@@ -1,3 +1,6 @@
+import path from "path"
+import { Sources } from "../core"
+
 export interface CompileInput {
     language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper" | "Aspect"
     settings?: {
@@ -37,4 +40,13 @@ export const parseInput = (content: string) => {
     } catch (error) {
         return undefined
     }
+}
+
+export const filterSources = (inputSources: Sources): Sources => {
+    const sources: Sources = {}
+    Object.entries(inputSources).forEach(([key, value]) => {
+        const { ext } = path.parse(key)
+        if (ext === ".sol") sources[key] = value
+    })
+    return sources
 }

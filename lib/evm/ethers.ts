@@ -4,7 +4,6 @@
 
 import Web3, { Contract } from "web3"
 
-import { getExplorer } from "../chains"
 import { ethers } from "ethers"
 
 export const load = async (contractAddress: string, abi: any[]) => {
