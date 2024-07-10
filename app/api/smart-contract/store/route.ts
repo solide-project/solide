@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from "next/server"
+import { utils } from "web3"
 
 import { SolidityDatabaseRegistry } from "@/lib/solidity-db/tron-contract"
 import { BTFSService, GlacierService } from "@/lib/solidity-db"
-import { utils } from "web3"
 
 export async function POST(request: NextRequest) {
   const databaseService = new GlacierService()
   const storageService = new BTFSService()
-  const formData: FormData = await request.formData()
+  const contract = new SolidityDatabaseRegistry({})
+  await contract.load()
+
+  // Check if the contract has enough resources to store the contract
+  const sufficient = await contract.hasSufficientResource()
+  if (!sufficient)
+    return generateError(`Not enough resources to store contract. You can help out by staking on ${contract.account}`)
 
   // We check if there bytecodes in our payload, no point continuing if there isn't
+  const formData: FormData = await request.formData()
   const payloadData = formData.get("payload") as string
-  const payload: {
-    bytecodes: string[]
-  } = JSON.parse(payloadData)
-  if (payload.bytecodes.length === 0) {
-    return NextResponse.json(
-      { details: "Not Bytecode representation" },
-      { status: 400 }
-    )
-  }
+  const payload: { bytecodes: string[] } = JSON.parse(payloadData)
+  if (payload.bytecodes.length === 0)
+    return generateError("Not Bytecode representation")
 
   // Upload content to BTFS
   const content = formData.get("file") as File
@@ -30,18 +31,12 @@ export async function POST(request: NextRequest) {
 
   // Handle response from BTFS
   const storageUploadData = await response.json()
-  if (!storageUploadData?.data?.file_hash) {
-    return NextResponse.json(
-      { details: "Smart contract couldn't be uploaded" },
-      { status: 400 }
-    )
-  }
-  const input = storageUploadData?.data?.file_hash
+  const contractCid: string = storageUploadData?.data?.file_hash || ""
+  if (!contractCid)
+    return generateError("Smart contract couldn't be uploaded")
 
   // Store the bytecode hash in our database
   const databaseId: string[] = []
-  const contract = new SolidityDatabaseRegistry({})
-  await contract.load()
   for (const raw of payload.bytecodes) {
     const bytecode = utils.sha3(raw) // Hashed version of bytecode
     if (!bytecode) continue
@@ -52,8 +47,6 @@ export async function POST(request: NextRequest) {
     // )
 
     const results = await contract.find(bytecode)
-
-    // if (exist) {
     if (results && results?.id) {
       console.log("Bytecode already exists in database")
       continue
@@ -62,24 +55,33 @@ export async function POST(request: NextRequest) {
     databaseId.push(bytecode)
     const insert = await databaseService.insertOne({
       bytecode,
-      input,
+      input: contractCid,
     })
   }
 
   try {
     // Store onchain
     if (databaseId && databaseId.length > 0) {
-      // const contract = new SolidityDatabaseRegistry({})
-      // await contract.load()
-      console.log("Adding to contract", databaseId, input)
-      contract.adds(databaseId, input)
+      // Adding multiple
+      // console.log("Adding to contract", databaseId, input)
+      // contract.adds(databaseId, input)
+
+      const bytecodeId = databaseId[0]
+      if (bytecodeId) {
+        console.log("Adding to contract", bytecodeId, contractCid)
+        contract.addOverride(bytecodeId, contractCid)
+      }
     }
   } catch (error) {
     console.log(error)
   }
 
   return NextResponse.json({
-    id: storageUploadData?.data?.file_hash,
+    id: contractCid,
     databaseId,
   })
+}
+
+const generateError = (message: string, status: number = 400) => {
+  return NextResponse.json({ message }, { status })
 }

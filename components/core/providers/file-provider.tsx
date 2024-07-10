@@ -13,13 +13,11 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
     // vfs.clear()
 
     Object.entries(sources).forEach(([key, val]) => {
-      console.log(key, val)
       vfs.touch(key, val.content)
     })
   }
 
   const initAndFoundEntry = async (sources: Sources, entry: string) => {
-    console.log("initAndFoundEntry", sources, entry)
     await init(sources)
 
     const entryFile = Object.entries(sources).find(([key, _]) =>

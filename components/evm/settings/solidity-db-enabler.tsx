@@ -11,6 +11,7 @@ export function SolidityDBEnabler({ }: SolidityDBEnablerProps) {
             id="optimizer"
             checked={evm.useSolidityDB}
             onClick={(e: any) => {
+                console.log("useSolidityDB", evm.selectedCompiledContract)
                 evm.setUseSolidityDB(!evm.useSolidityDB)
             }}
         />

@@ -1,8 +1,7 @@
-import { getSourceCode } from "@/lib/evm/explorer"
-import { EthGetSourceCodeInterface } from "@/lib/evm"
+import { getSourceCode, EthGetSourceCodeInterface } from "@/lib/evm/explorer"
 import { EVMProvider } from "@/components/evm/evm-provider"
 import { EvmIDE } from "@/components/evm/ide"
-import { InvalidMessage } from "@/components/core/components/invalid-message"
+import { LoadContractPage } from "@/components/evm/load-contract"
 
 export default async function Page({
   params,
@@ -14,24 +13,17 @@ export default async function Page({
     params.address
   )
 
-  if (typeof data.result === "string") {
-    return (
-      <InvalidMessage>
-        {data.result} {JSON.stringify(data)}
-      </InvalidMessage>
-    )
-  }
+  if (typeof data.result === "string") return <LoadContractPage
+    message={`${data.result} ${JSON.stringify(data)}`} />
 
-  return (
-    <EVMProvider>
-      <EvmIDE
-        url={params.address}
-        chainId={params.chain}
-        title={data.result[0].ContractName}
-        content={data.result[0].SourceCode}
-        version={data.result[0].CompilerVersion}
-        bytecodeId={data.result[0].BytcodeContract}
-      />
-    </EVMProvider>
-  )
+  return <EVMProvider>
+  <EvmIDE
+    url={params.address}
+    chainId={params.chain}
+    title={data.result[0].ContractName}
+    content={data.result[0].SourceCode}
+    version={data.result[0].CompilerVersion}
+    bytecodeId={data.result[0].BytcodeContract}
+  />
+</EVMProvider>
 }

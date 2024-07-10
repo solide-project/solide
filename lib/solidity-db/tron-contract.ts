@@ -2,23 +2,35 @@ import TronWeb from "tronweb"
 
 import { ChainID, getTronRPC } from "@/lib/chains"
 
-import { abi, address } from "./metadata"
+import { abi, address, account } from "./metadata"
+import { NetworkUsage } from "../tron"
 
 export class SolidityDatabaseRegistry {
   tronWeb: any
   contract: any
+  public account: string
+  public address: string
 
   constructor({
-    rpc = getTronRPC(ChainID.TRON_NILE_TESTNET),
+    rpc = getTronRPC(ChainID.TRON_MAINNET),
   }: {
     rpc?: string
   }) {
+    this.address = address
+    this.account = account
     this.tronWeb = new TronWeb({
       fullHost: rpc,
       privateKey: process.env.TRON_WALLET,
     })
 
-    this.tronWeb.setAddress("TGNwdiUL8joKM4zcU774qyCvepyDBEo2Zt")
+    this.tronWeb.setAddress(account)
+  }
+
+  async hasSufficientResource() {
+    const result: NetworkUsage = await this.tronWeb.trx.getAccountResources(account)
+    // console.log("Account", result)
+    return result.EnergyLimit - result.EnergyUsed >= 4000 &&
+      result.TotalNetLimit - result.TotalNetWeight >= 600
   }
 
   async load() {
@@ -35,6 +47,10 @@ export class SolidityDatabaseRegistry {
 
   async adds(hash: string[], cid: string) {
     return await this.contract.adds(hash, cid).send()
+  }
+
+  async addOverride(hash: string, cid: string) {
+    return await this.contract.addOverride(hash, cid).send()
   }
 
   async find(hash: string): Promise<any> {

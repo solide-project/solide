@@ -2,45 +2,39 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
-import { ethers } from "ethers"
+import { useState, useCallback } from "react"
+import { encodeBytes32String, decodeBytes32String } from "ethers"
 
-interface StringToByte32Props extends React.HTMLAttributes<HTMLDivElement> {
-}
+interface StringToByte32Props extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function StringToByte32({ }: StringToByte32Props) {
+export default function StringToByte32({ }: StringToByte32Props) {
     const [data, setData] = useState<string>("")
     const [result, setResult] = useState<string>("")
-    const [error, setErrors] = useState<string>("")
 
-    const handleStringToHex = () => {
+    const handleStringToHex = useCallback(() => {
         try {
-            setErrors("")
-            const result = ethers.encodeBytes32String(data)
-            setResult(result)
+            const encodedResult = encodeBytes32String(data)
+            setResult(encodedResult)
         } catch (e: any) {
-            console.error(e)
-            setErrors(e.message)
+            setResult(`Error: ${e.message}`)
         }
-    }
+    }, [data])
 
-    const handleHexToString = () => {
+    const handleHexToString = useCallback(() => {
         try {
-            setErrors("")
-            const result = ethers.decodeBytes32String(data)
-            setResult(result)
+            const decodedResult = decodeBytes32String(data)
+            setResult(decodedResult)
         } catch (e: any) {
-            console.error(e)
-            setErrors(e.message)
+            setResult(`Error: ${e.message}`)
         }
-    }
+    }, [data])
 
-    return <div>
+    return <>
         <Input onChange={(e) => setData(e.target.value)} value={data} placeholder="data" />
         <div className="flex space-x-2">
             <Button className="my-2" size="sm" onClick={handleStringToHex}>to Hex</Button>
             <Button className="my-2" size="sm" onClick={handleHexToString}>to String</Button>
         </div>
-        <div className="break-words text-wrap">{error || result}</div>
-    </div>
+        <div className="break-words text-wrap">{result}</div>
+    </>
 }

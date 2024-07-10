@@ -3,7 +3,7 @@
 import * as React from "react"
 import { AlertCircle, AlertTriangle } from "lucide-react"
 
-import { useEVM } from "../evm-provider"
+import { useEVM } from "@/components/evm/evm-provider"
 
 interface CompileErrorsProps extends React.HTMLAttributes<HTMLDivElement> {}
 

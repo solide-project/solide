@@ -1,14 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, lazy, Suspense } from "react"
 import { cn } from "@/lib/utils"
 import { Title } from "@/components/core/components/title"
-import { EventDecoder } from "@/components/evm/utils/event-decoder"
-import { UnitConversion } from "@/components/evm/utils/unit-conversion"
-import { StringToByte32 } from "@/components/evm/utils/str-byte"
 
-interface UtiltyTabProps extends React.HTMLAttributes<HTMLDivElement> {
-}
+interface UtiltyTabProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 enum Tab {
     DECODE = "Decode",
@@ -16,43 +12,44 @@ enum Tab {
     UNIT = "Unit Conversion",
 }
 
+const LazyEventDecoder = lazy(() => import("@/components/evm/utils/event-decoder"))
+const LazyStringToByte32 = lazy(() => import("@/components/evm/utils/str-byte"))
+const LazyUnitConversion = lazy(() => import("@/components/evm/utils/unit-conversion"))
+
 export function UtiltyTab({ className }: UtiltyTabProps) {
     const [activeTab, setActiveTab] = useState<Tab>(Tab.DECODE)
-    const isActive = (tab: string) => activeTab === tab
 
-    const tabActive = (tab: string): string =>
+    const isActive = (tab: Tab) => activeTab === tab
+
+    const tabActive = (tab: Tab) =>
         cn("cursor-pointer", {
             "text-grayscale-250": !isActive(tab),
             "bg-grayscale-200 rounded-lg px-3 py-1": isActive(tab),
         })
 
+    const handleTabClick = (tab: Tab) => {
+        setActiveTab(tab)
+    }
+
     return <div className={cn("px-2 pb-4", className)}>
         <Title text="Utility" />
 
         <div className="mx-2 my-4 flex items-center gap-x-4 text-sm overflow-auto">
-            <div
-                className={tabActive(Tab.DECODE)}
-                onClick={() => setActiveTab(Tab.DECODE)}
-            >
+            <div className={tabActive(Tab.DECODE)} onClick={() => handleTabClick(Tab.DECODE)}>
                 Log Decoder
             </div>
-            <div
-                className={tabActive(Tab.STR2BYTE)}
-                onClick={() => setActiveTab(Tab.STR2BYTE)}
-            >
+            <div className={tabActive(Tab.STR2BYTE)} onClick={() => handleTabClick(Tab.STR2BYTE)}>
                 String to Bytes32
             </div>
-            <div
-                className={tabActive(Tab.UNIT)}
-                onClick={() => setActiveTab(Tab.UNIT)}
-            >
+            <div className={tabActive(Tab.UNIT)} onClick={() => handleTabClick(Tab.UNIT)}>
                 Unit Conversion
             </div>
         </div>
 
-        {isActive(Tab.DECODE) && <EventDecoder />}
-        {isActive(Tab.STR2BYTE) && <StringToByte32 />}
-        {isActive(Tab.UNIT) && <UnitConversion />}
-
+        <Suspense fallback={<div>Loading...</div>}>
+            {isActive(Tab.DECODE) && <LazyEventDecoder />}
+            {isActive(Tab.STR2BYTE) && <LazyStringToByte32 />}
+            {isActive(Tab.UNIT) && <LazyUnitConversion />}
+        </Suspense>
     </div>
 }

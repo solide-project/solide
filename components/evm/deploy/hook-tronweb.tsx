@@ -1,7 +1,6 @@
 import { useState } from "react"
-import { Contract } from "web3"
 
-import { deploy, load } from "@/lib/server/tron"
+import { deploy, load } from "@/lib/tron"
 
 export const useTronHook = () => {
   const [contract, setContract] = useState<any | null>(null)

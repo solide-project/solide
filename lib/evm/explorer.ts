@@ -1,8 +1,10 @@
+// Server side code
+
 import Web3, { utils } from "web3"
 import { getSource } from "web3-plugin-contracts"
 
 import { solcVersion } from "@/lib/versions"
-import { getCode } from "@/lib/tron"
+import { getCode } from "@/lib/server/tron"
 import { metadataUtil } from "@/lib/evm"
 import { ChainID, getAPIKey, getRPC, getTronRPC } from "@/lib/chains"
 import { BTFSGateway, GlacierService } from "@/lib/solidity-db"
