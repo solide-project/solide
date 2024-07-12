@@ -154,6 +154,12 @@ const data: { [key: string]: string } = {
   [ChainID.POLYGON_AMOY]: "https://api-amoy.polygonscan.com",
   [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado.blockscout.com",
   [ChainID.COTI_DEVNET]: "https://ethernal.fly.dev",
+  [ChainID.LISK_MAINNET]: "https://blockscout.lisk.com",
+  [ChainID.LISK_SEPOLIA]: "https://sepolia-blockscout.lisk.com",
+  [ChainID.REDSTONE_MAINNET]: "https://explorer.redstone.xyz",
+  [ChainID.REDSTONE_GARNET_TESTNET]: "https://explorer.garnetchain.com",
+  [ChainID.OPEN_CAMPUS_CODEX]: "https://opencampus-codex.blockscout.com",
+
 }
 
 export const getAPI = (network: string): string => data[network] || ""
