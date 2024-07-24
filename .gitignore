@@ -2,6 +2,7 @@
 
 Dockerfile
 tmp/
+analyze/
 
 # Ignore all files in public except certain
 public/**

@@ -25,7 +25,7 @@ export const useWeb3Hook = () => {
       gasPrice: '1000000000',
     }
     if (value > 0) {
-      options.value = formatUnits(value, "wei")
+      options.value = value; // formatUnits(value, "wei")
     }
 
     if (!contract) {

@@ -84,12 +84,18 @@ export const deploy = async (
     bytecode,
     signer
   )
+
+  console.log("Deploying contract with args: ", args)
+
+  // const deployTx = await factory.getDeployTransaction(...args)
+  // const estimatedGas = await provider.estimateGas(deployTx)
+  // console.log("Estimated gas: ", estimatedGas.toString())
+
   const contractInstance = await factory.deploy(...args);
   const address = await contractInstance.getAddress()
   await contractInstance.waitForDeployment();
-  
-  ret.contract = new web3.eth.Contract(abi, address)
 
+  ret.contract = new web3.eth.Contract(abi, address)
   return ret
 }
 

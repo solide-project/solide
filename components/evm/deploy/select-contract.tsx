@@ -19,10 +19,11 @@ import {
 } from "@/components/ui/popover"
 
 import { useEVM } from "../evm-provider"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
-interface SelectedContractProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SelectedContractProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function SelectedContract({}: SelectedContractProps) {
+export function SelectedContract({ }: SelectedContractProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
 
@@ -45,39 +46,41 @@ export function SelectedContract({}: SelectedContractProps) {
         <Command>
           <CommandInput placeholder="Search framework..." />
           <CommandEmpty>No framework found.</CommandEmpty>
-          <CommandGroup>
-            {Object.entries(output.contracts || {}).map(
-              ([targetCompilation, contract]) => {
-                return Object.entries(contract).map(
-                  ([target, contractValue]) => {
-                    return (
-                      <CommandItem
-                        key={`${targetCompilation}-${target}`}
-                        value={target}
-                        onSelect={(val: string) => {
-                          setValue(target)
-                          setSelectedContract(
-                            targetCompilation,
-                            target,
-                            contractValue
-                          )
-                          setOpen(false)
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            value === target ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {target}
-                      </CommandItem>
-                    )
-                  }
-                )
-              }
-            )}
-          </CommandGroup>
+          <ScrollArea className="h-[200px]">
+            <CommandGroup>
+              {Object.entries(output.contracts || {}).map(
+                ([targetCompilation, contract]) => {
+                  return Object.entries(contract).map(
+                    ([target, contractValue]) => {
+                      return (
+                        <CommandItem
+                          key={`${targetCompilation}-${target}`}
+                          value={target}
+                          onSelect={(val: string) => {
+                            setValue(target)
+                            setSelectedContract(
+                              targetCompilation,
+                              target,
+                              contractValue
+                            )
+                            setOpen(false)
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === target ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {target}
+                        </CommandItem>
+                      )
+                    }
+                  )
+                }
+              )}
+            </CommandGroup>
+          </ScrollArea>
         </Command>
       </PopoverContent>
     </Popover>

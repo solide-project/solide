@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     request.nextUrl.searchParams.get("optimizer") === "true"
   const runs: number =
     parseInt(request.nextUrl.searchParams.get("runs") || "-1") || -1
-  const evmVersion: string | null = request.nextUrl.searchParams.get("evmVersion") || null
+  const evmVersion: string | null = request.nextUrl.searchParams.get("evm") || null
 
   let optimizer = {}
   if (enabled && runs > 0) {
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
   console.log("Using Solc Version", solcSnapshot.version())
   console.log("Run using CLI", viaIR)
   console.log("Optimizer", optimizer)
+  console.log("evmVersion", evmVersion)
 
   const { input, title } = await request.json()
   const solidityInput: any = input
