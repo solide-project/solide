@@ -2,18 +2,17 @@ import { useEffect, useState } from "react"
 import { Send } from "lucide-react"
 import Web3 from "web3"
 
+import { Sources } from "@/lib/core"
 import { ABIEntry, Environment } from "@/lib/evm"
 import * as evmUtil from "@/lib/evm"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useFileSystem } from "@/components/core/providers/file-provider"
 import { useLogger } from "@/components/core/providers/logger-provider"
-
-import { useEVM } from "@/components/evm/evm-provider"
 import { useTronHook } from "@/components/evm/deploy/hook-tronweb"
 import { useWeb3Hook } from "@/components/evm/deploy/hook-web3"
 import { SelectedEnvironment } from "@/components/evm/deploy/selected-environment"
-import { useFileSystem } from "@/components/core/providers/file-provider"
-import { Sources } from "@/lib/core"
+import { useEVM } from "@/components/evm/evm-provider"
 
 const CONSTRUCTOR_METHOD = "constructor"
 
@@ -21,9 +20,9 @@ interface ArgumentInterface {
   [key: string]: { [key: string]: any }
 }
 
-interface ContractInvokeProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface ContractInvokeProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function ContractInvoke({ }: ContractInvokeProps) {
+export function ContractInvoke({}: ContractInvokeProps) {
   const evm = useEVM()
   const logger = useLogger()
   const fs = useFileSystem()
@@ -62,9 +61,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     // There should any be one constructor
     setProcessedConstructor(
       evm.selectedCompiledContract.abi
-        .filter(
-          (method: evmUtil.ABIEntry) => method.type === "constructor"
-        )
+        .filter((method: evmUtil.ABIEntry) => method.type === "constructor")
         .pop()
     )
   }, [evm.selectedCompiledContract])
@@ -112,7 +109,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     expectedInputLength: number = 0
   ): boolean =>
     Object.keys(contractArguments[method] || {}).length ===
-    expectedInputLength &&
+      expectedInputLength &&
     Object.values(contractArguments[method] || {}).every((x: string) => x)
   //#endregion
 
@@ -210,7 +207,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     if (entry.outputs && entry.outputs.length > 0) {
       console.log("output is array", typeof result)
       if (typeof result === "object") {
-        result = JSON.stringify(result, (_, v) => typeof v === 'bigint' ? v.toString() : v)
+        result = JSON.stringify(result, (_, v) =>
+          typeof v === "bigint" ? v.toString() : v
+        )
       } else if (entry.outputs[0].type.includes("int")) {
         result = result.toString() as BigInt
       } else {
@@ -258,7 +257,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
           deployedAddress = result.contract.options.address || ""
           setContractAddress(result.contract.options.address || "")
           setLoadedContractEnvironment(evm.environment)
-          logger.success(`Contract deployed at ${result.contract.options.address}`)
+          logger.success(
+            `Contract deployed at ${result.contract.options.address}`
+          )
         } else {
           logger.error(`Error deploying contract: ${result.transactionHash}`)
         }
@@ -272,7 +273,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
         })
 
         if (result.contract) {
-          deployedAddress = window.tronWeb.address.fromHex(result.contract.address || "")
+          deployedAddress = window.tronWeb.address.fromHex(
+            result.contract.address || ""
+          )
           setContractAddress(deployedAddress)
           setLoadedContractEnvironment(evm.environment)
           logger.success(`Contract deployed at ${result.contract.address}`)
@@ -321,7 +324,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       if (deployedAddress) {
         let contractBytecode: string = "0x"
         if (evm.environment === Environment.TRONLINK) {
-          const { bytecode }: any = await window.tronWeb.trx.getContract(deployedAddress)
+          const { bytecode }: any = await window.tronWeb.trx.getContract(
+            deployedAddress
+          )
           contractBytecode = bytecode.toString()
         } else if (evm.environment === Environment.METAMASK) {
           const web3 = new Web3(window.ethereum)
@@ -348,8 +353,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
     const rawSources = await fs.generateSources()
     const metadata = JSON.parse(evm.selectedCompiledContract.metadata)
-    if (!metadata)
-      throw new Error("No metadata found")
+    if (!metadata) throw new Error("No metadata found")
 
     // Remove hash from metadata
     let processingSuccessful = true
@@ -363,8 +367,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       sources[source] = rawSources[source]
     })
 
-    if (!processingSuccessful)
-      throw new Error("Failed to process sources")
+    if (!processingSuccessful) throw new Error("Failed to process sources")
 
     // Clean out metadata
     metadata.sources = sources
@@ -376,9 +379,12 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
     // Transform to blob and send to Vaulidity
     const formData = new FormData()
-    formData.append("file", new Blob([JSON.stringify(metadata)], {
-      type: "application/json",
-    }))
+    formData.append(
+      "file",
+      new Blob([JSON.stringify(metadata)], {
+        type: "application/json",
+      })
+    )
     formData.append("payload", JSON.stringify(payload))
 
     const response = await fetch("/api/smart-contract/store", {
@@ -502,8 +508,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
                   }
                   onClick={() => invokeContract(abi.name)}
                 >
-                  {`${abi.name} ( ${abi.inputs && abi.inputs.length > 0 ? "..." : ""
-                    } )`}
+                  {`${abi.name} ( ${
+                    abi.inputs && abi.inputs.length > 0 ? "..." : ""
+                  } )`}
                 </Button>
                 <Button
                   className="cursor-pointer border-0 hover:bg-grayscale-100"
@@ -545,10 +552,12 @@ export function ContractInvoke({ }: ContractInvokeProps) {
                   }
                 )}
 
-                <div className="py-1 break-words">
-                  {ret[abi.name] !== undefined && <div className="max-h-[128px] overflow-y-auto">
-                    {ret[abi.name].toString()}
-                  </div>}
+                <div className="break-words py-1">
+                  {ret[abi.name] !== undefined && (
+                    <div className="max-h-[128px] overflow-y-auto">
+                      {ret[abi.name].toString()}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

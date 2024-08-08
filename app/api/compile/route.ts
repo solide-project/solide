@@ -1,8 +1,8 @@
 import path from "path"
 import { NextRequest, NextResponse } from "next/server"
 
-import { ContractPaths, ContractDependency } from "@/lib/core"
-import { filterSources, SolcError } from "@/lib/evm"
+import { ContractDependency, ContractPaths } from "@/lib/core"
+import { SolcError, filterSources } from "@/lib/evm"
 import { Solc, getSolcByVersion, removeContractHeaders } from "@/lib/server"
 import { getEntryDetails } from "@/lib/server/source-loader"
 import { compilerVersions, solcVersion } from "@/lib/versions"
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
     request.nextUrl.searchParams.get("optimizer") === "true"
   const runs: number =
     parseInt(request.nextUrl.searchParams.get("runs") || "-1") || -1
-  const evmVersion: string | null = request.nextUrl.searchParams.get("evm") || null
+  const evmVersion: string | null =
+    request.nextUrl.searchParams.get("evm") || null
 
   let optimizer = {}
   if (enabled && runs > 0) {

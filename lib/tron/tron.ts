@@ -22,8 +22,9 @@ export const deploy = async (
   await window.tronWeb.trx.sendRawTransaction(signedTx)
 
   const transactionHash = await window.tronWeb.trx.getTransaction(signedTx.txID)
-  const contractAddress = window.tronWeb.trx.tronweb.address.fromHex(transactionHash.contract_address)
-
+  const contractAddress = window.tronWeb.trx.tronweb.address.fromHex(
+    transactionHash.contract_address
+  )
 
   const contract = load(abi, contractAddress)
   return {
@@ -51,20 +52,20 @@ export const toEVMAddress = (address: string) => {
 }
 
 export interface AssetNet {
-  key: string;
-  value: number;
+  key: string
+  value: number
 }
 
 export interface NetworkUsage {
-  freeNetUsed: number;
-  freeNetLimit: number;
-  assetNetUsed: AssetNet[];
-  assetNetLimit: AssetNet[];
-  TotalNetLimit: number;
-  TotalNetWeight: number;
-  tronPowerLimit: number;
-  EnergyUsed: number;
-  EnergyLimit: number;
-  TotalEnergyLimit: number;
-  TotalEnergyWeight: number;
+  freeNetUsed: number
+  freeNetLimit: number
+  assetNetUsed: AssetNet[]
+  assetNetLimit: AssetNet[]
+  TotalNetLimit: number
+  TotalNetWeight: number
+  tronPowerLimit: number
+  EnergyUsed: number
+  EnergyLimit: number
+  TotalEnergyLimit: number
+  TotalEnergyWeight: number
 }

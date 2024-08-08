@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { Contract } from "web3"
 import { formatUnits } from "ethers"
+import { Contract } from "web3"
 
 import { deploy, load } from "@/lib/evm/ethers"
 
@@ -12,7 +12,9 @@ export const useWeb3Hook = () => {
     args: any[],
     value: number = 0
   ) => {
-    const accounts: string[] = await window.ethereum.request({ method: "eth_requestAccounts", })
+    const accounts: string[] = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    })
     const account = accounts[0]
 
     if (!account) {
@@ -21,11 +23,11 @@ export const useWeb3Hook = () => {
 
     const options: any = {
       from: account,
-      gas: '1000000',
-      gasPrice: '1000000000',
+      gas: "1000000",
+      gasPrice: "1000000000",
     }
     if (value > 0) {
-      options.value = value; // formatUnits(value, "wei")
+      options.value = value // formatUnits(value, "wei")
     }
 
     if (!contract) {

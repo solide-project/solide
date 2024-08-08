@@ -3,14 +3,15 @@
 import * as React from "react"
 import { useEffect } from "react"
 import { utils } from "web3"
+
+import { downloadBlob, downloadJSON } from "@/lib/core"
 import { CopyText } from "@/components/core/components/copy-text"
 
 import { useEVM } from "../evm-provider"
-import { downloadBlob, downloadJSON } from "@/lib/core"
 
-interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function ContractOverview({ }: ContractOverviewProps) {
+export function ContractOverview({}: ContractOverviewProps) {
   const evm = useEVM()
 
   const [abiFunction, setAbiFunction] = React.useState<string>("")
@@ -72,11 +73,17 @@ export function ContractOverview({ }: ContractOverviewProps) {
               <CopyText
                 title="DB ID"
                 payload={
-                  utils.sha3(evm.selectedCompiledContract?.evm?.bytecode?.object || "") || ""
+                  utils.sha3(
+                    evm.selectedCompiledContract?.evm?.bytecode?.object || ""
+                  ) || ""
                 }
               />
             }
-            payload={utils.sha3(evm.selectedCompiledContract?.evm?.bytecode?.object || "") || ""}
+            payload={
+              utils.sha3(
+                evm.selectedCompiledContract?.evm?.bytecode?.object || ""
+              ) || ""
+            }
           />
         </>
       )}
@@ -92,9 +99,7 @@ export function ContractOverview({ }: ContractOverviewProps) {
         </>
       )}
 
-      {evm.input && <div onClick={handleDownloadCompilerInput}>
-        Download
-      </div>}
+      {evm.input && <div onClick={handleDownloadCompilerInput}>Download</div>}
     </div>
   )
 }

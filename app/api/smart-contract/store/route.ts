@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { utils } from "web3"
 
-import { SolidityDatabaseRegistry } from "@/lib/solidity-db/tron-contract"
 import { BTFSService, GlacierService } from "@/lib/solidity-db"
+import { SolidityDatabaseRegistry } from "@/lib/solidity-db/tron-contract"
 
 export async function POST(request: NextRequest) {
   const databaseService = new GlacierService()
@@ -13,7 +13,9 @@ export async function POST(request: NextRequest) {
   // Check if the contract has enough resources to store the contract
   const sufficient = await contract.hasSufficientResource()
   if (!sufficient)
-    return generateError(`Not enough resources to store contract. You can help out by staking on ${contract.account}`)
+    return generateError(
+      `Not enough resources to store contract. You can help out by staking on ${contract.account}`
+    )
 
   // We check if there bytecodes in our payload, no point continuing if there isn't
   const formData: FormData = await request.formData()
@@ -32,8 +34,7 @@ export async function POST(request: NextRequest) {
   // Handle response from BTFS
   const storageUploadData = await response.json()
   const contractCid: string = storageUploadData?.data?.file_hash || ""
-  if (!contractCid)
-    return generateError("Smart contract couldn't be uploaded")
+  if (!contractCid) return generateError("Smart contract couldn't be uploaded")
 
   // Store the bytecode hash in our database
   const databaseId: string[] = []

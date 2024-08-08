@@ -1,9 +1,10 @@
 import path from "path"
+
 import { useEditor } from "./providers/editor-provider"
 
-interface IDEHeaderProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface IDEHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function IDEHeader({ }: IDEHeaderProps) {
+export function IDEHeader({}: IDEHeaderProps) {
   const editor = useEditor()
 
   return (

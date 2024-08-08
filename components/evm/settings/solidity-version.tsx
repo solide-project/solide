@@ -39,9 +39,9 @@ function extractVersion(version: string) {
   return match ? match[1] : version
 }
 
-interface SolidityVersionsProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface SolidityVersionsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function SolidityVersions({ }: SolidityVersionsProps) {
+export function SolidityVersions({}: SolidityVersionsProps) {
   const { solidityVersions, compilerVersion, setCompilerVersion } = useEVM()
   const logger = useLogger()
 
@@ -55,11 +55,13 @@ export function SolidityVersions({ }: SolidityVersionsProps) {
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
-      <PopoverTrigger className={cn(buttonVariants({ variant: "default" }), "!text-base")}>
+      <PopoverTrigger
+        className={cn(buttonVariants({ variant: "default" }), "!text-base")}
+      >
         {value && solidityVersions.releases
           ? extractVersion(
-            solidityVersions.releases[value] || "Unknown version"
-          )
+              solidityVersions.releases[value] || "Unknown version"
+            )
           : "Select framework..."}
       </PopoverTrigger>
       <PopoverContent className="p-0">

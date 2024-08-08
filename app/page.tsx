@@ -23,8 +23,7 @@ export default async function IndexPage({ searchParams }: SearchParams) {
   if (searchParams?.remappings) {
     searchParams?.remappings.split(",").forEach((remapping: string) => {
       const [to, from] = remapping.split("=")
-      if (!to || !from)
-        return <LoadContractPage message="Remapping Error" />
+      if (!to || !from) return <LoadContractPage message="Remapping Error" />
       remappings[to] = from
     })
   }
@@ -32,15 +31,17 @@ export default async function IndexPage({ searchParams }: SearchParams) {
   const data = await getSolidityContract(url, remappings)
   if (typeof data === "string") return <LoadContractPage message={data} />
 
-  return <EVMProvider>
-    <EvmIDE
-      url={url}
-      content={JSON.stringify(data)}
-      version={version}
-      title={url.replace(
-        /https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//,
-        ""
-      )}
-    />
-  </EVMProvider>
+  return (
+    <EVMProvider>
+      <EvmIDE
+        url={url}
+        content={JSON.stringify(data)}
+        version={version}
+        title={url.replace(
+          /https:\/\/raw.githubusercontent.com\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\/[a-zA-Z0-9\-]+\//,
+          ""
+        )}
+      />
+    </EVMProvider>
+  )
 }

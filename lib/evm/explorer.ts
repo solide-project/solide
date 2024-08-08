@@ -3,38 +3,37 @@
 import Web3, { utils } from "web3"
 import { getSource } from "web3-plugin-contracts"
 
-import { solcVersion } from "@/lib/versions"
-import { getCode } from "@/lib/server/tron"
-import { metadataUtil } from "@/lib/evm"
 import { ChainID, getAPIKey, getRPC, getTronRPC } from "@/lib/chains"
+import { metadataUtil } from "@/lib/evm"
+import { getCode } from "@/lib/server/tron"
 import { BTFSGateway, GlacierService } from "@/lib/solidity-db"
+import { solcVersion } from "@/lib/versions"
+
 import { SolidityDatabaseRegistry } from "../solidity-db/tron-contract"
 
 export interface EthGetSourceCodeInterface {
   status: string
   message: string
-  result:
-  | ContractInfo[]
-  | string
+  result: ContractInfo[] | string
 }
 
 export interface ContractInfo {
-  SourceCode: string;
-  ABI: string;
-  ContractName: string;
-  CompilerVersion: string;
-  OptimizationUsed: string;
-  Runs: string;
-  ConstructorArguments: string;
-  EVMVersion: string;
-  Library: string;
-  LicenseType: string;
-  Proxy: string;
-  Implementation: string;
-  SwarmSource: string;
+  SourceCode: string
+  ABI: string
+  ContractName: string
+  CompilerVersion: string
+  OptimizationUsed: string
+  Runs: string
+  ConstructorArguments: string
+  EVMVersion: string
+  Library: string
+  LicenseType: string
+  Proxy: string
+  Implementation: string
+  SwarmSource: string
 
   // This is addon for Solide
-  BytcodeContract?: string;        // This is the id of the contract provided by Solide
+  BytcodeContract?: string // This is the id of the contract provided by Solide
 }
 
 export const getSourceCode = async (
@@ -68,8 +67,7 @@ export const getSourceCode = async (
       } else {
         const rpc = getRPC(chain)
         if (rpc) {
-          const web3 = new Web3(
-            new Web3.providers.HttpProvider(rpc));
+          const web3 = new Web3(new Web3.providers.HttpProvider(rpc))
           contractBytecode = await web3.eth.getCode(address)
         }
       }
@@ -110,12 +108,14 @@ export const getSourceCode = async (
         data.result = [result]
       }
     }
-  } else if (data.result === "API Endpoint not found" || data.result === "Contract not verified") {
+  } else if (
+    data.result === "API Endpoint not found" ||
+    data.result === "Contract not verified"
+  ) {
     let contractBytecode: string = ""
     const rpc = getRPC(chain)
     if (rpc) {
-      const web3 = new Web3(
-        new Web3.providers.HttpProvider(rpc));
+      const web3 = new Web3(new Web3.providers.HttpProvider(rpc))
       contractBytecode = await web3.eth.getCode(address)
     }
 

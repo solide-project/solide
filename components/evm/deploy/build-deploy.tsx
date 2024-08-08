@@ -3,15 +3,14 @@
 import { useState } from "react"
 
 import { cn } from "@/lib/utils"
-
 import { Title } from "@/components/core/components/title"
-import { useEVM } from "@/components/evm/evm-provider"
 import { CompileErrors } from "@/components/evm/deploy/compile-errors"
 import { ContractInvoke } from "@/components/evm/deploy/contract-invoke"
 import { ContractOverview } from "@/components/evm/deploy/contract-overview"
 import { SelectedContract } from "@/components/evm/deploy/select-contract"
+import { useEVM } from "@/components/evm/evm-provider"
 
-interface BuildDeployProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface BuildDeployProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 enum Tab {
   OVERVIEW = "overview",

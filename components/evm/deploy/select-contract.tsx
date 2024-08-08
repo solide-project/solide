@@ -17,13 +17,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-
-import { useEVM } from "../evm-provider"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-interface SelectedContractProps extends React.HTMLAttributes<HTMLDivElement> { }
+import { useEVM } from "../evm-provider"
 
-export function SelectedContract({ }: SelectedContractProps) {
+interface SelectedContractProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function SelectedContract({}: SelectedContractProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
 
@@ -39,7 +39,7 @@ export function SelectedContract({ }: SelectedContractProps) {
           className="w-full justify-between"
         >
           {value || "Select contract ..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
@@ -68,7 +68,7 @@ export function SelectedContract({ }: SelectedContractProps) {
                         >
                           <Check
                             className={cn(
-                              "mr-2 h-4 w-4",
+                              "mr-2 size-4",
                               value === target ? "opacity-100" : "opacity-0"
                             )}
                           />

@@ -53,7 +53,7 @@ export function SelectedEnvironment({}: SelectedEnvironmentProps) {
           className="w-full justify-between capitalize"
         >
           {environment || Environment.METAMASK}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
@@ -78,7 +78,7 @@ export function SelectedEnvironment({}: SelectedEnvironmentProps) {
                 >
                   <Check
                     className={cn(
-                      "mr-2 h-4 w-4",
+                      "mr-2 size-4",
                       value === environment.id ? "opacity-100" : "opacity-0"
                     )}
                   />

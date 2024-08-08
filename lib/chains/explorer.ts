@@ -108,7 +108,8 @@ const data: { [key: string]: string } = {
   [ChainID.METER_MAINNET]: "https://scan.meter.io",
   [ChainID.METER_TESTNET]: "https://scan-warringstakes.meter.io",
   [ChainID.PUBLIC_GOOD_NETWORK]: "https://explorer.publicgoods.network",
-  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]: "https://explorer.sepolia.publicgoods.network",
+  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]:
+    "https://explorer.sepolia.publicgoods.network",
   [ChainID.ROOTSTOCK_MAINNET]: "https://rootstock.blockscout.com",
   [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
   [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",
@@ -150,7 +151,10 @@ const data: { [key: string]: string } = {
 
 export const getExplorer = (network: string): string => data[network] || ""
 
-export const getContractExplorer = (network: string, contract: string): string => {
+export const getContractExplorer = (
+  network: string,
+  contract: string
+): string => {
   const explorer = getExplorer(network)
   let addressPath = ""
 

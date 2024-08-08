@@ -18,7 +18,7 @@ export function CopyText({ title, payload }: CopyTextProps) {
   const [icon, setIcon] = useState(CopyIcon())
 
   const copyText = (entryText: string) => {
-    setIcon(<Check className="text-emerald-400 h-5 lg:w-5" />)
+    setIcon(<Check className="h-5 text-emerald-400 lg:w-5" />)
     navigator.clipboard.writeText(entryText)
     setTimeout(() => {
       setIcon(CopyIcon())

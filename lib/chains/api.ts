@@ -109,7 +109,8 @@ const data: { [key: string]: string } = {
   [ChainID.CARBON_EVM_MAINNET]: "https://evm-scan.carbon.network",
   [ChainID.CARBON_EVM_TESTNET]: "https://test-evm-scan.carbon.network",
   [ChainID.ARTELA_TESTNET]: "https://betanet-scan.artela.network",
-  [ChainID.BERACHAIN_TESTNET]: "https://api.routescan.io/v2/network/testnet/evm/80085/etherscan",
+  [ChainID.BERACHAIN_TESTNET]:
+    "https://api.routescan.io/v2/network/testnet/evm/80085/etherscan",
   [ChainID.VICTION_MAINNET]: "https://www.vicscan.xyz",
   [ChainID.VICTION_TESTNET]: "https://scan-api-testnet.viction.xyz",
   [ChainID.PALM_MAINNET]: "https://sourcify.sirato.xyz/mesh/11297108109",
@@ -117,7 +118,8 @@ const data: { [key: string]: string } = {
   [ChainID.METER_MAINNET]: "https://api.meter.io:8000/api/cfile",
   [ChainID.METER_TESTNET]: "https://api.meter.io:4000/api/cfile",
   [ChainID.PUBLIC_GOOD_NETWORK]: "https://explorer.publicgoods.network",
-  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]: "https://explorer.sepolia.publicgoods.network",
+  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]:
+    "https://explorer.sepolia.publicgoods.network",
   [ChainID.ROOTSTOCK_MAINNET]: "https://rootstock.blockscout.com",
   [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
   [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",

@@ -2,6 +2,9 @@
 
 import * as React from "react"
 
+import { getContractExplorer } from "@/lib/chains"
+import { QueryHelper } from "@/lib/core"
+import { CompileError, CompileInput, isAddress, parseInput } from "@/lib/evm"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,11 +28,8 @@ import {
 } from "@/components/core/providers/navbar-provider"
 import { BuildDeploy } from "@/components/evm/deploy/build-deploy"
 import { useEVM } from "@/components/evm/evm-provider"
-import { EVMNavBar } from "@/components/evm/navbar/navbar"
-import { QueryHelper } from "@/lib/core"
-import { CompileError, CompileInput, isAddress, parseInput } from "@/lib/evm"
-import { getContractExplorer } from "@/lib/chains"
 import { UTILITY_KEY } from "@/components/evm/navbar/nav-item-utility"
+import { EVMNavBar } from "@/components/evm/navbar/navbar"
 import { UtiltyTab } from "@/components/evm/utils/utility-tab"
 
 export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
@@ -67,7 +67,7 @@ export function EvmIDE({
   const { setNavItemActive, isNavItemActive } = useNav()
 
   React.useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       if (version) {
         evm.setCompilerVersion(version)
       }
@@ -130,8 +130,7 @@ export function EvmIDE({
     }
 
     if (evm.evmVersions) {
-      queryBuilder
-        .addParam("evm", evm.evmVersions)
+      queryBuilder.addParam("evm", evm.evmVersions)
     }
     // if (viaIR) {
     //     queryBuilder.addParam('viaIR', viaIR)
@@ -173,14 +172,14 @@ export function EvmIDE({
       settings: {
         optimizer: {
           enabled: evm.compilerOptimised,
-          runs: evm.compilerRuns
+          runs: evm.compilerRuns,
         },
         outputSelection: {
           "*": {
-            "*": ["*"]
-          }
-        }
-      }
+            "*": ["*"],
+          },
+        },
+      },
     })
 
     const data = await response.json()

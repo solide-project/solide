@@ -29,17 +29,17 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  return <html lang="en" suppressHydrationWarning>
-    <head />
-    <body
-      className={cn(
-        "bg-grayscale-000 font-sans antialiased",
-        fontSpace.variable
-      )}
-    >
-      <SolideProviders>
-        {children}
-      </SolideProviders>
-    </body >
-  </html >
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body
+        className={cn(
+          "bg-grayscale-000 font-sans antialiased",
+          fontSpace.variable
+        )}
+      >
+        <SolideProviders>{children}</SolideProviders>
+      </body>
+    </html>
+  )
 }
