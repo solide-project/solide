@@ -39,11 +39,11 @@ export const abiParameterToNative = (
   value: any = ""
 ): any => {
   let data: any = value.toString()
-  if (input.type.includes("int")) {
+  if (input.type.includes("int") && !input.type.includes("[]")) {
     data = parseInt(value)
-  } else if (input.type.includes("bool")) {
+  } else if (input.type.includes("bool")  && !input.type.includes("[]")) {
     data = value === "true"
-  } else if (input.type.includes("tuple")) {
+  } else if (input.type.includes("tuple")  && !input.type.includes("[]")) {
     data = JSON.parse(value)
   } else if (input.type.includes("[]")) {
     data = JSON.parse(value)
