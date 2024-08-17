@@ -13,9 +13,9 @@ import { NavItemFile } from "@/components/core/navbar/nav-item-file"
 import { NavItemTheme } from "@/components/core/navbar/nav-item-theme"
 import { EVMSelectedChain } from "@/components/evm/evm-selected-chain"
 import { NavItemBytecode } from "@/components/evm/navbar/nav-item-bytecode"
-import { NavItemDownloader } from "@/components/evm/navbar/nav-item-downloader"
 import { NavItemUtility } from "@/components/evm/navbar/nav-item-utility"
 import { EVMSettings } from "@/components/evm/settings/settings"
+import { NavItemLoader } from "./nav-item-loader"
 
 interface EVMNavBarProps extends React.HTMLAttributes<HTMLDivElement> {
   url: string
@@ -24,28 +24,30 @@ interface EVMNavBarProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function EVMNavBar({ url, bytecodeId }: EVMNavBarProps) {
   return (
-    <div className="flex h-full flex-col gap-y-2 rounded-lg bg-grayscale-025 px-2 py-4">
-      <NavTooltipItem tooltip="File Explorer">
-        <NavItemFile />
-      </NavTooltipItem>
-      <NavTooltipItem tooltip="Build & Deploy">
-        <NavItemCode />
-      </NavTooltipItem>
-      <NavTooltipItem tooltip="Editor">
-        <NavItemEditor />
-      </NavTooltipItem>
-      <NavTooltipItem tooltip="Console">
-        <NavItemConsole />
-      </NavTooltipItem>
-      <NavTooltipItem tooltip="Utility">
-        <NavItemUtility />
-      </NavTooltipItem>
-      <NavTooltipItem tooltip="Source">
-        <NavItemContent url={url} />
-      </NavTooltipItem>
-      <NavTooltipItem tooltip="Download Smart Contract">
-        <NavItemDownloader />
-      </NavTooltipItem>
+    <div className="flex h-full flex-col rounded-lg bg-grayscale-025 px-2 py-4">
+      <div className="max-h-fit overflow-y-auto flex h-full flex-col gap-y-2">
+        <NavTooltipItem tooltip="File Explorer">
+          <NavItemFile />
+        </NavTooltipItem>
+        <NavTooltipItem tooltip="Build & Deploy">
+          <NavItemCode />
+        </NavTooltipItem>
+        <NavTooltipItem tooltip="Editor">
+          <NavItemEditor />
+        </NavTooltipItem>
+        <NavTooltipItem tooltip="Console">
+          <NavItemConsole />
+        </NavTooltipItem>
+        <NavTooltipItem tooltip="Utility">
+          <NavItemUtility />
+        </NavTooltipItem>
+        <NavTooltipItem tooltip="Source">
+          <NavItemContent url={url} />
+        </NavTooltipItem>
+        <NavTooltipItem tooltip="Load New Contract">
+          <NavItemLoader />
+        </NavTooltipItem>
+      </div>
 
       <div className="mt-auto flex flex-col items-center gap-2">
         {bytecodeId && <NavItemBytecode id={bytecodeId} />}

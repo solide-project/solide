@@ -1,16 +1,15 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { eth } from "web3"
+import { AbiEvent, decodeEventLog } from 'viem'
 
-import * as evmUtil from "@/lib/evm"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useEVM } from "@/components/evm/evm-provider"
 
-interface EventDecoderProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface EventDecoderProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export default function EventDecoder({}: EventDecoderProps) {
+export default function EventDecoder({ }: EventDecoderProps) {
   const evm = useEVM()
   const [topics, setTopics] = useState<string[]>(["", "", "", ""])
   const [data, setData] = useState<string>("")
@@ -35,9 +34,13 @@ export default function EventDecoder({}: EventDecoderProps) {
   }
 
   const handleDecode = () => {
-    eventABIs.forEach((event: evmUtil.ABIEntry) => {
+    eventABIs.forEach((event: AbiEvent) => {
       try {
-        const decodedResult = eth.abi.decodeLog(event.inputs, data, topics)
+        const decodedResult = decodeEventLog({
+          abi: event.inputs,
+          data: data as `0x${string}`,
+          topics: topics as any,
+        })
         setResult(decodedResult)
       } catch (e) {
         console.error(e)

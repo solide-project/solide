@@ -1,83 +1,36 @@
 /**
- * Assumes web3 is injected
+ * Assumes window.ethereum is injected
  */
 
-import { ethers } from "ethers"
-import Web3, { Contract } from "web3"
-
-export const load = async (contractAddress: string, abi: any[]) => {
-  if (!window.ethereum) {
-    console.error("No ethereum provider found")
-    return
-  }
-  const contractABI = [...abi] as const
-  const web3 = new Web3(window.ethereum)
-  return new web3.eth.Contract(contractABI, contractAddress)
-}
+import { Abi, createPublicClient, createWalletClient, custom, } from "viem"
+import { mainnet } from "viem/chains"
+import { getNetworkDetails } from "../eth/chains"
+import { deployContract } from "viem/zksync"
+import { encodeDeployData } from "viem"
+import { BrowserProvider, ContractFactory } from "ethers"
 
 interface DeployResult {
-  contract: Contract<any> | undefined | null
+  contract: string | undefined | null
   transactionHash: string
 }
 
-/**
- * Note we are using ethers to deploy and create contract instance with web3.
- * Reason is ethers is more stable and has better support for contract deployment,
- * error such as code can't be store for web3
- * @param abi
- * @param bytecode
- * @param args
- * @returns
- */
 export const deploy = async (
   abi: any,
   bytecode: string,
   args: any[]
 ): Promise<DeployResult> => {
-  const ret: any = {
-    contract: null,
-    transactionHash: "",
-  }
   if (!window.ethereum) {
     console.error("No ethereum provider found")
-    return ret
+    return { contract: null, transactionHash: "" }
   }
 
-  // Get signer from Metamask
+  const provider = new BrowserProvider(window.ethereum)
+  const signer = await provider.getSigner()
   const accounts: string[] = await window.ethereum.request({
     method: "eth_requestAccounts",
   })
-  const account = accounts[0]
 
-  // // Setup web3 and chain info
-  const web3 = new Web3(window.ethereum)
-  const chainId = await web3.eth.getChainId()
-
-  // const contract = new web3.eth.Contract(abi)
-
-  // // contract.options.data = bytecode;        // Note this is readonly
-  // const deployTx = contract.deploy({
-  //   data: bytecode,
-  //   arguments: args,
-  // })
-  // const deployedContract = await deployTx
-  //   .send({
-  //     from: account,
-  //     gas: (await deployTx.estimateGas()).toString(),
-  //   })
-  //   .once("transactionHash", (txhash) => {
-  //     const explorer = getExplorer(chainId.toString())
-  //     console.log(`Transaction hash: ${explorer} ${txhash}`)
-  //     ret.transactionHash = txhash
-  //   })
-
-  // console.log(`Contract deployed at ${deployedContract.options.address}`)
-  // ret.contract = new web3.eth.Contract(abi, deployedContract.options.address)
-
-  const provider = new ethers.BrowserProvider(window.ethereum)
-  const signer = await provider.getSigner()
-
-  const factory = new ethers.ContractFactory(abi, bytecode, signer)
+  const factory = new ContractFactory(abi, bytecode, signer)
 
   console.log("Deploying contract with args: ", args)
 
@@ -87,10 +40,63 @@ export const deploy = async (
 
   const contractInstance = await factory.deploy(...args)
   const address = await contractInstance.getAddress()
+  const hash = await contractInstance.deploymentTransaction()
   await contractInstance.waitForDeployment()
 
-  ret.contract = new web3.eth.Contract(abi, address)
-  return ret
+  console.log("Contract deployed at ", hash)
+  return {
+    contract: address,
+    transactionHash: "hash",
+  }
+
+  // const accounts: string[] = await window.ethereum.request({
+  //   method: "eth_requestAccounts",
+  // })
+  // const account = accounts[0]
+
+  // // // Setup web3 and chain info
+  // const web3 = new Web3(window.ethereum)
+  // const chainId = await web3.eth.getChainId()
+
+  // // const contract = new web3.eth.Contract(abi)
+
+  // // // contract.options.data = bytecode;        // Note this is readonly
+  // // const deployTx = contract.deploy({
+  // //   data: bytecode,
+  // //   arguments: args,
+  // // })
+  // // const deployedContract = await deployTx
+  // //   .send({
+  // //     from: account,
+  // //     gas: (await deployTx.estimateGas()).toString(),
+  // //   })
+  // //   .once("transactionHash", (txhash) => {
+  // //     const explorer = getExplorer(chainId.toString())
+  // //     console.log(`Transaction hash: ${explorer} ${txhash}`)
+  // //     ret.transactionHash = txhash
+  // //   })
+
+  // // console.log(`Contract deployed at ${deployedContract.options.address}`)
+  // // ret.contract = new web3.eth.Contract(abi, deployedContract.options.address)
+
+  // const provider = new ethers.BrowserProvider(window.ethereum)
+  // const signer = await provider.getSigner()
+
+  // const factory = new ethers.ContractFactory(abi, bytecode, signer)
+
+
+  // console.log("Deploying contract with args: ", args)
+
+  // // const deployTx = await factory.getDeployTransaction(...args)
+  // // const estimatedGas = await provider.estimateGas(deployTx)
+  // // console.log("Estimated gas: ", estimatedGas.toString())
+
+  // const contractInstance = await factory.deploy(...args)
+  // const address = await contractInstance.getAddress()
+  // await contractInstance.waitForDeployment()
+
+  // ret.contract = new web3.eth.Contract(abi, address)
+  // return ret
 }
 
 /**

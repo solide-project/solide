@@ -3,12 +3,17 @@
 import path from "path"
 import { useEffect, useState } from "react"
 import {
+  Braces,
   Check,
+  Download,
   FileBox,
+  FileJson2,
   FilePlus,
+  FileText,
   FolderClosed,
   FolderOpen,
   FolderPlus,
+  Info,
 } from "lucide-react"
 
 import { VFSFile, VFSNode, isVFSFile } from "@/lib/core/file-system/interfaces"
@@ -31,6 +36,7 @@ import {
 import { useEditor } from "@/components/core/providers/editor-provider"
 import { useFileSystem } from "@/components/core/providers/file-provider"
 import { useLogger } from "@/components/core/providers/logger-provider"
+import { downloadBlob, zipSources } from "@/lib/core/deps/downloader"
 
 interface FileTreeNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string
@@ -44,7 +50,7 @@ const nodeClass =
   "hover:bg-secondary flex items-center cursor-pointer space-x-1"
 const iconsProps = {
   size: 18,
-  className: "shrink-0",
+  className: "shrink-0 hover:cursor-pointer hover:text-primary",
 }
 const FileTreeNode = ({ name, directory, node, depth }: FileTreeNodeProps) => {
   const ide = useEditor()
@@ -64,14 +70,34 @@ const FileTreeNode = ({ name, directory, node, depth }: FileTreeNodeProps) => {
     // setName(name)
   }, [path, name])
 
+  const loadIcon = (filename: string) => {
+    const { ext } = path.parse(filename)
+    switch (ext) {
+      case ".md":
+        return <Info {...iconsProps} />
+      case ".json":
+        return <Braces {...iconsProps} />
+      case ".ts":
+      case ".js":
+      case ".tsx":
+      case ".jsx":
+        return <FileJson2 {...iconsProps} />
+      case ".txt":
+      case ".log":
+        return <FileText {...iconsProps} />
+      default:
+        return <FileBox {...iconsProps} />
+    }
+  }
+
   if (isVFSFile(node)) {
     return (
       <ContextMenu>
         <ContextMenuTrigger
           onClick={() => ide.selectFile(node as VFSFile)}
-          className={cn(nodeClass, "pl-[16px]")}
+          className={cn(nodeClass, depth === 0 ? "pl-[4px]" : "pl-[16px]")}
         >
-          <FileBox {...iconsProps} />
+          {loadIcon(name)}
           <div className="truncate">{name}</div>
         </ContextMenuTrigger>
         <ContextMenuContent>
@@ -152,19 +178,13 @@ const FileTreeNode = ({ name, directory, node, depth }: FileTreeNodeProps) => {
           <ContextMenuSub>
             <FileTreeContextMenuSubTrigger>Add</FileTreeContextMenuSubTrigger>
             <ContextMenuSubContent>
-              <FileTreeContextMenuItem
-                onClick={() => {
-                  vfs.touch(path.join(fullPath, "text.txt"), "")
-                }}
-              >
+              <FileTreeContextMenuItem onClick={() => { vfs.touch(path.join(fullPath, "text.txt"), "") }} >
                 File
                 <ContextMenuShortcut>
                   <FilePlus size={14} />
                 </ContextMenuShortcut>
               </FileTreeContextMenuItem>
-              <FileTreeContextMenuItem
-                onClick={() => vfs.mkdir(path.join(fullPath, "new-folder"))}
-              >
+              <FileTreeContextMenuItem onClick={() => vfs.mkdir(path.join(fullPath, "folder"))} >
                 Folder
                 <ContextMenuShortcut>
                   <FolderPlus size={14} />
@@ -199,27 +219,43 @@ interface FileTreeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const FileTree = ({ className, name = "root" }: FileTreeProps) => {
-  const { vfs } = useFileSystem()
+  const { vfs, generateSources } = useFileSystem()
+  const logger = useLogger()
+
+  const handleDownload = async (event: any) => {
+    try {
+      const payload = await zipSources(await generateSources())
+      logger.info(`Downloading contract... ${payload.size} bytes`)
+
+      downloadBlob({
+        source: payload,
+        name: "contract.zip",
+      })
+    } catch (error) {
+      logger.error("Failed to download contract.")
+    }
+  }
 
   if (!vfs.vfs) {
     return <div className={className}>Empty</div>
   }
 
-  return (
-    <div className={className}>
-      <Title text="File Tree" />
-      {/* <FileTreeNode name={name} node={vfs.vfs || {}} depth={0} path="" /> */}
-      {Object.keys(vfs.vfs).map((name, index) => {
-        return (
-          <FileTreeNode
-            key={index}
-            name={name}
-            node={vfs.vfs[name] || {}}
-            depth={0}
-            directory=""
-          />
-        )
-      })}
+  return <div className={className}>
+    <Title text="File Tree" />
+
+    <div className="flex gap-2 pl-[8px] my-2">
+      <FilePlus {...iconsProps} onClick={() => { vfs.touch("text.txt") }} />
+      <FolderPlus {...iconsProps} onClick={() => { vfs.mkdir("folder") }} />
+      <Download {...iconsProps} onClick={handleDownload} />
     </div>
-  )
+
+    {/* <FileTreeNode name={name} node={vfs.vfs || {}} depth={0} path="" /> */}
+    {Object.keys(vfs.vfs).map((name, index) => <FileTreeNode
+      key={index}
+      name={name}
+      node={vfs.vfs[name] || {}}
+      depth={0}
+      directory=""
+    />)}
+  </div>
 }

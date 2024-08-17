@@ -1,51 +1,42 @@
 import { useState } from "react"
-import { formatUnits } from "ethers"
-import { Contract } from "web3"
 
-import { deploy, load } from "@/lib/evm/ethers"
+import { deploy } from "@/lib/evm/ethers"
+import { DeployedContracts } from "@/lib/eth/interfaces"
+import { EVMSmartContract } from "@/lib/eth/evm"
+import { getAddress } from 'viem'
 
 export const useWeb3Hook = () => {
-  const [contract, setContract] = useState<Contract<any> | null>(null)
+  const [contracts, setContracts] = useState<DeployedContracts>({})
 
   const executeSend = async (
+    contractAddress: string,
     method: string,
     args: any[],
     value: number = 0
   ) => {
-    const accounts: string[] = await window.ethereum.request({
-      method: "eth_requestAccounts",
-    })
-    const account = accounts[0]
-
-    if (!account) {
-      throw new Error("No account found")
-    }
-
-    const options: any = {
-      from: account,
-      gas: "1000000",
-      gasPrice: "1000000000",
-    }
-    if (value > 0) {
-      options.value = value // formatUnits(value, "wei")
-    }
-
-    if (!contract) {
+    contractAddress = getAddress(contractAddress)
+    if (!contracts.hasOwnProperty(contractAddress)) {
       throw new Error("Contract not loaded")
     }
 
-    const receipt = await contract.methods[method](...args).send(options)
-
-    return { receipt }
+    return contracts[contractAddress].send({ method, args, value: value.toString() })
   }
 
-  const executeCall = async (method: string, args: any[]) => {
-    if (!contract) {
+  const executeCall = async (contractAddress: string, method: string, args: any[]) => {
+    contractAddress = getAddress(contractAddress)
+    if (!contracts.hasOwnProperty(contractAddress)) {
       throw new Error("Contract not loaded")
     }
 
-    console.log("Calling", method, args)
-    return contract.methods[method](...args).call()
+    return contracts[contractAddress].call({ method, args })
+  }
+
+  const removeContract = (contractAddress: string) => {
+    contractAddress = getAddress(contractAddress)
+    if (contracts.hasOwnProperty(contractAddress)) {
+      delete contracts[contractAddress]
+      setContracts({ ...contracts })
+    }
   }
 
   const doDeploy = async ({
@@ -60,25 +51,30 @@ export const useWeb3Hook = () => {
     args: any[]
   }) => {
     if (contractAddress) {
-      const contract = await load(contractAddress, abi)
-
-      if (contract) {
-        setContract(contract)
-      }
-      return {
-        contract,
-        transactionHash: "",
-      }
+      contractAddress = getAddress(contractAddress)
+      setContracts({
+        ...contracts,
+        [contractAddress]: new EVMSmartContract(contractAddress, abi),
+      })
+      return { contract: contractAddress, transactionHash: "" };
     }
 
-    return await deploy(abi, bytecode, args)
+    console.log("Deploying contract", abi, bytecode, args)
+    const result = await deploy(abi, bytecode, args)
+    contractAddress = result.contract as string
+    setContracts({
+      ...contracts,
+      [getAddress(contractAddress)]: new EVMSmartContract(contractAddress, abi)
+    })
+    return result
   }
 
   return {
-    contract,
-    setContract,
     executeCall,
     executeSend,
     doDeploy,
+
+    contracts,
+    removeContract
   }
 }

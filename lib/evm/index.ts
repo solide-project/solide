@@ -7,7 +7,7 @@
 export * from "./output"
 export * from "./error"
 export * from "./environment"
-export * from "./abi"
+export * from "../eth/ethers"
 export * as metadataUtil from "./metadata"
 export * from "./ethers"
 export * from "./input"

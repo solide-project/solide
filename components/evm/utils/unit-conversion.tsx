@@ -1,12 +1,12 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { parseUnits } from "ethers"
+import { parseUnits } from "viem"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-interface UnitConversionProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface UnitConversionProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 const etherUnits: { [key: string]: BigInt } = {
   Gwei: BigInt(1000000000),
@@ -38,7 +38,7 @@ const etherUnits: { [key: string]: BigInt } = {
   wei: BigInt(1),
 }
 
-export default function UnitConversion({}: UnitConversionProps) {
+export default function UnitConversion({ }: UnitConversionProps) {
   const [decimals, setDecimals] = useState<string>("18")
   const [data, setData] = useState<string>("0")
   const [result, setResult] = useState<string>("")

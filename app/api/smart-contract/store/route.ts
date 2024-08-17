@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { utils } from "web3"
+import { keccak256, toHex } from "viem"
 
 import { BTFSService, GlacierService } from "@/lib/solidity-db"
 import { SolidityDatabaseRegistry } from "@/lib/solidity-db/tron-contract"
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   // Store the bytecode hash in our database
   const databaseId: string[] = []
   for (const raw of payload.bytecodes) {
-    const bytecode = utils.sha3(raw) // Hashed version of bytecode
+    const bytecode = keccak256(toHex(raw)) // Hashed version of bytecode
     if (!bytecode) continue
 
     // Glacier

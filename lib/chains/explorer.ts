@@ -156,24 +156,53 @@ export const getContractExplorer = (
   contract: string
 ): string => {
   const explorer = getExplorer(network)
-  let addressPath = ""
+  if (!explorer) {
+    return ""
+  }
+
+  let path = ""
 
   switch (network) {
     case ChainID.TRON_MAINNET:
     case ChainID.TRON_SHASTA_TESTNET:
     case ChainID.COTI_DEVNET:
-      addressPath = `contract/${contract}`
+      path = `contract/${contract}`
     case ChainID.PALM_MAINNET:
     case ChainID.PALM_TESTNET:
-      addressPath = `contracts/${contract}`
+      path = `contracts/${contract}`
       break
     case ChainID.SHARDEUM_SPHINX_1_X:
-      addressPath = `account/${contract}`
+      path = `account/${contract}`
       break
     default:
-      addressPath = `address/${contract}`
+      path = `address/${contract}`
       break
   }
 
-  return `${explorer}/${addressPath}`
+  return `${explorer}/${path}`
 }
+
+export const getTransactionExplorer = (
+  network: string,
+  tx: string
+): string => {
+  const explorer = getExplorer(network)
+  if (!explorer) {
+    return ""
+  }
+  
+  let path = ""
+
+  switch (network) {
+    case ChainID.TRON_MAINNET:
+    case ChainID.TRON_SHASTA_TESTNET:
+    case ChainID.COTI_DEVNET:
+      path = `transaction/${tx}`
+    default:
+      path = `tx/${tx}`
+      break
+  }
+
+  return `${explorer}/${path}`
+}
+

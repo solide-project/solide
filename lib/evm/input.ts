@@ -1,7 +1,5 @@
 import path from "path"
 
-import { Sources } from "../core"
-
 export interface CompileInput {
   language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper" | "Aspect"
   settings?: {
@@ -14,11 +12,11 @@ export interface CompileInput {
     metadataHash: string
   }
   sources: {
-    [key: string]: CompileSource
+    [key: string]: SolcSource
   }
 }
 
-export interface CompileSource {
+export interface SolcSource {
   content: string
 }
 
@@ -31,7 +29,7 @@ export const parseInput = (content: string) => {
   try {
     const input = JSON.parse(content)
     return input
-  } catch (error) {}
+  } catch (error) { }
 
   try {
     const input = JSON.parse(content.slice(1, -1))
@@ -41,11 +39,35 @@ export const parseInput = (content: string) => {
   }
 }
 
-export const filterSources = (inputSources: Sources): Sources => {
-  const sources: Sources = {}
+export const filterSources = (inputSources: { [fileName: string]: SolcSource }) => {
+  const sources: { [fileName: string]: SolcSource } = {}
   Object.entries(inputSources).forEach(([key, value]) => {
     const { ext } = path.parse(key)
     if (ext === ".sol") sources[key] = value
   })
   return sources
+}
+
+export interface PartialSolcInput {
+  language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper"
+
+  settings: {
+    outputSelection: any;
+    optimizer: any
+    evmVersion: string
+    remappings: string[];
+    [key: string]: any;
+  };
+
+  [key: string]: any;
+}
+
+export interface SolcInput extends PartialSolcInput {
+  sources: {
+    [fileName: string]: SolcSource;
+  };
+}
+
+export interface SolcSource {
+  content: string;
 }

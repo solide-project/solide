@@ -52,59 +52,45 @@ export function SelectChain({ handleOnChange }: SelectChainProps) {
     handleOnChange && handleOnChange(value)
   }, [value])
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="none"
-          role="combobox"
-          aria-expanded={open}
-          className="w-full justify-center space-x-2 !text-base"
-        >
-          <Image
-            width={36}
-            height={36}
-            alt={getNetworkNameFromChainID(value)}
-            loader={() => getIconByChainId(value)}
-            src={getIconByChainId(value)}
-            className={cn(
-              buttonVariants({ size: "icon", variant: "outline" }),
-              "size-6 cursor-pointer border-none"
-            )}
-          />
-          <div>{value && getNetworkNameFromChainID(value)}</div>
-          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full border-none p-0">
-        <Command>
-          <CommandInput placeholder="Search framework..." />
-          <CommandEmpty>No framework found.</CommandEmpty>
+  return <Popover open={open} onOpenChange={setOpen} modal={true}>
+    <PopoverTrigger className={buttonVariants({ variant: "ghost" })}>
+      <Image width={36} height={36}
+        alt={getNetworkNameFromChainID(value)}
+        loader={() => getIconByChainId(value)}
+        src={getIconByChainId(value)}
+        className={cn("size-6 cursor-pointer border-none")}
+      />
+      <div>{value && getNetworkNameFromChainID(value)}</div>
+      <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+    </PopoverTrigger>
+    <PopoverContent className="p-0">
+      <Command>
+        <CommandInput placeholder="Search chain..." />
+        <CommandEmpty>No chain found.</CommandEmpty>
+        <ScrollArea className="max-h-[256px] overflow-auto">
           <CommandGroup>
-            <ScrollArea className="1-full h-[200px]">
-              {chainList.map((framework) => (
-                <CommandItem
-                  key={framework.value}
-                  value={getNetworkNameFromChainID(framework.value)}
-                  onSelect={(currentValue) => {
-                    setValue(framework.value)
-                    handleOnChange && handleOnChange(framework.value)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 size-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {framework.label}
-                </CommandItem>
-              ))}
-            </ScrollArea>
+            {chainList.map((framework) => (
+              <CommandItem
+                key={framework.value}
+                value={getNetworkNameFromChainID(framework.value)}
+                onSelect={(currentValue) => {
+                  setValue(framework.value)
+                  handleOnChange && handleOnChange(framework.value)
+                  setOpen(false)
+                }}
+              >
+                <Check
+                  className={cn(
+                    "mr-2 size-4",
+                    value === framework.value ? "opacity-100" : "opacity-0"
+                  )}
+                />
+                {framework.label}
+              </CommandItem>
+            ))}
           </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
+        </ScrollArea>
+      </Command>
+    </PopoverContent>
+  </Popover>
 }

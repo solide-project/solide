@@ -2,7 +2,7 @@ import TronWeb from "tronweb"
 
 import { ChainID, getTronRPC } from "@/lib/chains"
 
-import { NetworkUsage } from "../tron"
+import { NetworkUsage } from "@/lib/eth/tron"
 import { abi, account, address } from "./metadata"
 
 export class SolidityDatabaseRegistry {

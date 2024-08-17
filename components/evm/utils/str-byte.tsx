@@ -1,20 +1,20 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { decodeBytes32String, encodeBytes32String } from "ethers"
+import { hexToString, stringToHex } from "viem"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-interface StringToByte32Props extends React.HTMLAttributes<HTMLDivElement> {}
+interface StringToByte32Props extends React.HTMLAttributes<HTMLDivElement> { }
 
-export default function StringToByte32({}: StringToByte32Props) {
+export default function StringToByte32({ }: StringToByte32Props) {
   const [data, setData] = useState<string>("")
   const [result, setResult] = useState<string>("")
 
   const handleStringToHex = useCallback(() => {
     try {
-      const encodedResult = encodeBytes32String(data)
+      const encodedResult = stringToHex(data)
       setResult(encodedResult)
     } catch (e: any) {
       setResult(`Error: ${e.message}`)
@@ -23,7 +23,7 @@ export default function StringToByte32({}: StringToByte32Props) {
 
   const handleHexToString = useCallback(() => {
     try {
-      const decodedResult = decodeBytes32String(data)
+      const decodedResult = hexToString(data as `0x${string}`)
       setResult(decodedResult)
     } catch (e: any) {
       setResult(`Error: ${e.message}`)
