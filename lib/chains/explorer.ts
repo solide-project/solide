@@ -182,15 +182,12 @@ export const getContractExplorer = (
   return `${explorer}/${path}`
 }
 
-export const getTransactionExplorer = (
-  network: string,
-  tx: string
-): string => {
+export const getTransactionExplorer = (network: string, tx: string): string => {
   const explorer = getExplorer(network)
   if (!explorer) {
     return ""
   }
-  
+
   let path = ""
 
   switch (network) {
@@ -205,4 +202,3 @@ export const getTransactionExplorer = (
 
   return `${explorer}/${path}`
 }
-

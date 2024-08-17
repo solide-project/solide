@@ -15,6 +15,7 @@ import { EVMSelectedChain } from "@/components/evm/evm-selected-chain"
 import { NavItemBytecode } from "@/components/evm/navbar/nav-item-bytecode"
 import { NavItemUtility } from "@/components/evm/navbar/nav-item-utility"
 import { EVMSettings } from "@/components/evm/settings/settings"
+
 import { NavItemLoader } from "./nav-item-loader"
 
 interface EVMNavBarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -25,7 +26,7 @@ interface EVMNavBarProps extends React.HTMLAttributes<HTMLDivElement> {
 export function EVMNavBar({ url, bytecodeId }: EVMNavBarProps) {
   return (
     <div className="flex h-full flex-col rounded-lg bg-grayscale-025 px-2 py-4">
-      <div className="max-h-fit overflow-y-auto flex h-full flex-col gap-y-2">
+      <div className="flex h-full max-h-fit flex-col gap-y-2 overflow-y-auto">
         <NavTooltipItem tooltip="File Explorer">
           <NavItemFile />
         </NavTooltipItem>

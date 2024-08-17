@@ -67,7 +67,7 @@ export function EvmIDE({
   const { setNavItemActive, isNavItemActive } = useNav()
 
   React.useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       if (version) {
         evm.setCompilerVersion(version)
       }

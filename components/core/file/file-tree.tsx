@@ -16,6 +16,7 @@ import {
   Info,
 } from "lucide-react"
 
+import { downloadBlob, zipSources } from "@/lib/core/deps/downloader"
 import { VFSFile, VFSNode, isVFSFile } from "@/lib/core/file-system/interfaces"
 import { cn } from "@/lib/utils"
 import {
@@ -36,7 +37,6 @@ import {
 import { useEditor } from "@/components/core/providers/editor-provider"
 import { useFileSystem } from "@/components/core/providers/file-provider"
 import { useLogger } from "@/components/core/providers/logger-provider"
-import { downloadBlob, zipSources } from "@/lib/core/deps/downloader"
 
 interface FileTreeNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string
@@ -58,17 +58,13 @@ const FileTreeNode = ({ name, directory, node, depth }: FileTreeNodeProps) => {
   const { vfs } = useFileSystem()
 
   const [isExpanded, setIsExpanded] = useState(false)
-  const [newName, setName] = useState("")
+  const [newName, setName] = useState(name)
   const [fullPath, setFullPath] = useState("")
-
-  useEffect(() => {
-    setName(name)
-  }, [])
 
   useEffect(() => {
     setFullPath(directory + "/" + name)
     // setName(name)
-  }, [path, name])
+  }, [name])
 
   const loadIcon = (filename: string) => {
     const { ext } = path.parse(filename)
@@ -178,13 +174,19 @@ const FileTreeNode = ({ name, directory, node, depth }: FileTreeNodeProps) => {
           <ContextMenuSub>
             <FileTreeContextMenuSubTrigger>Add</FileTreeContextMenuSubTrigger>
             <ContextMenuSubContent>
-              <FileTreeContextMenuItem onClick={() => { vfs.touch(path.join(fullPath, "text.txt"), "") }} >
+              <FileTreeContextMenuItem
+                onClick={() => {
+                  vfs.touch(path.join(fullPath, "text.txt"), "")
+                }}
+              >
                 File
                 <ContextMenuShortcut>
                   <FilePlus size={14} />
                 </ContextMenuShortcut>
               </FileTreeContextMenuItem>
-              <FileTreeContextMenuItem onClick={() => vfs.mkdir(path.join(fullPath, "folder"))} >
+              <FileTreeContextMenuItem
+                onClick={() => vfs.mkdir(path.join(fullPath, "folder"))}
+              >
                 Folder
                 <ContextMenuShortcut>
                   <FolderPlus size={14} />
@@ -240,22 +242,36 @@ export const FileTree = ({ className, name = "root" }: FileTreeProps) => {
     return <div className={className}>Empty</div>
   }
 
-  return <div className={className}>
-    <Title text="File Tree" />
+  return (
+    <div className={className}>
+      <Title text="File Tree" />
 
-    <div className="flex gap-2 pl-[8px] my-2">
-      <FilePlus {...iconsProps} onClick={() => { vfs.touch("text.txt") }} />
-      <FolderPlus {...iconsProps} onClick={() => { vfs.mkdir("folder") }} />
-      <Download {...iconsProps} onClick={handleDownload} />
+      <div className="my-2 flex gap-2 pl-[8px]">
+        <FilePlus
+          {...iconsProps}
+          onClick={() => {
+            vfs.touch("text.txt")
+          }}
+        />
+        <FolderPlus
+          {...iconsProps}
+          onClick={() => {
+            vfs.mkdir("folder")
+          }}
+        />
+        <Download {...iconsProps} onClick={handleDownload} />
+      </div>
+
+      {/* <FileTreeNode name={name} node={vfs.vfs || {}} depth={0} path="" /> */}
+      {Object.keys(vfs.vfs).map((name, index) => (
+        <FileTreeNode
+          key={index}
+          name={name}
+          node={vfs.vfs[name] || {}}
+          depth={0}
+          directory=""
+        />
+      ))}
     </div>
-
-    {/* <FileTreeNode name={name} node={vfs.vfs || {}} depth={0} path="" /> */}
-    {Object.keys(vfs.vfs).map((name, index) => <FileTreeNode
-      key={index}
-      name={name}
-      node={vfs.vfs[name] || {}}
-      depth={0}
-      directory=""
-    />)}
-  </div>
+  )
 }

@@ -1,5 +1,6 @@
 // Server side code
 
+import { createPublicClient, http, keccak256, toHex } from "viem"
 import { getSource } from "web3-plugin-contracts"
 
 import { ChainID, getAPIKey, getRPC, getTronRPC } from "@/lib/chains"
@@ -9,7 +10,6 @@ import { BTFSGateway, GlacierService } from "@/lib/solidity-db"
 import { solcVersion } from "@/lib/versions"
 
 import { SolidityDatabaseRegistry } from "../solidity-db/tron-contract"
-import { createPublicClient, http, keccak256, toHex } from "viem"
 
 export interface EthGetSourceCodeInterface {
   status: string

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { solcVersion } from "@/lib/versions"
@@ -21,7 +22,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useLogger } from "@/components/core/providers/logger-provider"
 
 import { SolidityReleases, useEVM } from "../evm-provider"
-import { ChevronsUpDown } from "lucide-react"
 
 function extractBuild(buildFormat: string) {
   if (!buildFormat) return buildFormat
@@ -40,9 +40,9 @@ function extractVersion(version: string) {
   return match ? match[1] : version
 }
 
-interface SolidityVersionsProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface SolidityVersionsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function SolidityVersions({ }: SolidityVersionsProps) {
+export function SolidityVersions({}: SolidityVersionsProps) {
   const { solidityVersions, compilerVersion, setCompilerVersion } = useEVM()
   const logger = useLogger()
 
@@ -54,41 +54,48 @@ export function SolidityVersions({ }: SolidityVersionsProps) {
     logger.info(`Compiler version: ${compilerVersion}`)
   }, [compilerVersion])
 
-  return <Popover open={open} onOpenChange={setOpen} modal={true}>
-    <PopoverTrigger className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "")}>
-      {value ? value : "Select framework..."}
-      <ChevronsUpDown className="w-4 h-4 ml-2" />
-    </PopoverTrigger>
-    <PopoverContent className="p-0">
-      <Command>
-        <CommandInput placeholder="Search compiler version..." className="h-9" />
-        <CommandEmpty>No version found.</CommandEmpty>
-        <ScrollArea className="max-h-[256px] overflow-y-auto">
-          <CommandGroup>
-            {Object.keys(solidityVersions?.releases || {}).map(
-              (version: string, index: any) => (
-                <CommandItem
-                  className="hover:cursor-pointer"
-                  key={index}
-                  value={version}
-                  onSelect={(currentValue) => {
-                    const v = extractBuild(
-                      solidityVersions.releases[currentValue]
-                    )
-                    setCompilerVersion(v)
-                    setValue(currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  {extractVersion(
-                    solidityVersions?.releases[version] || solcVersion
-                  )}
-                </CommandItem>
-              )
-            )}
-          </CommandGroup>
-        </ScrollArea>
-      </Command>
-    </PopoverContent>
-  </Popover>
+  return (
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
+      <PopoverTrigger
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "")}
+      >
+        {value ? value : "Select framework..."}
+        <ChevronsUpDown className="ml-2 size-4" />
+      </PopoverTrigger>
+      <PopoverContent className="p-0">
+        <Command>
+          <CommandInput
+            placeholder="Search compiler version..."
+            className="h-9"
+          />
+          <CommandEmpty>No version found.</CommandEmpty>
+          <ScrollArea className="max-h-[256px] overflow-y-auto">
+            <CommandGroup>
+              {Object.keys(solidityVersions?.releases || {}).map(
+                (version: string, index: any) => (
+                  <CommandItem
+                    className="hover:cursor-pointer"
+                    key={index}
+                    value={version}
+                    onSelect={(currentValue) => {
+                      const v = extractBuild(
+                        solidityVersions.releases[currentValue]
+                      )
+                      setCompilerVersion(v)
+                      setValue(currentValue)
+                      setOpen(false)
+                    }}
+                  >
+                    {extractVersion(
+                      solidityVersions?.releases[version] || solcVersion
+                    )}
+                  </CommandItem>
+                )
+              )}
+            </CommandGroup>
+          </ScrollArea>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
 }

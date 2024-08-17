@@ -1,18 +1,20 @@
-import { IDESettings } from "@/components/core/components/ide-settings"
+import { Info } from "lucide-react"
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { IDESettings } from "@/components/core/components/ide-settings"
+import { NavItemTheme } from "@/components/core/navbar/nav-item-theme"
+
 import { CompilerOptimised } from "./compiler-optimised"
 import { CompilerRuns } from "./compiler-runs"
 import { EVMVersions } from "./evm-version"
 import { SolidityDBEnabler } from "./solidity-db-enabler"
 import { SolidityVersions } from "./solidity-version"
-import { NavItemTheme } from "@/components/core/navbar/nav-item-theme"
-import { Info } from "lucide-react"
 
-interface EVMSettingsProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface EVMSettingsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function EVMSettings({ className }: EVMSettingsProps) {
   return (
@@ -39,7 +41,10 @@ export function EVMSettings({ className }: EVMSettingsProps) {
         <div className="flex items-center gap-x-1">
           <div className="font-semibold">Optimised</div>
           <Tooltip>
-            <TooltipTrigger asChild={true} className="hover:cusor-pointer text-grey-900">
+            <TooltipTrigger
+              asChild={true}
+              className="hover:cusor-pointer text-grey-900"
+            >
               <Info height={12} />
             </TooltipTrigger>
             <TooltipContent side="right">
@@ -54,7 +59,10 @@ export function EVMSettings({ className }: EVMSettingsProps) {
         <div className="flex items-center gap-x-1">
           <div className="font-semibold">Store on Vaulidity</div>
           <Tooltip>
-            <TooltipTrigger asChild={true} className="hover:cusor-pointer text-grey-900">
+            <TooltipTrigger
+              asChild={true}
+              className="hover:cusor-pointer text-grey-900"
+            >
               <Info height={12} />
             </TooltipTrigger>
             <TooltipContent side="right">

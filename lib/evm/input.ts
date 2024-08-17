@@ -29,7 +29,7 @@ export const parseInput = (content: string) => {
   try {
     const input = JSON.parse(content)
     return input
-  } catch (error) { }
+  } catch (error) {}
 
   try {
     const input = JSON.parse(content.slice(1, -1))
@@ -39,7 +39,9 @@ export const parseInput = (content: string) => {
   }
 }
 
-export const filterSources = (inputSources: { [fileName: string]: SolcSource }) => {
+export const filterSources = (inputSources: {
+  [fileName: string]: SolcSource
+}) => {
   const sources: { [fileName: string]: SolcSource } = {}
   Object.entries(inputSources).forEach(([key, value]) => {
     const { ext } = path.parse(key)
@@ -52,22 +54,22 @@ export interface PartialSolcInput {
   language: "Solidity" | "Yul" | "LLL" | "Assembly" | "Vyper"
 
   settings: {
-    outputSelection: any;
+    outputSelection: any
     optimizer: any
     evmVersion: string
-    remappings: string[];
-    [key: string]: any;
-  };
+    remappings: string[]
+    [key: string]: any
+  }
 
-  [key: string]: any;
+  [key: string]: any
 }
 
 export interface SolcInput extends PartialSolcInput {
   sources: {
-    [fileName: string]: SolcSource;
-  };
+    [fileName: string]: SolcSource
+  }
 }
 
 export interface SolcSource {
-  content: string;
+  content: string
 }

@@ -1,8 +1,7 @@
 import { useState } from "react"
 
 import { DeployedContracts } from "@/lib/eth/interfaces"
-import { deploy } from "@/lib/eth/tron"
-import { TronSmartContract } from "@/lib/eth/tron"
+import { TronSmartContract, deploy } from "@/lib/eth/tron"
 
 export const useTronHook = () => {
   const [contracts, setContracts] = useState<DeployedContracts>({})
@@ -17,10 +16,18 @@ export const useTronHook = () => {
       throw new Error("Contract not loaded")
     }
 
-    return contracts[contractAddress].send({ method, args, value: value.toString() })
+    return contracts[contractAddress].send({
+      method,
+      args,
+      value: value.toString(),
+    })
   }
 
-  const executeCall = async (contractAddress: string, method: string, args: any[]) => {
+  const executeCall = async (
+    contractAddress: string,
+    method: string,
+    args: any[]
+  ) => {
     console.log("executeCall", contractAddress, method, args)
     if (!contracts.hasOwnProperty(contractAddress)) {
       throw new Error("Contract not loaded")
@@ -55,14 +62,14 @@ export const useTronHook = () => {
         ...contracts,
         [contractAddress]: new TronSmartContract(contractAddress, abi),
       })
-      return { contract: contractAddress, transactionHash: "" };
+      return { contract: contractAddress, transactionHash: "" }
     }
 
     const result = await deploy(abi, bytecode, args, name)
     contractAddress = result.contract as string
     setContracts({
       ...contracts,
-      [contractAddress]: new TronSmartContract(contractAddress, abi)
+      [contractAddress]: new TronSmartContract(contractAddress, abi),
     })
 
     return result
@@ -74,6 +81,6 @@ export const useTronHook = () => {
     doDeploy,
 
     contracts,
-    removeContract
+    removeContract,
   }
 }

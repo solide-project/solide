@@ -2,12 +2,18 @@
  * Assumes window.ethereum is injected
  */
 
-import { Abi, createPublicClient, createWalletClient, custom, } from "viem"
-import { mainnet } from "viem/chains"
-import { getNetworkDetails } from "../eth/chains"
-import { deployContract } from "viem/zksync"
-import { encodeDeployData } from "viem"
 import { BrowserProvider, ContractFactory } from "ethers"
+import {
+  Abi,
+  createPublicClient,
+  createWalletClient,
+  custom,
+  encodeDeployData,
+} from "viem"
+import { mainnet } from "viem/chains"
+import { deployContract } from "viem/zksync"
+
+import { getNetworkDetails } from "../eth/chains"
 
 interface DeployResult {
   contract: string | undefined | null
@@ -83,7 +89,6 @@ export const deploy = async (
   // const signer = await provider.getSigner()
 
   // const factory = new ethers.ContractFactory(abi, bytecode, signer)
-
 
   // console.log("Deploying contract with args: ", args)
 

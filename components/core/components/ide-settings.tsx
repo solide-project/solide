@@ -9,18 +9,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-interface IDESettingsProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface IDESettingsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function IDESettings({ children }: IDESettingsProps) {
-  return <Dialog>
-    <DialogTrigger className={cn(buttonVariants({ variant: "default", size: "icon" }))}>
-      <Settings />
-    </DialogTrigger>
-    <DialogContent className="overflow-y-auto border-none bg-grayscale-025 shadow-none">
-      <DialogHeader>
-        <div className="text-xl text-center font-semibold">Settings</div>
-        {children}
-      </DialogHeader>
-    </DialogContent>
-  </Dialog>
+  return (
+    <Dialog>
+      <DialogTrigger
+        className={cn(buttonVariants({ variant: "default", size: "icon" }))}
+      >
+        <Settings />
+      </DialogTrigger>
+      <DialogContent className="overflow-y-auto border-none bg-grayscale-025 shadow-none">
+        <DialogHeader>
+          <div className="text-center text-xl font-semibold">Settings</div>
+          {children}
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
 }

@@ -1,9 +1,9 @@
 import { useState } from "react"
+import { getAddress } from "viem"
 
-import { deploy } from "@/lib/evm/ethers"
-import { DeployedContracts } from "@/lib/eth/interfaces"
 import { EVMSmartContract } from "@/lib/eth/evm"
-import { getAddress } from 'viem'
+import { DeployedContracts } from "@/lib/eth/interfaces"
+import { deploy } from "@/lib/evm/ethers"
 
 export const useWeb3Hook = () => {
   const [contracts, setContracts] = useState<DeployedContracts>({})
@@ -19,10 +19,18 @@ export const useWeb3Hook = () => {
       throw new Error("Contract not loaded")
     }
 
-    return contracts[contractAddress].send({ method, args, value: value.toString() })
+    return contracts[contractAddress].send({
+      method,
+      args,
+      value: value.toString(),
+    })
   }
 
-  const executeCall = async (contractAddress: string, method: string, args: any[]) => {
+  const executeCall = async (
+    contractAddress: string,
+    method: string,
+    args: any[]
+  ) => {
     contractAddress = getAddress(contractAddress)
     if (!contracts.hasOwnProperty(contractAddress)) {
       throw new Error("Contract not loaded")
@@ -56,7 +64,7 @@ export const useWeb3Hook = () => {
         ...contracts,
         [contractAddress]: new EVMSmartContract(contractAddress, abi),
       })
-      return { contract: contractAddress, transactionHash: "" };
+      return { contract: contractAddress, transactionHash: "" }
     }
 
     console.log("Deploying contract", abi, bytecode, args)
@@ -64,7 +72,7 @@ export const useWeb3Hook = () => {
     contractAddress = result.contract as string
     setContracts({
       ...contracts,
-      [getAddress(contractAddress)]: new EVMSmartContract(contractAddress, abi)
+      [getAddress(contractAddress)]: new EVMSmartContract(contractAddress, abi),
     })
     return result
   }
@@ -75,6 +83,6 @@ export const useWeb3Hook = () => {
     doDeploy,
 
     contracts,
-    removeContract
+    removeContract,
   }
 }

@@ -6,9 +6,9 @@ import { hexToString, stringToHex } from "viem"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-interface StringToByte32Props extends React.HTMLAttributes<HTMLDivElement> { }
+interface StringToByte32Props extends React.HTMLAttributes<HTMLDivElement> {}
 
-export default function StringToByte32({ }: StringToByte32Props) {
+export default function StringToByte32({}: StringToByte32Props) {
   const [data, setData] = useState<string>("")
   const [result, setResult] = useState<string>("")
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -22,11 +23,10 @@ import {
   evmVersionArray,
   useEVM,
 } from "@/components/evm/evm-provider"
-import { ChevronsUpDown } from "lucide-react"
 
-interface EVMVersionsProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface EVMVersionsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function EVMVersions({ }: EVMVersionsProps) {
+export function EVMVersions({}: EVMVersionsProps) {
   const { evmVersions, setEVMVersions } = useEVM()
 
   const [open, setOpen] = useState(false)
@@ -34,9 +34,11 @@ export function EVMVersions({ }: EVMVersionsProps) {
 
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
-      <PopoverTrigger className={buttonVariants({ variant: "ghost", size: "sm" })}>
+      <PopoverTrigger
+        className={buttonVariants({ variant: "ghost", size: "sm" })}
+      >
         {evmVersions ? evmVersions : "Default"}
-        <ChevronsUpDown className="w-4 h-4 ml-2" />
+        <ChevronsUpDown className="ml-2 size-4" />
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <Command>

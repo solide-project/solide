@@ -1,15 +1,15 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { AbiEvent, decodeEventLog } from 'viem'
+import { AbiEvent, decodeEventLog } from "viem"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useEVM } from "@/components/evm/evm-provider"
 
-interface EventDecoderProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface EventDecoderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export default function EventDecoder({ }: EventDecoderProps) {
+export default function EventDecoder({}: EventDecoderProps) {
   const evm = useEVM()
   const [topics, setTopics] = useState<string[]>(["", "", "", ""])
   const [data, setData] = useState<string>("")

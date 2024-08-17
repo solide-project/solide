@@ -2,16 +2,15 @@
 
 import * as React from "react"
 import { useEffect } from "react"
+import { keccak256 } from "viem"
 
 import { downloadBlob, downloadJSON } from "@/lib/core"
 import { CopyText } from "@/components/core/components/copy-text"
-
 import { useEVM } from "@/components/evm/evm-provider"
-import { keccak256 } from "viem"
 
-interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> { }
+interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function ContractOverview({ }: ContractOverviewProps) {
+export function ContractOverview({}: ContractOverviewProps) {
   const evm = useEVM()
 
   const [abiFunction, setAbiFunction] = React.useState<string>("")

@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react"
 import { ArrowLeft, ArrowRight, DoorClosedIcon } from "lucide-react"
+import {
+  Abi,
+  AbiFunction,
+  AbiParameter,
+  AbiStateMutability,
+  createPublicClient,
+  custom,
+  getAddress,
+  hexToString,
+  isAddress,
+  toFunctionSelector,
+} from "viem"
 
+import { getExplorer } from "@/lib/chains"
+import { getTransactionExplorer } from "@/lib/chains/explorer"
 import { Sources } from "@/lib/core"
-import { Environment } from "@/lib/evm"
-import { toNative } from "@/lib/evm"
+import { Environment, toNative } from "@/lib/evm"
+import { isAddress as isEthOrTronAddress } from "@/lib/evm/ethers"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useFileSystem } from "@/components/core/providers/file-provider"
-import { useLogger } from "@/components/core/providers/logger-provider"
-import { useTronHook } from "@/components/evm/deploy/hook-tronweb"
-import { useWeb3Hook } from "@/components/evm/deploy/hook-web3"
-import { SelectedEnvironment } from "@/components/evm/deploy/selected-environment"
-import { useEVM } from "@/components/evm/evm-provider"
-
 import {
   Dialog,
   DialogContent,
@@ -20,21 +26,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Abi, AbiFunction, AbiParameter, AbiStateMutability, createPublicClient, custom, getAddress, hexToString, isAddress, toFunctionSelector } from "viem"
+import { Input } from "@/components/ui/input"
 import { CollapsibleChevron } from "@/components/core/components/collapsible-chevron"
-import { getExplorer } from "@/lib/chains"
-import { getTransactionExplorer } from "@/lib/chains/explorer"
-import { isAddress as isEthOrTronAddress } from "@/lib/evm/ethers"
 import { Title } from "@/components/core/components/title"
+import { useFileSystem } from "@/components/core/providers/file-provider"
+import { useLogger } from "@/components/core/providers/logger-provider"
+import { useTronHook } from "@/components/evm/deploy/hook-tronweb"
+import { useWeb3Hook } from "@/components/evm/deploy/hook-web3"
+import { SelectedEnvironment } from "@/components/evm/deploy/selected-environment"
+import { useEVM } from "@/components/evm/evm-provider"
 
 const CONSTRUCTOR_METHOD = "constructor"
 
 // Copy from viem
 type AbiConstructor = {
-  type: 'constructor'
+  type: "constructor"
   inputs: readonly AbiParameter[]
   payable?: boolean | undefined
-  stateMutability: Extract<AbiStateMutability, 'payable' | 'nonpayable'>
+  stateMutability: Extract<AbiStateMutability, "payable" | "nonpayable">
 }
 
 interface ContractInvokeProps extends React.HTMLAttributes<HTMLDivElement> { }
@@ -53,50 +62,57 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     [key: string]: any
   }>({})
 
-  const [loadedContractEnvironment, setLoadedContractEnvironment] = useState<Environment | null>(null)
+  const [loadedContractEnvironment, setLoadedContractEnvironment] =
+    useState<Environment | null>(null)
 
-  useEffect(() => {
-  }, [evm.selectedCompiledContract])
+  useEffect(() => { }, [evm.selectedCompiledContract])
 
   //#region Params State
   /**
    * Note we are storing constructor arguments in here as method name "constructor"
    */
   const [contractArguments, setContractArguments] = useState<{
-    [contractAddress: string]: { [method: string]: { [parameter: string]: any } }
+    [contractAddress: string]: {
+      [method: string]: { [parameter: string]: any }
+    }
   }>({})
   const handleArgumentChange = (
     contractAddress: string,
     method: string,
     name: string,
-    value: string) => {
-    setContractArguments(prevArgs => ({
+    value: string
+  ) => {
+    setContractArguments((prevArgs) => ({
       ...prevArgs,
       [contractAddress]: {
         ...prevArgs[contractAddress],
         [method]: {
           ...prevArgs[contractAddress]?.[method],
-          [name]: value
-        }
-      }
-    }));
-  };
+          [name]: value,
+        },
+      },
+    }))
+  }
 
   const formatParameters = (entry: AbiFunction | AbiConstructor): any[] => {
-    if (!entry) return [];
+    if (!entry) return []
 
-    const method = entry.type === CONSTRUCTOR_METHOD ? CONSTRUCTOR_METHOD : entry.name;
-    const selected = entry.type === CONSTRUCTOR_METHOD
-      ? CONSTRUCTOR_METHOD
-      : (evm.environment === Environment.METAMASK ? getAddress(selectedContractAddress) : selectedContractAddress);
+    const method =
+      entry.type === CONSTRUCTOR_METHOD ? CONSTRUCTOR_METHOD : entry.name
+    const selected =
+      entry.type === CONSTRUCTOR_METHOD
+        ? CONSTRUCTOR_METHOD
+        : evm.environment === Environment.METAMASK
+          ? getAddress(selectedContractAddress)
+          : selectedContractAddress
 
-    const methodArgs = contractArguments[selected]?.[method];
-    if (!methodArgs) return [];
+    const methodArgs = contractArguments[selected]?.[method]
+    if (!methodArgs) return []
 
     return entry.inputs.map((input: AbiParameter, index: number) =>
       toNative(methodArgs[input.name || index.toString()], input)
-    );
-  };
+    )
+  }
   //#endregion
 
   //#region Contract Calls
@@ -112,14 +128,16 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     }
 
     setIsInvoking(true)
-    logger.info(<div className="flex gap-2">
-      <ArrowRight size={18} /> <div>{method}()</div>
-    </div>)
+    logger.info(
+      <div className="flex gap-2">
+        <ArrowRight size={18} /> <div>{method}()</div>
+      </div>
+    )
   }
 
   const invokeSend = async (method: string) => {
     try {
-      initialiseInvocation(method);
+      initialiseInvocation(method)
 
       let invoker = web3Hook.executeSend
       if (evm.environment === Environment.METAMASK) {
@@ -129,7 +147,12 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       // This should be the transaction hash
-      const result = await invoker(selectedContractAddress, method, formatParameters(selectedAbiParameter!), msgValue)
+      const result = await invoker(
+        selectedContractAddress,
+        method,
+        formatParameters(selectedAbiParameter!),
+        msgValue
+      )
       const tx = result.toString()
 
       // formatOutput(selectedAbiParameter, result)
@@ -137,7 +160,11 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       const chainId = parseInt(hex, 16).toString()
       const txExplorer = getTransactionExplorer(chainId, tx)
       if (txExplorer) {
-        logger.success(<a className="underline" href={txExplorer} target="_blank">{tx}</a>)
+        logger.success(
+          <a className="underline" href={txExplorer} target="_blank">
+            {tx}
+          </a>
+        )
       } else {
         logger.success(tx)
       }
@@ -151,7 +178,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
   const invokeCall = async (method: string) => {
     try {
-      initialiseInvocation(method);
+      initialiseInvocation(method)
 
       let invoker = web3Hook.executeCall
       if (evm.environment === Environment.METAMASK) {
@@ -161,8 +188,11 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       // This should be the transaction hash
-      const result = await invoker(selectedContractAddress, method, formatParameters(selectedAbiParameter!))
-      console.log("result", result)
+      const result = await invoker(
+        selectedContractAddress,
+        method,
+        formatParameters(selectedAbiParameter!)
+      )
 
       formatOutput(selectedAbiParameter!, result)
     } catch (error: any) {
@@ -174,9 +204,8 @@ export function ContractInvoke({ }: ContractInvokeProps) {
   }
 
   const formatOutput = (entry: AbiFunction, result: any) => {
-    console.log("formatOutput", entry, result)
+    // console.log("formatOutput", entry, result)
     if (entry.outputs && entry.outputs.length > 0) {
-      console.log("output is array", typeof result)
       if (typeof result === "object") {
         result = JSON.stringify(result, (_, v) =>
           typeof v === "bigint" ? v.toString() : v
@@ -184,13 +213,14 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       } else if (entry.outputs[0].type.includes("int")) {
         result = result.toString() as BigInt
       } else {
-        console.log("output is string", typeof result)
         result = result as string
       }
 
-      logger.info(<div className="flex gap-2">
-        <ArrowLeft size={18} /> <div>{result}</div>
-      </div>)
+      logger.info(
+        <div className="flex gap-2">
+          <ArrowLeft size={18} /> <div>{result}</div>
+        </div>
+      )
       setRet({ ...ret, [entry.name]: result })
     } else {
       logger.success(result)
@@ -211,16 +241,18 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     }
 
     try {
-      let result;
+      let result
 
       // Note empty contractAddress value means this is a new contract (deploying)
       let shouldUpload = contractAddress ? false : true
 
-      const contractConstructor = (evm.selectedCompiledContract.abi as Abi)
-        .find(abi => abi.type === CONSTRUCTOR_METHOD)
-      const args = contractAddress || !contractConstructor
-        ? []
-        : formatParameters(contractConstructor)
+      const contractConstructor = (
+        evm.selectedCompiledContract.abi as Abi
+      ).find((abi) => abi.type === CONSTRUCTOR_METHOD)
+      const args =
+        contractAddress || !contractConstructor
+          ? []
+          : formatParameters(contractConstructor)
       if (evm.environment === Environment.METAMASK) {
         result = await web3Hook.doDeploy({
           contractAddress,
@@ -235,7 +267,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
           setContractArguments({
             ...contractArguments,
-            [getAddress(result.contract)]: {}
+            [getAddress(result.contract)]: {},
           })
         } else {
           logger.error(`Error deploying contract: ${result.transactionHash}`)
@@ -255,7 +287,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
           setContractArguments({
             ...contractArguments,
-            [result.contract]: {}
+            [result.contract]: {},
           })
         } else {
           logger.error(`Error deploying contract: ${result.transactionHash}`)
@@ -277,7 +309,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     }
 
     // This case handle contracts that have no constructor
-    const hasConstructor = (evm.selectedCompiledContract.abi as Abi).some(abi => abi.type === CONSTRUCTOR_METHOD)
+    const hasConstructor = (evm.selectedCompiledContract.abi as Abi).some(
+      (abi) => abi.type === CONSTRUCTOR_METHOD
+    )
     if (evm.selectedCompiledContract && !hasConstructor) {
       return false
     }
@@ -302,7 +336,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
           const web3 = createPublicClient({
             transport: custom(window.ethereum!),
           })
-          const code = await web3.getCode({ address: deployedAddress as `0x${string}` })
+          const code = await web3.getCode({
+            address: deployedAddress as `0x${string}`,
+          })
           contractBytecode = code?.toString() || "0x"
         }
         if (contractBytecode !== "0x") {
@@ -348,8 +384,6 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       delete metadata.metadata.bytecodeHash
     }
 
-    console.log("metadata", metadata)
-
     // Transform to blob and send to Vaulidity
     const formData = new FormData()
     formData.append(
@@ -385,10 +419,13 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     return `${msg.toString()}`
   }
 
-  const [selectedContractAddress, setSelectedContractAddress] = useState<string>("")
-  const [selectedAbiParameter, setSelectedAbiParameter] = useState<AbiFunction | null>(null)
+  const [selectedContractAddress, setSelectedContractAddress] =
+    useState<string>("")
+  const [selectedAbiParameter, setSelectedAbiParameter] =
+    useState<AbiFunction | null>(null)
 
-  const [selectedConstructor, setSelectedConstructor] = useState<AbiConstructor | null>(null)
+  const [selectedConstructor, setSelectedConstructor] =
+    useState<AbiConstructor | null>(null)
 
   const handleRemoveContract = (contractAddress: string) => {
     if (evm.environment === Environment.METAMASK) {
@@ -420,7 +457,8 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
       <div className="flex items-center justify-center">
         <div className="py-2 font-semibold text-grayscale-350">Value (wei)</div>
-        <Input className="h-9 rounded-md px-3"
+        <Input
+          className="h-9 rounded-md px-3"
           placeholder="Value"
           type="number"
           value={msgValue}
@@ -429,126 +467,170 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       </div>
 
       {/* Should be typed: AbiConstructor */}
-      {(evm.selectedCompiledContract.abi as Abi).filter(abi => abi.type === CONSTRUCTOR_METHOD)
+      {(evm.selectedCompiledContract.abi as Abi)
+        .filter((abi) => abi.type === CONSTRUCTOR_METHOD)
         .map((abi, index: number) => {
-          return <div key={index}>
-            <Button onClick={() => setSelectedConstructor(abi)}>
-              {CONSTRUCTOR_METHOD}
-            </Button>
-          </div>
+          return (
+            <div key={index}>
+              <Button onClick={() => setSelectedConstructor(abi)}>
+                Deploy New Contract
+              </Button>
+            </div>
+          )
         })}
 
       <Title text="Deployed Contracts" />
-      {Object.entries(evm.environment === Environment.METAMASK ? web3Hook.contracts : tronHook.contracts).map(([key, val], index) => {
-        return <CollapsibleChevron key={index} name={key} onClosed={() => handleRemoveContract(key)}>
-          <div className="flex flex-wrap gap-2">
-            {(val.abi as Abi)
-              .filter(abi => abi.type === "function")
-              .map((abi: AbiFunction, methodsIndex: number) => {
-                return <Button
-                  key={methodsIndex}
-                  onClick={() => {
-                    console.log("selectedContractAddress", abi)
-                    setSelectedContractAddress(key)
-                    setSelectedAbiParameter(abi)
-                  }}
-                  size="sm">
-                  {abi.name}
-                </Button>
-              })}
-          </div>
-        </CollapsibleChevron>
+      {Object.entries(
+        evm.environment === Environment.METAMASK
+          ? web3Hook.contracts
+          : tronHook.contracts
+      ).map(([key, val], index) => {
+        return (
+          <CollapsibleChevron
+            key={index}
+            name={key}
+            onClosed={() => handleRemoveContract(key)}
+          >
+            <div className="flex flex-wrap gap-2">
+              {(val.abi as Abi)
+                .filter((abi) => abi.type === "function")
+                .map((abi: AbiFunction, methodsIndex: number) => {
+                  return (
+                    <Button
+                      key={methodsIndex}
+                      onClick={() => {
+                        setSelectedContractAddress(key)
+                        setSelectedAbiParameter(abi)
+                      }}
+                      size="sm"
+                    >
+                      {abi.name}
+                    </Button>
+                  )
+                })}
+            </div>
+          </CollapsibleChevron>
+        )
       })}
 
-      <Dialog open={!!selectedAbiParameter} onOpenChange={() => {
-        setSelectedContractAddress("")
-        setSelectedAbiParameter(null)
-      }}>
+      <Dialog
+        open={!!selectedAbiParameter}
+        onOpenChange={() => {
+          setSelectedContractAddress("")
+          setSelectedAbiParameter(null)
+        }}
+      >
         <DialogContent className="max-h-[80vh] overflow-auto">
           <DialogHeader>
-            <DialogTitle>{selectedAbiParameter?.name || "Unknown"} ({selectedAbiParameter && toFunctionSelector(selectedAbiParameter)})</DialogTitle>
+            <DialogTitle>
+              {selectedAbiParameter?.name || "Unknown"} (
+              {selectedAbiParameter && toFunctionSelector(selectedAbiParameter)}
+              )
+            </DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
 
-          {selectedAbiParameter && <>
-            {selectedAbiParameter.inputs.map(
-              (input: AbiParameter, abiIndex: number) => {
-                return (
-                  <div
-                    key={abiIndex}
-                    className="flex items-center space-x-2 py-1"
-                  >
-                    <div>{input.name}</div>
+          {selectedAbiParameter && (
+            <>
+              {selectedAbiParameter.inputs.map(
+                (input: AbiParameter, abiIndex: number) => {
+                  return (
+                    <div
+                      key={abiIndex}
+                      className="flex items-center space-x-2 py-1"
+                    >
+                      <div>{input.name}</div>
 
-                    <Input
-                      value={contractArguments[selectedContractAddress]?.[selectedAbiParameter.name]?.[input.name || abiIndex.toString()]}
-                      placeholder={input.type}
-                      onChange={(e) =>
-                        handleArgumentChange(
-                          selectedContractAddress,
-                          selectedAbiParameter.name,
-                          input.name || abiIndex.toString(),
-                          e.target.value
-                        )
-                      }
-                    />
-                  </div>
-                )
-              }
-            )}
+                      <Input
+                        value={
+                          contractArguments[selectedContractAddress]?.[
+                          selectedAbiParameter.name
+                          ]?.[input.name || abiIndex.toString()]
+                        }
+                        placeholder={input.type}
+                        onChange={(e) =>
+                          handleArgumentChange(
+                            selectedContractAddress,
+                            selectedAbiParameter.name,
+                            input.name || abiIndex.toString(),
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  )
+                }
+              )}
 
-            <Button onClick={() => {
-              if (selectedAbiParameter.stateMutability === "view") {
-                invokeCall(selectedAbiParameter.name)
-                return
-              } else {
-                invokeSend(selectedAbiParameter.name)
-              }
-            }}
-              disabled={isInvoking}>
-              {isInvoking ? "Invoking..." : selectedAbiParameter.stateMutability === "view" ? "Call" : "Send"}
-            </Button>
-          </>}
+              <Button
+                onClick={() => {
+                  if (selectedAbiParameter.stateMutability === "view") {
+                    invokeCall(selectedAbiParameter.name)
+                    return
+                  } else {
+                    invokeSend(selectedAbiParameter.name)
+                  }
+                }}
+                disabled={isInvoking}
+              >
+                {isInvoking
+                  ? "Invoking..."
+                  : selectedAbiParameter.stateMutability === "view"
+                    ? "Call"
+                    : "Send"}
+              </Button>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!selectedConstructor} onOpenChange={() => {
-        setSelectedConstructor(null)
-      }}>
+      <Dialog
+        open={!!selectedConstructor}
+        onOpenChange={() => {
+          setSelectedConstructor(null)
+        }}
+      >
         <DialogContent className="max-h-[80vh] overflow-auto">
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogTitle>Deploy</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
 
-          {selectedConstructor && <>
-            {selectedConstructor.inputs.map(
-              (input: AbiParameter, abiIndex: number) => {
-                return (
-                  <div key={abiIndex} className="flex items-center space-x-2 py-1">
-                    <div>{input.name}</div>
+          {selectedConstructor && (
+            <>
+              {selectedConstructor.inputs.map(
+                (input: AbiParameter, abiIndex: number) => {
+                  return (
+                    <div
+                      key={abiIndex}
+                      className="flex items-center space-x-2 py-1"
+                    >
+                      <div>{input.name}</div>
 
-                    <Input
-                      value={contractArguments[CONSTRUCTOR_METHOD]?.[CONSTRUCTOR_METHOD]?.[input.name || abiIndex.toString()]}
-                      placeholder={input.type}
-                      onChange={(e) =>
-                        handleArgumentChange(
-                          CONSTRUCTOR_METHOD,
-                          CONSTRUCTOR_METHOD,
-                          input.name || abiIndex.toString(),
-                          e.target.value
-                        )
-                      }
-                    />
-                  </div>
-                )
-              }
-            )}
+                      <Input
+                        value={
+                          contractArguments[CONSTRUCTOR_METHOD]?.[
+                          CONSTRUCTOR_METHOD
+                          ]?.[input.name || abiIndex.toString()]
+                        }
+                        placeholder={input.type}
+                        onChange={(e) =>
+                          handleArgumentChange(
+                            CONSTRUCTOR_METHOD,
+                            CONSTRUCTOR_METHOD,
+                            input.name || abiIndex.toString(),
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  )
+                }
+              )}
 
-            <Button onClick={handleDeploy}>
-              Call
-            </Button>
-          </>}
+              <Button onClick={handleDeploy}>Call</Button>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </div>
