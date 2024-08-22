@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { solcVersion } from "@/lib/versions"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Command,
@@ -18,7 +18,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useLogger } from "@/components/core/providers/logger-provider"
 import {
   EVMVersion,
   evmVersionArray,
@@ -36,15 +35,16 @@ export function EVMVersions({}: EVMVersionsProps) {
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger
-        className={cn(buttonVariants({ variant: "default" }), "!text-base")}
+        className={buttonVariants({ variant: "ghost", size: "sm" })}
       >
         {evmVersions ? evmVersions : "Default"}
+        <ChevronsUpDown className="ml-2 size-4" />
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" />
-          <CommandEmpty>No framework found.</CommandEmpty>
-          <ScrollArea className="h-[200px]">
+          <CommandInput placeholder="Search evm version..." className="h-9" />
+          <CommandEmpty>No version found.</CommandEmpty>
+          <ScrollArea className="max-h-[256px] overflow-y-auto">
             <CommandGroup>
               <CommandItem
                 value={"default"}
@@ -58,6 +58,7 @@ export function EVMVersions({}: EVMVersionsProps) {
               </CommandItem>
               {evmVersionArray.map((version: EVMVersion, index: any) => (
                 <CommandItem
+                  className="hover:cursor-pointer"
                   key={index}
                   value={version || ""}
                   onSelect={(currentValue) => {

@@ -1,6 +1,6 @@
 // Server side code
 
-import Web3, { utils } from "web3"
+import { createPublicClient, http, keccak256, toHex } from "viem"
 import { getSource } from "web3-plugin-contracts"
 
 import { ChainID, getAPIKey, getRPC, getTronRPC } from "@/lib/chains"
@@ -67,13 +67,16 @@ export const getSourceCode = async (
       } else {
         const rpc = getRPC(chain)
         if (rpc) {
-          const web3 = new Web3(new Web3.providers.HttpProvider(rpc))
-          contractBytecode = await web3.eth.getCode(address)
+          const web3 = createPublicClient({
+            transport: http(rpc),
+          })
+          const code = await web3.getCode({ address: address as `0x${string}` })
+          contractBytecode = code?.toString() || ""
         }
       }
 
       if (contractBytecode && contractBytecode !== "0x") {
-        const hash = utils.sha3(contractBytecode.slice(2)) || ""
+        const hash = keccak256(toHex(contractBytecode.slice(2))) || ""
 
         const databaseService = new SolidityDatabaseRegistry({})
         await databaseService.load()
@@ -115,12 +118,15 @@ export const getSourceCode = async (
     let contractBytecode: string = ""
     const rpc = getRPC(chain)
     if (rpc) {
-      const web3 = new Web3(new Web3.providers.HttpProvider(rpc))
-      contractBytecode = await web3.eth.getCode(address)
+      const web3 = createPublicClient({
+        transport: http(rpc),
+      })
+      const code = await web3.getCode({ address: address as `0x${string}` })
+      contractBytecode = code?.toString() || ""
     }
 
     if (contractBytecode && contractBytecode !== "0x") {
-      const hash = utils.sha3(contractBytecode.slice(2)) || ""
+      const hash = keccak256(toHex(contractBytecode.slice(2))) || ""
       console.log("hash", hash)
       const databaseService = new SolidityDatabaseRegistry({})
       await databaseService.load()

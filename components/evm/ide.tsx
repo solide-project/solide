@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { getContractExplorer } from "@/lib/chains"
+import { ChainID, getContractExplorer } from "@/lib/chains"
 import { QueryHelper } from "@/lib/core"
 import { CompileError, CompileInput, isAddress, parseInput } from "@/lib/evm"
 import { cn } from "@/lib/utils"
@@ -188,6 +188,8 @@ export function EvmIDE({
       data.data?.target,
       data.data?.data
     )
+
+    console.log(data.output)
     evm.setOutput(data.output)
   }
 

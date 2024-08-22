@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { decodeBytes32String, encodeBytes32String } from "ethers"
+import { hexToString, stringToHex } from "viem"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,7 +14,7 @@ export default function StringToByte32({}: StringToByte32Props) {
 
   const handleStringToHex = useCallback(() => {
     try {
-      const encodedResult = encodeBytes32String(data)
+      const encodedResult = stringToHex(data)
       setResult(encodedResult)
     } catch (e: any) {
       setResult(`Error: ${e.message}`)
@@ -23,7 +23,7 @@ export default function StringToByte32({}: StringToByte32Props) {
 
   const handleHexToString = useCallback(() => {
     try {
-      const decodedResult = decodeBytes32String(data)
+      const decodedResult = hexToString(data as `0x${string}`)
       setResult(decodedResult)
     } catch (e: any) {
       setResult(`Error: ${e.message}`)

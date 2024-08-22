@@ -1,3 +1,43 @@
+import { ISmartContract, InvokeParam } from "./interfaces"
+
+export class TronSmartContract implements ISmartContract {
+  contractAddress: string
+  contract: any
+  abi: any
+  constructor(address: string, abi: any) {
+    if (!window.tronWeb) {
+      throw new Error("TronWeb not found. Please install TronLink or TronPay.")
+    }
+
+    this.abi = abi
+    this.contractAddress = address
+    console.log("Contract address", address)
+    this.contract = window.tronWeb.contract(
+      abi,
+      window.tronWeb.address.toHex(address)
+    )
+  }
+
+  async call({ method, args }: InvokeParam): Promise<any> {
+    console.log(
+      "Calling",
+      method,
+      args,
+      window.tronWeb.address.toHex(this.contractAddress)
+    )
+    return this.contract[method](...args).call()
+  }
+
+  async send({
+    method,
+    args,
+    value = "0",
+    gas = "0",
+  }: InvokeParam): Promise<any> {
+    return this.contract[method](...args).send()
+  }
+}
+
 export const deploy = async (
   abi: any,
   bytecode: string,
@@ -22,20 +62,21 @@ export const deploy = async (
   await window.tronWeb.trx.sendRawTransaction(signedTx)
 
   const transactionHash = await window.tronWeb.trx.getTransaction(signedTx.txID)
-  const contractAddress = window.tronWeb.trx.tronweb.address.fromHex(
+  console.log(
+    "Deployed contract",
+    transactionHash,
+    window.tronWeb.trx,
+    window.tronWeb.trx.tronweb
+  )
+  const contractAddress: string = window.tronWeb.address.fromHex(
     transactionHash.contract_address
   )
 
-  const contract = load(abi, contractAddress)
+  console.log("Deployed contract", contractAddress)
   return {
-    contract,
+    contract: contractAddress,
     transactionHash,
   }
-}
-
-export const load = (abi: any, address: string) => {
-  // return window.tronWeb.contract(abi, window.tronWeb.address.toHex(address))
-  return window.tronWeb.contract(abi, address)
 }
 
 export const getContract = (address: string, abi: any) => {

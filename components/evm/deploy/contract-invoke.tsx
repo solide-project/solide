@@ -1,12 +1,34 @@
 import { useEffect, useState } from "react"
-import { Send } from "lucide-react"
-import Web3 from "web3"
+import { ArrowLeft, ArrowRight, DoorClosedIcon } from "lucide-react"
+import {
+  Abi,
+  AbiFunction,
+  AbiParameter,
+  AbiStateMutability,
+  createPublicClient,
+  custom,
+  getAddress,
+  hexToString,
+  isAddress,
+  toFunctionSelector,
+} from "viem"
 
+import { getExplorer } from "@/lib/chains"
+import { getTransactionExplorer } from "@/lib/chains/explorer"
 import { Sources } from "@/lib/core"
-import { ABIEntry, Environment } from "@/lib/evm"
-import * as evmUtil from "@/lib/evm"
+import { Environment, toNative } from "@/lib/evm"
+import { isAddress as isEthOrTronAddress } from "@/lib/evm/ethers"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { CollapsibleChevron } from "@/components/core/components/collapsible-chevron"
+import { Title } from "@/components/core/components/title"
 import { useFileSystem } from "@/components/core/providers/file-provider"
 import { useLogger } from "@/components/core/providers/logger-provider"
 import { useTronHook } from "@/components/evm/deploy/hook-tronweb"
@@ -16,23 +38,23 @@ import { useEVM } from "@/components/evm/evm-provider"
 
 const CONSTRUCTOR_METHOD = "constructor"
 
-interface ArgumentInterface {
-  [key: string]: { [key: string]: any }
+// Copy from viem
+type AbiConstructor = {
+  type: "constructor"
+  inputs: readonly AbiParameter[]
+  payable?: boolean | undefined
+  stateMutability: Extract<AbiStateMutability, "payable" | "nonpayable">
 }
 
-interface ContractInvokeProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface ContractInvokeProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function ContractInvoke({}: ContractInvokeProps) {
+export function ContractInvoke({ }: ContractInvokeProps) {
   const evm = useEVM()
   const logger = useLogger()
   const fs = useFileSystem()
 
   const web3Hook = useWeb3Hook()
   const tronHook = useTronHook()
-
-  const [processedABI, setProcessedABI] = useState<ABIEntry[]>([])
-  const [processedConstructor, setProcessedConstructor] =
-    useState<evmUtil.ABIEntry>({} as evmUtil.ABIEntry)
 
   const [msgValue, setMsgValue] = useState<number>(0)
   const [contractAddress, setContractAddress] = useState<string>("")
@@ -43,169 +65,147 @@ export function ContractInvoke({}: ContractInvokeProps) {
   const [loadedContractEnvironment, setLoadedContractEnvironment] =
     useState<Environment | null>(null)
 
-  useEffect(() => {
-    setContractArguments({} as ArgumentInterface)
-    setProcessedABI(
-      evm.selectedCompiledContract.abi.map((method: evmUtil.ABIEntry) => {
-        if (method.type === "function" && method.inputs) {
-          method.inputs.forEach(
-            (input: evmUtil.ABIParameter, index: number) => {
-              input.name = input.name === "" ? `input${index}` : input.name
-            }
-          )
-        }
-        return method
-      })
-    )
-
-    // There should any be one constructor
-    setProcessedConstructor(
-      evm.selectedCompiledContract.abi
-        .filter((method: evmUtil.ABIEntry) => method.type === "constructor")
-        .pop()
-    )
-  }, [evm.selectedCompiledContract])
+  useEffect(() => { }, [evm.selectedCompiledContract])
 
   //#region Params State
   /**
    * Note we are storing constructor arguments in here as method name "constructor"
    */
   const [contractArguments, setContractArguments] = useState<{
-    [key: string]: { [key: string]: any }
+    [contractAddress: string]: {
+      [method: string]: { [parameter: string]: any }
+    }
   }>({})
-  // const [contractArguments, setContractArguments] = useState<ArgumentInterface>({} as ArgumentInterface)
   const handleArgumentChange = (
+    contractAddress: string,
     method: string,
     name: string,
     value: string
   ) => {
-    const newArgs = { ...contractArguments }
-
-    if (!newArgs.hasOwnProperty(method)) {
-      newArgs[method] = {}
-    }
-
-    newArgs[method][name] = value
-    setContractArguments(newArgs)
+    setContractArguments((prevArgs) => ({
+      ...prevArgs,
+      [contractAddress]: {
+        ...prevArgs[contractAddress],
+        [method]: {
+          ...prevArgs[contractAddress]?.[method],
+          [name]: value,
+        },
+      },
+    }))
   }
 
-  const formatParameters = (entry: evmUtil.ABIEntry, method: string) => {
-    // console.log("formatParameters", entry, contractArguments[method])
-    if (!entry || !contractArguments.hasOwnProperty(method)) {
-      return []
-    }
+  const formatParameters = (entry: AbiFunction | AbiConstructor): any[] => {
+    if (!entry) return []
 
-    return entry.inputs.map((input: evmUtil.ABIParameter) => {
-      const val: any = evmUtil.abiParameterToNative(
-        input,
-        contractArguments[method][input.name]
-      )
-      return val
-    })
+    const method =
+      entry.type === CONSTRUCTOR_METHOD ? CONSTRUCTOR_METHOD : entry.name
+    const selected =
+      entry.type === CONSTRUCTOR_METHOD
+        ? CONSTRUCTOR_METHOD
+        : evm.environment === Environment.METAMASK
+          ? getAddress(selectedContractAddress)
+          : selectedContractAddress
+
+    const methodArgs = contractArguments[selected]?.[method]
+    if (!methodArgs) return []
+
+    return entry.inputs.map((input: AbiParameter, index: number) =>
+      toNative(methodArgs[input.name || index.toString()], input)
+    )
   }
-
-  const areContractMethodsFilled = (
-    method: string,
-    expectedInputLength: number = 0
-  ): boolean =>
-    Object.keys(contractArguments[method] || {}).length ===
-      expectedInputLength &&
-    Object.values(contractArguments[method] || {}).every((x: string) => x)
   //#endregion
 
   //#region Contract Calls
-  const invokeContract = async (method: string) => {
+  const [isInvoking, setIsInvoking] = useState<boolean>(false)
+
+  const initialiseInvocation = (method: string) => {
     if (!loadedContractEnvironment) {
-      logger.warn("No contract loaded")
-      return
+      throw new Error("No contract loaded")
     }
 
-    const entry: evmUtil.ABIEntry | undefined = processedABI
-      .filter((m) => m.type === "function")
-      .find((n) => n.name === method)
-
-    if (!entry) {
-      logger.warn("ABI for method not found")
-      return
+    if (!selectedAbiParameter) {
+      throw new Error("No method selected")
     }
 
+    setIsInvoking(true)
+    logger.info(
+      <div className="flex gap-2">
+        <ArrowRight size={18} /> <div>{method}()</div>
+      </div>
+    )
+  }
+
+  const invokeSend = async (method: string) => {
     try {
-      logger.info(`➡️ ${method}()`)
-      if (
-        loadedContractEnvironment &&
-        evm.environment === Environment.METAMASK
-      ) {
-        const result = await web3Hook.executeSend(
-          method,
-          formatParameters(entry, method),
-          msgValue
-        )
+      initialiseInvocation(method)
 
-        formatOutput(entry, result)
-      } else if (
-        loadedContractEnvironment &&
-        evm.environment === Environment.TRONLINK
-      ) {
-        const result = await tronHook.executeSend(
-          method,
-          formatParameters(entry, method),
-          msgValue
-        )
+      let invoker = web3Hook.executeSend
+      if (evm.environment === Environment.METAMASK) {
+        invoker = web3Hook.executeSend
+      } else if (evm.environment === Environment.TRONLINK) {
+        invoker = tronHook.executeSend
+      }
 
-        formatOutput(entry, result)
+      // This should be the transaction hash
+      const result = await invoker(
+        selectedContractAddress,
+        method,
+        formatParameters(selectedAbiParameter!),
+        msgValue
+      )
+      const tx = result.toString()
+
+      // formatOutput(selectedAbiParameter, result)
+      const hex = await window.ethereum.request({ method: "eth_chainId" })
+      const chainId = parseInt(hex, 16).toString()
+      const txExplorer = getTransactionExplorer(chainId, tx)
+      if (txExplorer) {
+        logger.success(
+          <a className="underline" href={txExplorer} target="_blank">
+            {tx}
+          </a>
+        )
+      } else {
+        logger.success(tx)
       }
     } catch (error: any) {
       logger.error(handleError(error), true)
+    } finally {
+      setSelectedAbiParameter(null)
+      setIsInvoking(false)
     }
   }
 
-  const handleStaticCall = async (method: string) => {
-    if (!loadedContractEnvironment) {
-      logger.warn("No contract loaded")
-      return
-    }
-
-    const entry: evmUtil.ABIEntry | undefined = processedABI
-      .filter((m) => m.type === "function")
-      .find((n) => n.name === method)
-
-    if (!entry) {
-      logger.warn("ABI for method not found")
-      return
-    }
-
+  const invokeCall = async (method: string) => {
     try {
-      logger.info(`➡️ ${method}()`)
-      if (
-        loadedContractEnvironment &&
-        evm.environment === Environment.METAMASK
-      ) {
-        const result = await web3Hook.executeCall(
-          method,
-          formatParameters(entry, method)
-        )
+      initialiseInvocation(method)
 
-        formatOutput(entry, result)
-      } else if (
-        loadedContractEnvironment &&
-        evm.environment === Environment.TRONLINK
-      ) {
-        const result = await tronHook.executeCall(
-          method,
-          formatParameters(entry, method)
-        )
-
-        formatOutput(entry, result)
+      let invoker = web3Hook.executeCall
+      if (evm.environment === Environment.METAMASK) {
+        invoker = web3Hook.executeCall
+      } else if (evm.environment === Environment.TRONLINK) {
+        invoker = tronHook.executeCall
       }
+
+      // This should be the transaction hash
+      const result = await invoker(
+        selectedContractAddress,
+        method,
+        formatParameters(selectedAbiParameter!)
+      )
+
+      formatOutput(selectedAbiParameter!, result)
     } catch (error: any) {
       logger.error(handleError(error), true)
+    } finally {
+      setSelectedAbiParameter(null)
+      setIsInvoking(false)
     }
   }
 
-  const formatOutput = (entry: evmUtil.ABIEntry, result: any) => {
-    console.log("formatOutput", entry, result)
+  const formatOutput = (entry: AbiFunction, result: any) => {
+    // console.log("formatOutput", entry, result)
     if (entry.outputs && entry.outputs.length > 0) {
-      console.log("output is array", typeof result)
       if (typeof result === "object") {
         result = JSON.stringify(result, (_, v) =>
           typeof v === "bigint" ? v.toString() : v
@@ -213,11 +213,14 @@ export function ContractInvoke({}: ContractInvokeProps) {
       } else if (entry.outputs[0].type.includes("int")) {
         result = result.toString() as BigInt
       } else {
-        console.log("output is string", typeof result)
         result = result as string
       }
 
-      logger.info(`⬅️ ${result}`)
+      logger.info(
+        <div className="flex gap-2">
+          <ArrowLeft size={18} /> <div>{result}</div>
+        </div>
+      )
       setRet({ ...ret, [entry.name]: result })
     } else {
       logger.success(result)
@@ -238,15 +241,20 @@ export function ContractInvoke({}: ContractInvokeProps) {
     }
 
     try {
+      let result
+
       // Note empty contractAddress value means this is a new contract (deploying)
       let shouldUpload = contractAddress ? false : true
 
-      let deployedAddress = ""
-      const args = contractAddress
-        ? []
-        : formatParameters(processedConstructor, CONSTRUCTOR_METHOD)
+      const contractConstructor = (
+        evm.selectedCompiledContract.abi as Abi
+      ).find((abi) => abi.type === CONSTRUCTOR_METHOD)
+      const args =
+        contractAddress || !contractConstructor
+          ? []
+          : formatParameters(contractConstructor)
       if (evm.environment === Environment.METAMASK) {
-        const result = await web3Hook.doDeploy({
+        result = await web3Hook.doDeploy({
           contractAddress,
           abi: evm.selectedCompiledContract?.abi,
           bytecode: evm.selectedCompiledContract?.evm?.bytecode?.object,
@@ -254,17 +262,18 @@ export function ContractInvoke({}: ContractInvokeProps) {
         })
 
         if (result.contract) {
-          deployedAddress = result.contract.options.address || ""
-          setContractAddress(result.contract.options.address || "")
-          setLoadedContractEnvironment(evm.environment)
-          logger.success(
-            `Contract deployed at ${result.contract.options.address}`
-          )
+          setContractAddress(result.contract)
+          logger.success(`Contract deployed at ${result.contract}`)
+
+          setContractArguments({
+            ...contractArguments,
+            [getAddress(result.contract)]: {},
+          })
         } else {
           logger.error(`Error deploying contract: ${result.transactionHash}`)
         }
       } else if (evm.environment === Environment.TRONLINK) {
-        const result = await tronHook.doDeploy({
+        result = await tronHook.doDeploy({
           contractAddress,
           abi: evm.selectedCompiledContract?.abi,
           bytecode: evm.selectedCompiledContract?.evm?.bytecode?.object,
@@ -273,19 +282,21 @@ export function ContractInvoke({}: ContractInvokeProps) {
         })
 
         if (result.contract) {
-          deployedAddress = window.tronWeb.address.fromHex(
-            result.contract.address || ""
-          )
-          setContractAddress(deployedAddress)
-          setLoadedContractEnvironment(evm.environment)
-          logger.success(`Contract deployed at ${result.contract.address}`)
+          setContractAddress(result.contract)
+          logger.success(`Contract deployed at ${result.contract}`)
+
+          setContractArguments({
+            ...contractArguments,
+            [result.contract]: {},
+          })
         } else {
           logger.error(`Error deploying contract: ${result.transactionHash}`)
         }
       }
 
-      if (shouldUpload && evm.useSolidityDB) {
-        await uploadToSolidityDB(deployedAddress)
+      setLoadedContractEnvironment(evm.environment)
+      if (shouldUpload && evm.useSolidityDB && result && result.contract) {
+        await uploadToSolidityDB(result.contract)
       }
     } catch (error: any) {
       logger.error(handleError(error), true)
@@ -293,23 +304,15 @@ export function ContractInvoke({}: ContractInvokeProps) {
   }
 
   const handleDeployDisabled = () => {
-    if (evmUtil.isAddress(contractAddress)) {
+    if (isEthOrTronAddress(contractAddress)) {
       return false
     }
 
     // This case handle contracts that have no constructor
-    if (evm.selectedCompiledContract && !processedConstructor) {
-      return false
-    }
-
-    if (
-      processedConstructor &&
-      processedConstructor.type === CONSTRUCTOR_METHOD &&
-      areContractMethodsFilled(
-        CONSTRUCTOR_METHOD,
-        processedConstructor.inputs.length
-      )
-    ) {
+    const hasConstructor = (evm.selectedCompiledContract.abi as Abi).some(
+      (abi) => abi.type === CONSTRUCTOR_METHOD
+    )
+    if (evm.selectedCompiledContract && !hasConstructor) {
       return false
     }
 
@@ -329,8 +332,14 @@ export function ContractInvoke({}: ContractInvokeProps) {
           )
           contractBytecode = bytecode.toString()
         } else if (evm.environment === Environment.METAMASK) {
-          const web3 = new Web3(window.ethereum)
-          contractBytecode = await web3.eth.getCode(deployedAddress)
+          // const web3 = new Web3(window.ethereum)
+          const web3 = createPublicClient({
+            transport: custom(window.ethereum!),
+          })
+          const code = await web3.getCode({
+            address: deployedAddress as `0x${string}`,
+          })
+          contractBytecode = code?.toString() || "0x"
         }
         if (contractBytecode !== "0x") {
           payload.bytecodes.push(contractBytecode.slice(2))
@@ -375,8 +384,6 @@ export function ContractInvoke({}: ContractInvokeProps) {
       delete metadata.metadata.bytecodeHash
     }
 
-    console.log("metadata", metadata)
-
     // Transform to blob and send to Vaulidity
     const formData = new FormData()
     formData.append(
@@ -412,6 +419,19 @@ export function ContractInvoke({}: ContractInvokeProps) {
     return `${msg.toString()}`
   }
 
+  const [selectedContractAddress, setSelectedContractAddress] =
+    useState<string>("")
+  const [selectedAbiParameter, setSelectedAbiParameter] =
+    useState<AbiFunction | null>(null)
+
+  const [selectedConstructor, setSelectedConstructor] =
+    useState<AbiConstructor | null>(null)
+
+  const handleRemoveContract = (contractAddress: string) => {
+    if (evm.environment === Environment.METAMASK) {
+      web3Hook.removeContract(contractAddress)
+    }
+  }
   return (
     <div>
       <div className="my-4">
@@ -435,51 +455,104 @@ export function ContractInvoke({}: ContractInvokeProps) {
         />
       </div>
 
-      <div className="py-2 font-semibold text-grayscale-350">Value (wei)</div>
-      <Input
-        className="h-9 rounded-md px-3"
-        placeholder="Value"
-        type="number"
-        value={msgValue}
-        onChange={(e) => setMsgValue(parseInt(e.target.value) || 0)}
-      />
+      <div className="flex items-center justify-center">
+        <div className="py-2 font-semibold text-grayscale-350">Value (wei)</div>
+        <Input
+          className="h-9 rounded-md px-3"
+          placeholder="Value"
+          type="number"
+          value={msgValue}
+          onChange={(e) => setMsgValue(parseInt(e.target.value) || 0)}
+        />
+      </div>
 
-      {processedConstructor &&
-        processedConstructor.type &&
-        processedConstructor.type === CONSTRUCTOR_METHOD && (
-          <div>
-            <Button
-              size="sm"
-              variant="warning"
-              disabled={
-                !(
-                  false ||
-                  areContractMethodsFilled(
-                    CONSTRUCTOR_METHOD,
-                    processedConstructor.inputs.length
+      {/* Should be typed: AbiConstructor */}
+      {(evm.selectedCompiledContract.abi as Abi)
+        .filter((abi) => abi.type === CONSTRUCTOR_METHOD)
+        .map((abi, index: number) => {
+          return (
+            <div key={index}>
+              <Button onClick={() => setSelectedConstructor(abi)}>
+                Deploy New Contract
+              </Button>
+            </div>
+          )
+        })}
+
+      <Title text="Deployed Contracts" />
+      {Object.entries(
+        evm.environment === Environment.METAMASK
+          ? web3Hook.contracts
+          : tronHook.contracts
+      ).map(([key, val], index) => {
+        return (
+          <CollapsibleChevron
+            key={index}
+            name={key}
+            onClosed={() => handleRemoveContract(key)}
+          >
+            <div className="flex flex-wrap gap-2">
+              {(val.abi as Abi)
+                .filter((abi) => abi.type === "function")
+                .map((abi: AbiFunction, methodsIndex: number) => {
+                  return (
+                    <Button
+                      key={methodsIndex}
+                      onClick={() => {
+                        setSelectedContractAddress(key)
+                        setSelectedAbiParameter(abi)
+                      }}
+                      size="sm"
+                    >
+                      {abi.name}
+                    </Button>
                   )
-                )
-              }
-              onClick={() => handleDeploy()}
-            >
-              {CONSTRUCTOR_METHOD}
-            </Button>
+                })}
+            </div>
+          </CollapsibleChevron>
+        )
+      })}
 
-            <div>
-              {processedConstructor.inputs.map(
-                (input: evmUtil.ABIParameter, abiIndex: number) => {
+      <Dialog
+        open={!!selectedAbiParameter}
+        onOpenChange={() => {
+          setSelectedContractAddress("")
+          setSelectedAbiParameter(null)
+        }}
+      >
+        <DialogContent className="max-h-[80vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedAbiParameter?.name || "Unknown"} (
+              {selectedAbiParameter && toFunctionSelector(selectedAbiParameter)}
+              )
+            </DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+
+          {selectedAbiParameter && (
+            <>
+              {selectedAbiParameter.inputs.map(
+                (input: AbiParameter, abiIndex: number) => {
                   return (
                     <div
                       key={abiIndex}
                       className="flex items-center space-x-2 py-1"
                     >
                       <div>{input.name}</div>
+
                       <Input
+                        value={
+                          contractArguments[selectedContractAddress]?.[
+                          selectedAbiParameter.name
+                          ]?.[input.name || abiIndex.toString()]
+                        }
                         placeholder={input.type}
                         onChange={(e) =>
                           handleArgumentChange(
-                            CONSTRUCTOR_METHOD,
-                            input.name,
+                            selectedContractAddress,
+                            selectedAbiParameter.name,
+                            input.name || abiIndex.toString(),
                             e.target.value
                           )
                         }
@@ -488,81 +561,78 @@ export function ContractInvoke({}: ContractInvokeProps) {
                   )
                 }
               )}
-            </div>
-          </div>
-        )}
 
-      {processedABI
-        .filter((m) => m.type === "function")
-        .map((abi, index) => {
-          return (
-            <div key={index}>
-              <div className="flex space-x-1">
-                <Button
-                  size="sm"
-                  disabled={
-                    !(
-                      loadedContractEnvironment &&
-                      areContractMethodsFilled(abi.name, abi.inputs.length)
-                    )
+              <Button
+                onClick={() => {
+                  if (selectedAbiParameter.stateMutability === "view") {
+                    invokeCall(selectedAbiParameter.name)
+                    return
+                  } else {
+                    invokeSend(selectedAbiParameter.name)
                   }
-                  onClick={() => invokeContract(abi.name)}
-                >
-                  {`${abi.name} ( ${
-                    abi.inputs && abi.inputs.length > 0 ? "..." : ""
-                  } )`}
-                </Button>
-                <Button
-                  className="cursor-pointer border-0 hover:bg-grayscale-100"
-                  size="icon"
-                  variant="ghost"
-                  disabled={
-                    !(
-                      loadedContractEnvironment &&
-                      areContractMethodsFilled(abi.name, abi.inputs.length)
-                    )
-                  }
-                  onClick={() => handleStaticCall(abi.name)}
-                >
-                  <Send />
-                </Button>
-              </div>
+                }}
+                disabled={isInvoking}
+              >
+                {isInvoking
+                  ? "Invoking..."
+                  : selectedAbiParameter.stateMutability === "view"
+                    ? "Call"
+                    : "Send"}
+              </Button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
-              <div>
-                {abi.inputs.map(
-                  (input: evmUtil.ABIParameter, abiIndex: number) => {
-                    return (
-                      <div
-                        key={abiIndex}
-                        className="flex items-center space-x-2 py-1"
-                      >
-                        <div>{input.name}</div>
-                        <Input
-                          placeholder={input.type}
-                          onChange={(e) =>
-                            handleArgumentChange(
-                              abi.name,
-                              input.name,
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
-                    )
-                  }
-                )}
+      <Dialog
+        open={!!selectedConstructor}
+        onOpenChange={() => {
+          setSelectedConstructor(null)
+        }}
+      >
+        <DialogContent className="max-h-[80vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>Deploy</DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
 
-                <div className="break-words py-1">
-                  {ret[abi.name] !== undefined && (
-                    <div className="max-h-[128px] overflow-y-auto">
-                      {ret[abi.name].toString()}
+          {selectedConstructor && (
+            <>
+              {selectedConstructor.inputs.map(
+                (input: AbiParameter, abiIndex: number) => {
+                  return (
+                    <div
+                      key={abiIndex}
+                      className="flex items-center space-x-2 py-1"
+                    >
+                      <div>{input.name}</div>
+
+                      <Input
+                        value={
+                          contractArguments[CONSTRUCTOR_METHOD]?.[
+                          CONSTRUCTOR_METHOD
+                          ]?.[input.name || abiIndex.toString()]
+                        }
+                        placeholder={input.type}
+                        onChange={(e) =>
+                          handleArgumentChange(
+                            CONSTRUCTOR_METHOD,
+                            CONSTRUCTOR_METHOD,
+                            input.name || abiIndex.toString(),
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )
-        })}
+                  )
+                }
+              )}
+
+              <Button onClick={handleDeploy}>Call</Button>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

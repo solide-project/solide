@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { solcVersion } from "@/lib/versions"
@@ -56,23 +57,24 @@ export function SolidityVersions({}: SolidityVersionsProps) {
   return (
     <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger
-        className={cn(buttonVariants({ variant: "default" }), "!text-base")}
+        className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "")}
       >
-        {value && solidityVersions.releases
-          ? extractVersion(
-              solidityVersions.releases[value] || "Unknown version"
-            )
-          : "Select framework..."}
+        {value ? value : "Select framework..."}
+        <ChevronsUpDown className="ml-2 size-4" />
       </PopoverTrigger>
       <PopoverContent className="p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" />
-          <CommandEmpty>No framework found.</CommandEmpty>
-          <ScrollArea className="h-[200px]">
+          <CommandInput
+            placeholder="Search compiler version..."
+            className="h-9"
+          />
+          <CommandEmpty>No version found.</CommandEmpty>
+          <ScrollArea className="max-h-[256px] overflow-y-auto">
             <CommandGroup>
               {Object.keys(solidityVersions?.releases || {}).map(
                 (version: string, index: any) => (
                   <CommandItem
+                    className="hover:cursor-pointer"
                     key={index}
                     value={version}
                     onSelect={(currentValue) => {

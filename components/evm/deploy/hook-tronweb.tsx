@@ -1,24 +1,47 @@
 import { useState } from "react"
 
-import { deploy, load } from "@/lib/tron"
+import { DeployedContracts } from "@/lib/eth/interfaces"
+import { TronSmartContract, deploy } from "@/lib/eth/tron"
 
 export const useTronHook = () => {
-  const [contract, setContract] = useState<any | null>(null)
+  const [contracts, setContracts] = useState<DeployedContracts>({})
 
   const executeSend = async (
+    contractAddress: string,
     method: string,
     args: any[],
     value: number = 0
   ) => {
-    // const options: any = {}
-    // if (value !== "0") {
-    //     options.value = ethers.parseEther(value);
-    // }
-    return contract[method](...args).send({})
+    if (!contracts.hasOwnProperty(contractAddress)) {
+      throw new Error("Contract not loaded")
+    }
+
+    return contracts[contractAddress].send({
+      method,
+      args,
+      value: value.toString(),
+    })
   }
 
-  const executeCall = async (method: string, args: any[] = []) => {
-    return contract[method](...args).call()
+  const executeCall = async (
+    contractAddress: string,
+    method: string,
+    args: any[]
+  ) => {
+    console.log("executeCall", contractAddress, method, args)
+    if (!contracts.hasOwnProperty(contractAddress)) {
+      throw new Error("Contract not loaded")
+    }
+
+    console.log("Calling", method, args, contractAddress)
+    return contracts[contractAddress].call({ method, args })
+  }
+
+  const removeContract = (contractAddress: string) => {
+    if (contracts.hasOwnProperty(contractAddress)) {
+      delete contracts[contractAddress]
+      setContracts({ ...contracts })
+    }
   }
 
   const doDeploy = async ({
@@ -35,25 +58,29 @@ export const useTronHook = () => {
     name: string
   }) => {
     if (contractAddress) {
-      const contract = await load(abi, contractAddress)
-
-      if (contract) {
-        setContract(contract)
-      }
-      return {
-        contract,
-        transactionHash: "",
-      }
+      setContracts({
+        ...contracts,
+        [contractAddress]: new TronSmartContract(contractAddress, abi),
+      })
+      return { contract: contractAddress, transactionHash: "" }
     }
 
-    return await deploy(abi, bytecode, args, name)
+    const result = await deploy(abi, bytecode, args, name)
+    contractAddress = result.contract as string
+    setContracts({
+      ...contracts,
+      [contractAddress]: new TronSmartContract(contractAddress, abi),
+    })
+
+    return result
   }
 
   return {
-    contract,
-    setContract,
-    executeSend,
     executeCall,
+    executeSend,
     doDeploy,
+
+    contracts,
+    removeContract,
   }
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, CircleX, LucideIcon } from "lucide-react"
+import { useEffect, useRef } from "react"
 
 import { Title } from "./components/title"
 import { useLogger } from "./providers/logger-provider"
@@ -9,6 +9,13 @@ interface ConsoleLoggerProps extends React.HTMLAttributes<HTMLButtonElement> {}
 
 export function ConsoleLogger({ className }: ConsoleLoggerProps) {
   const logger = useLogger()
+  const lastLogRef = useRef<HTMLDivElement>(null) // Reference for the console container
+
+  useEffect(() => {
+    if (lastLogRef.current) {
+      lastLogRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [logger.logs])
 
   const generateColor = (type: string = "default"): string => {
     const colors: { [key: string]: string } = {
@@ -22,15 +29,6 @@ export function ConsoleLogger({ className }: ConsoleLoggerProps) {
     return colors[type] || colors.default
   }
 
-  const generateIcon = (type: string = "default"): JSX.Element => {
-    const colors: { [key: string]: JSX.Element } = {
-      error: <CircleX size={18} className="text-red-700" />,
-      success: <Check size={18} className="text-green-500" />,
-    }
-
-    return colors[type] || colors.error
-  }
-
   const extractTimeFromISOString = (isoString: string): string => {
     return new Date(isoString).toISOString().substring(11, 19)
   }
@@ -41,6 +39,7 @@ export function ConsoleLogger({ className }: ConsoleLoggerProps) {
       <div className="flex flex-col">
         {logger.logs.map((log, index) => (
           <div
+            ref={index === logger.logs.length - 1 ? lastLogRef : null}
             key={index}
             className="flex items-center justify-between text-wrap break-words border-t py-1 text-sm"
           >
@@ -49,7 +48,6 @@ export function ConsoleLogger({ className }: ConsoleLoggerProps) {
                 log.type
               )}`}
             >
-              <div>{log.icon && generateIcon(log.type)}</div>
               <div>{log.text}</div>
             </code>
             <div>{extractTimeFromISOString(log.timestamp)}</div>

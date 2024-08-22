@@ -2,12 +2,11 @@
 
 import * as React from "react"
 import { useEffect } from "react"
-import { utils } from "web3"
+import { keccak256 } from "viem"
 
 import { downloadBlob, downloadJSON } from "@/lib/core"
 import { CopyText } from "@/components/core/components/copy-text"
-
-import { useEVM } from "../evm-provider"
+import { useEVM } from "@/components/evm/evm-provider"
 
 interface ContractOverviewProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -73,14 +72,14 @@ export function ContractOverview({}: ContractOverviewProps) {
               <CopyText
                 title="DB ID"
                 payload={
-                  utils.sha3(
+                  keccak256(
                     evm.selectedCompiledContract?.evm?.bytecode?.object || ""
                   ) || ""
                 }
               />
             }
             payload={
-              utils.sha3(
+              keccak256(
                 evm.selectedCompiledContract?.evm?.bytecode?.object || ""
               ) || ""
             }
