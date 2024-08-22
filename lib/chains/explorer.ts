@@ -108,8 +108,7 @@ const data: { [key: string]: string } = {
   [ChainID.METER_MAINNET]: "https://scan.meter.io",
   [ChainID.METER_TESTNET]: "https://scan-warringstakes.meter.io",
   [ChainID.PUBLIC_GOOD_NETWORK]: "https://explorer.publicgoods.network",
-  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]:
-    "https://explorer.sepolia.publicgoods.network",
+  [ChainID.PUBLIC_GOOD_NETWORK_SEPOLIA]: "https://explorer.sepolia.publicgoods.network",
   [ChainID.ROOTSTOCK_MAINNET]: "https://rootstock.blockscout.com",
   [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
   [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",
@@ -147,6 +146,11 @@ const data: { [key: string]: string } = {
   [ChainID.POLYGON_AMOY]: "https://amoy.polygonscan.com",
   [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado.blockscout.com",
   [ChainID.COTI_DEVNET]: "https://explorer-devnet.coti.io",
+  [ChainID.LISK_MAINNET]: "https://blockscout.lisk.com",
+  [ChainID.LISK_SEPOLIA]: "https://sepolia-blockscout.lisk.com",
+  [ChainID.REDSTONE_MAINNET]: "https://explorer.redstone.xyz",
+  [ChainID.REDSTONE_GARNET_TESTNET]: "https://explorer.garnetchain.com",
+  [ChainID.OPEN_CAMPUS_CODEX]: "https://opencampus-codex.blockscout.com",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""

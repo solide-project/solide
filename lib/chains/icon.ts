@@ -1,9 +1,7 @@
 import { ChainID } from "./chain-id"
 
 export const getIconByChainId = (chainId: string): string =>
-  `https://raw.githubusercontent.com/solide-project/icons/master/crypto/${getIcon(
-    chainId
-  )}`
+  `https://raw.githubusercontent.com/solide-project/icons/master/crypto/${getIcon(chainId)}`
 
 const getIcon = (chainId: string): string => {
   switch (chainId) {
@@ -227,6 +225,14 @@ const getIcon = (chainId: string): string => {
       return "kroma.svg"
     case ChainID.COTI_DEVNET:
       return "coti.svg"
+    case ChainID.LISK_MAINNET:
+    case ChainID.LISK_SEPOLIA:
+      return "lisk.svg"
+    case ChainID.REDSTONE_MAINNET:
+    case ChainID.REDSTONE_GARNET_TESTNET:
+      return "redstone.svg"
+    case ChainID.OPEN_CAMPUS_CODEX:
+      return "opencampus.svg"
     default:
       return ""
   }
