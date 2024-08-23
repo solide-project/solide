@@ -45,9 +45,9 @@ export function EVMVersions({ }: EVMVersionsProps) {
         <Command>
           <CommandInput placeholder="Search evm version..." className="h-9" />
           <CommandEmpty>No version found.</CommandEmpty>
-          <ScrollArea className="overflow-y-auto">
+          <ScrollArea>
             <CommandGroup>
-              <CommandList>
+              <CommandList className="max-h-[256px] overflow-auto">
                 <CommandItem
                   value={"default"}
                   onSelect={(currentValue) => {

@@ -47,9 +47,9 @@ export function SelectedContract({ }: SelectedContractProps) {
         <Command>
           <CommandInput placeholder="Search framework..." />
           <CommandEmpty>No framework found.</CommandEmpty>
-          <ScrollArea className="max-h-[200px] overflow-auto">
+          <ScrollArea>
             <CommandGroup>
-              <CommandList>
+              <CommandList className="max-h-[256px] overflow-auto">
                 {Object.entries(output.contracts || {}).map(
                   ([targetCompilation, contract]) => {
                     return Object.entries(contract).map(

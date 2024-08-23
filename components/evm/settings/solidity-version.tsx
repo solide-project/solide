@@ -70,9 +70,9 @@ export function SolidityVersions({ }: SolidityVersionsProps) {
             className="h-9"
           />
           <CommandEmpty>No version found.</CommandEmpty>
-          <ScrollArea className="overflow-auto">
+          <ScrollArea>
             <CommandGroup>
-              <CommandList>
+              <CommandList className="max-h-[256px] overflow-auto">
                 {Object.keys(solidityVersions?.releases || {}).map(
                   (version: string, index: any) => (
                     <CommandItem
