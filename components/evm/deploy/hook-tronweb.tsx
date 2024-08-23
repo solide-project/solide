@@ -28,12 +28,10 @@ export const useTronHook = () => {
     method: string,
     args: any[]
   ) => {
-    console.log("executeCall", contractAddress, method, args)
     if (!contracts.hasOwnProperty(contractAddress)) {
       throw new Error("Contract not loaded")
     }
 
-    console.log("Calling", method, args, contractAddress)
     return contracts[contractAddress].call({ method, args })
   }
 

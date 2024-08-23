@@ -12,6 +12,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command"
 import {
   Popover,
@@ -22,9 +23,9 @@ import {
 import { useEVM } from "../evm-provider"
 
 interface SelectedEnvironmentProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+  extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function SelectedEnvironment({}: SelectedEnvironmentProps) {
+export function SelectedEnvironment({ }: SelectedEnvironmentProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
 
@@ -61,31 +62,33 @@ export function SelectedEnvironment({}: SelectedEnvironmentProps) {
           <CommandInput placeholder="Search framework..." />
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup>
-            {environments.map((environment) => {
-              return (
-                <CommandItem
-                  key={environment.id}
-                  value={environment.id}
-                  onSelect={(val: string) => {
-                    setValue(environment.text)
-                    setEnvironment(environment.id)
-                    setOpen(false)
-                  }}
-                  className={cn(
-                    environment.disabled ? "cursor-not-allowed" : ""
-                  )}
-                  disabled={environment.disabled}
-                >
-                  <Check
+            <CommandList>
+              {environments.map((environment) => {
+                return (
+                  <CommandItem
+                    key={environment.id}
+                    value={environment.id}
+                    onSelect={(val: string) => {
+                      setValue(environment.text)
+                      setEnvironment(environment.id)
+                      setOpen(false)
+                    }}
                     className={cn(
-                      "mr-2 size-4",
-                      value === environment.id ? "opacity-100" : "opacity-0"
+                      environment.disabled ? "cursor-not-allowed" : ""
                     )}
-                  />
-                  {environment.text}
-                </CommandItem>
-              )
-            })}
+                    disabled={environment.disabled}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 size-4",
+                        value === environment.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {environment.text}
+                  </CommandItem>
+                )
+              })}
+            </CommandList>
           </CommandGroup>
         </Command>
       </PopoverContent>

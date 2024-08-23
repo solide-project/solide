@@ -13,7 +13,7 @@ interface IDESettingsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function IDESettings({ children }: IDESettingsProps) {
   return (
-    <Dialog>
+    <Dialog modal={false}>
       <DialogTrigger
         className={cn(buttonVariants({ variant: "default", size: "icon" }))}
       >

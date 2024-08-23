@@ -11,6 +11,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command"
 import {
   Popover,
@@ -24,9 +25,9 @@ import {
   useEVM,
 } from "@/components/evm/evm-provider"
 
-interface EVMVersionsProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface EVMVersionsProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function EVMVersions({}: EVMVersionsProps) {
+export function EVMVersions({ }: EVMVersionsProps) {
   const { evmVersions, setEVMVersions } = useEVM()
 
   const [open, setOpen] = useState(false)
@@ -44,32 +45,34 @@ export function EVMVersions({}: EVMVersionsProps) {
         <Command>
           <CommandInput placeholder="Search evm version..." className="h-9" />
           <CommandEmpty>No version found.</CommandEmpty>
-          <ScrollArea className="max-h-[256px] overflow-y-auto">
+          <ScrollArea className="overflow-y-auto">
             <CommandGroup>
-              <CommandItem
-                value={"default"}
-                onSelect={(currentValue) => {
-                  setEVMVersions(null)
-                  setValue(null)
-                  setOpen(false)
-                }}
-              >
-                default
-              </CommandItem>
-              {evmVersionArray.map((version: EVMVersion, index: any) => (
+              <CommandList>
                 <CommandItem
-                  className="hover:cursor-pointer"
-                  key={index}
-                  value={version || ""}
+                  value={"default"}
                   onSelect={(currentValue) => {
-                    setEVMVersions(version)
-                    setValue(version)
+                    setEVMVersions(null)
+                    setValue(null)
                     setOpen(false)
                   }}
                 >
-                  {version ? version : "Default"}
+                  default
                 </CommandItem>
-              ))}
+                {evmVersionArray.map((version: EVMVersion, index: any) => (
+                  <CommandItem
+                    className="hover:cursor-pointer"
+                    key={index}
+                    value={version || ""}
+                    onSelect={(currentValue) => {
+                      setEVMVersions(version)
+                      setValue(version)
+                      setOpen(false)
+                    }}
+                  >
+                    {version ? version : "Default"}
+                  </CommandItem>
+                ))}
+              </CommandList>
             </CommandGroup>
           </ScrollArea>
         </Command>

@@ -230,7 +230,20 @@ export function ContractInvoke({ }: ContractInvokeProps) {
   //#endregion
 
   //#region Deploy
+  const [isDeploying, setIsDeploying] = useState(false)
+
   const handleDeploy = async () => {
+    try {
+      setIsDeploying(true)
+      await doDeploy();
+    } catch (e: any) {
+      console.error(e)
+    } finally {
+      setIsDeploying(false)
+    }
+  }
+
+  const doDeploy = async () => {
     if (!evm.selectedCompiledContract?.abi) {
       logger.warn("No contract selected")
       return
@@ -628,7 +641,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
                 }
               )}
 
-              <Button onClick={handleDeploy}>Call</Button>
+              <Button onClick={handleDeploy} disabled={isDeploying}>
+                {isDeploying ? "Deploying ..." : "Deploy"}
+              </Button>
             </>
           )}
         </DialogContent>

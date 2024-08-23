@@ -149,6 +149,7 @@ const data: { [key: string]: string } = {
   [ChainID.REDSTONE_MAINNET]: "Redstone Mainnet",
   [ChainID.REDSTONE_GARNET_TESTNET]: "Redstone Garnet Testnet",
   [ChainID.OPEN_CAMPUS_CODEX]: "Open Campus Codex",
+  [ChainID.MOVEMENT_IMOLA_DEVNET]: "Movement Imola",
 }
 
 export const getNetworkNameFromChainID = (network: string): string =>

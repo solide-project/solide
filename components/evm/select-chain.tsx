@@ -18,6 +18,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command"
 import {
   Popover,
@@ -72,25 +73,27 @@ export function SelectChain({ handleOnChange }: SelectChainProps) {
           <CommandEmpty>No chain found.</CommandEmpty>
           <ScrollArea className="max-h-[256px] overflow-auto">
             <CommandGroup>
-              {chainList.map((framework) => (
-                <CommandItem
-                  key={framework.value}
-                  value={getNetworkNameFromChainID(framework.value)}
-                  onSelect={(currentValue) => {
-                    setValue(framework.value)
-                    handleOnChange && handleOnChange(framework.value)
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 size-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {framework.label}
-                </CommandItem>
-              ))}
+              <CommandList>
+                {chainList.map((framework) => (
+                  <CommandItem
+                    key={framework.value}
+                    value={getNetworkNameFromChainID(framework.value)}
+                    onSelect={(currentValue) => {
+                      setValue(framework.value)
+                      handleOnChange && handleOnChange(framework.value)
+                      setOpen(false)
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 size-4",
+                        value === framework.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {framework.label}
+                  </CommandItem>
+                ))}
+              </CommandList>
             </CommandGroup>
           </ScrollArea>
         </Command>

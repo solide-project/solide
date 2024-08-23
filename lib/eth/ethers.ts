@@ -35,8 +35,6 @@ export const toNative = (value: any = "", input: AbiParameter) => {
   }
   // address
   else if (input.type === "address") {
-    console.log("toNative", value, input)
-
     if (typeof value !== "string" || !isAddress(value)) {
       throw new Error("Invalid Ethereum address format")
     }

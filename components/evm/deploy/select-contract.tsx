@@ -11,6 +11,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command"
 import {
   Popover,
@@ -21,9 +22,9 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { useEVM } from "../evm-provider"
 
-interface SelectedContractProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SelectedContractProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function SelectedContract({}: SelectedContractProps) {
+export function SelectedContract({ }: SelectedContractProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState("")
 
@@ -46,13 +47,13 @@ export function SelectedContract({}: SelectedContractProps) {
         <Command>
           <CommandInput placeholder="Search framework..." />
           <CommandEmpty>No framework found.</CommandEmpty>
-          <ScrollArea className="h-[200px]">
+          <ScrollArea className="max-h-[200px] overflow-auto">
             <CommandGroup>
-              {Object.entries(output.contracts || {}).map(
-                ([targetCompilation, contract]) => {
-                  return Object.entries(contract).map(
-                    ([target, contractValue]) => {
-                      return (
+              <CommandList>
+                {Object.entries(output.contracts || {}).map(
+                  ([targetCompilation, contract]) => {
+                    return Object.entries(contract).map(
+                      ([target, contractValue]) => (
                         <CommandItem
                           key={`${targetCompilation}-${target}`}
                           value={target}
@@ -73,12 +74,11 @@ export function SelectedContract({}: SelectedContractProps) {
                             )}
                           />
                           {target}
-                        </CommandItem>
-                      )
-                    }
-                  )
-                }
-              )}
+                        </CommandItem>)
+                    )
+                  }
+                )}
+              </CommandList>
             </CommandGroup>
           </ScrollArea>
         </Command>

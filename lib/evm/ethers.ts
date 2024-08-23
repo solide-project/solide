@@ -38,8 +38,6 @@ export const deploy = async (
 
   const factory = new ContractFactory(abi, bytecode, signer)
 
-  console.log("Deploying contract with args: ", args)
-
   // const deployTx = await factory.getDeployTransaction(...args)
   // const estimatedGas = await provider.estimateGas(deployTx)
   // console.log("Estimated gas: ", estimatedGas.toString())

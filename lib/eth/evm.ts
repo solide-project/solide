@@ -60,16 +60,16 @@ export class EVMSmartContract implements ISmartContract {
       gasPrice: BigInt("1000000000"),
     })
 
-    console.log(request, value, {
-      account,
-      address: this.contractAddress,
-      abi: this.abi,
-      functionName: method,
-      args: args,
-      value: BigInt(value),
-      gas: BigInt(gas),
-      gasPrice: BigInt("1000000000"),
-    })
+    // console.log(request, value, {
+    //   account,
+    //   address: this.contractAddress,
+    //   abi: this.abi,
+    //   functionName: method,
+    //   args: args,
+    //   value: BigInt(value),
+    //   gas: BigInt(gas),
+    //   gasPrice: BigInt("1000000000"),
+    // })
     const hash = await walletClient.writeContract(request)
 
     return hash

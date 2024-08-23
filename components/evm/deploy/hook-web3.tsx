@@ -67,7 +67,6 @@ export const useWeb3Hook = () => {
       return { contract: contractAddress, transactionHash: "" }
     }
 
-    console.log("Deploying contract", abi, bytecode, args)
     const result = await deploy(abi, bytecode, args)
     contractAddress = result.contract as string
     setContracts({

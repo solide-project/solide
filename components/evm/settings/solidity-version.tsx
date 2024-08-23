@@ -12,6 +12,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command"
 import {
   Popover,
@@ -40,9 +41,9 @@ function extractVersion(version: string) {
   return match ? match[1] : version
 }
 
-interface SolidityVersionsProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SolidityVersionsProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function SolidityVersions({}: SolidityVersionsProps) {
+export function SolidityVersions({ }: SolidityVersionsProps) {
   const { solidityVersions, compilerVersion, setCompilerVersion } = useEVM()
   const logger = useLogger()
 
@@ -69,29 +70,31 @@ export function SolidityVersions({}: SolidityVersionsProps) {
             className="h-9"
           />
           <CommandEmpty>No version found.</CommandEmpty>
-          <ScrollArea className="max-h-[256px] overflow-y-auto">
+          <ScrollArea className="overflow-auto">
             <CommandGroup>
-              {Object.keys(solidityVersions?.releases || {}).map(
-                (version: string, index: any) => (
-                  <CommandItem
-                    className="hover:cursor-pointer"
-                    key={index}
-                    value={version}
-                    onSelect={(currentValue) => {
-                      const v = extractBuild(
-                        solidityVersions.releases[currentValue]
-                      )
-                      setCompilerVersion(v)
-                      setValue(currentValue)
-                      setOpen(false)
-                    }}
-                  >
-                    {extractVersion(
-                      solidityVersions?.releases[version] || solcVersion
-                    )}
-                  </CommandItem>
-                )
-              )}
+              <CommandList>
+                {Object.keys(solidityVersions?.releases || {}).map(
+                  (version: string, index: any) => (
+                    <CommandItem
+                      className="hover:cursor-pointer"
+                      key={index}
+                      value={version}
+                      onSelect={(currentValue) => {
+                        const v = extractBuild(
+                          solidityVersions.releases[currentValue]
+                        )
+                        setCompilerVersion(v)
+                        setValue(currentValue)
+                        setOpen(false)
+                      }}
+                    >
+                      {extractVersion(
+                        solidityVersions?.releases[version] || solcVersion
+                      )}
+                    </CommandItem>
+                  )
+                )}
+              </CommandList>
             </CommandGroup>
           </ScrollArea>
         </Command>
