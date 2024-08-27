@@ -145,8 +145,9 @@ const data: { [key: string]: string } = {
     [ChainID.LISK_SEPOLIA]: "https://rpc.sepolia-api.lisk.com",
     [ChainID.REDSTONE_MAINNET]: "https://rpc.redstonechain.com",
     [ChainID.REDSTONE_GARNET_TESTNET]: "wss://rpc.garnetchain.com",
-    [ChainID.OPEN_CAMPUS_CODEX]: "https://rpc.open-campus-codex.gelato.digital",
-    [ChainID.MOVEMENT_IMOLA_DEVNET]: "https://mevm.devnet.imola.movementlabs.xyz"
+    [ChainID.OPEN_CAMPUS_CODEX]: "https://open-campus-codex-sepolia.drpc.org",
+    [ChainID.MOVEMENT_IMOLA_DEVNET]: "https://mevm.devnet.imola.movementlabs.xyz",
+    [ChainID.REACTIVE_KOPLI]: "https://kopli-rpc.rkt.ink",
 }
 
 export const getRPC = (network: string): string =>

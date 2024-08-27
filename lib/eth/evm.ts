@@ -33,7 +33,7 @@ export class EVMSmartContract implements ISmartContract {
     method,
     args,
     value = "0",
-    gas = "1000000",
+    // gas = "1000000",
   }: InvokeParam): Promise<any> {
     const transport = custom(window.ethereum!)
     const chainId = await window.ethereum.request({ method: "eth_chainId" })
@@ -49,6 +49,14 @@ export class EVMSmartContract implements ISmartContract {
       throw new Error("No account found")
     }
 
+    const gas = await publicClient.estimateContractGas({
+      address: this.contractAddress,
+      abi: this.abi,
+      functionName: method,
+      args: args,
+      account,
+    })
+
     const { request } = await publicClient.simulateContract({
       account,
       address: this.contractAddress,
@@ -56,8 +64,8 @@ export class EVMSmartContract implements ISmartContract {
       functionName: method,
       args: args,
       value: BigInt(value),
-      gas: BigInt(gas),
-      gasPrice: BigInt("1000000000"),
+      gas,
+      // gasPrice: BigInt("1000000000"),
     })
 
     // console.log(request, value, {

@@ -235,6 +235,8 @@ const getIcon = (chainId: string): string => {
       return "opencampus.svg"
     case ChainID.MOVEMENT_IMOLA_DEVNET:
       return "movement.svg"
+    case ChainID.REACTIVE_KOPLI:
+      return "reactive.svg"
     default:
       return ""
   }
