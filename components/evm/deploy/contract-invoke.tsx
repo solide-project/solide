@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ArrowLeft, ArrowRight, DoorClosedIcon } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import {
   Abi,
   AbiFunction,
@@ -8,12 +8,9 @@ import {
   createPublicClient,
   custom,
   getAddress,
-  hexToString,
-  isAddress,
   toFunctionSelector,
 } from "viem"
 
-import { getExplorer } from "@/lib/chains"
 import { getTransactionExplorer } from "@/lib/chains/explorer"
 import { Sources } from "@/lib/core"
 import { Environment, toNative } from "@/lib/evm"
@@ -129,7 +126,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
     setIsInvoking(true)
     logger.info(
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <ArrowRight size={18} /> <div>{method}()</div>
       </div>
     )
@@ -217,7 +214,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       logger.info(
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <ArrowLeft size={18} /> <div>{result}</div>
         </div>
       )

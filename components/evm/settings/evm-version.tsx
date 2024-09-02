@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { ChevronsUpDown } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import {
   Command,
@@ -18,7 +17,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   EVMVersion,
   evmVersionArray,
@@ -41,40 +39,40 @@ export function EVMVersions({ }: EVMVersionsProps) {
         {evmVersions ? evmVersions : "Default"}
         <ChevronsUpDown className="ml-2 size-4" />
       </PopoverTrigger>
-      <PopoverContent className="p-0">
+      <PopoverContent>
         <Command>
           <CommandInput placeholder="Search evm version..." className="h-9" />
           <CommandEmpty>No version found.</CommandEmpty>
-          <ScrollArea>
-            <CommandGroup>
-              <CommandList className="max-h-[256px] overflow-auto">
+          <CommandGroup>
+            <CommandList
+              className="max-h-[256px]"
+            >
+              <CommandItem
+                value={"default"}
+                onSelect={(currentValue) => {
+                  setEVMVersions(null)
+                  setValue(null)
+                  setOpen(false)
+                }}
+              >
+                default
+              </CommandItem>
+              {evmVersionArray.map((version: EVMVersion, index: any) => (
                 <CommandItem
-                  value={"default"}
+                  className="hover:cursor-pointer"
+                  key={index}
+                  value={version || ""}
                   onSelect={(currentValue) => {
-                    setEVMVersions(null)
-                    setValue(null)
+                    setEVMVersions(version)
+                    setValue(version)
                     setOpen(false)
                   }}
                 >
-                  default
+                  {version ? version : "Default"}
                 </CommandItem>
-                {evmVersionArray.map((version: EVMVersion, index: any) => (
-                  <CommandItem
-                    className="hover:cursor-pointer"
-                    key={index}
-                    value={version || ""}
-                    onSelect={(currentValue) => {
-                      setEVMVersions(version)
-                      setValue(version)
-                      setOpen(false)
-                    }}
-                  >
-                    {version ? version : "Default"}
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </CommandGroup>
-          </ScrollArea>
+              ))}
+            </CommandList>
+          </CommandGroup>
         </Command>
       </PopoverContent>
     </Popover>

@@ -6,20 +6,23 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/core/components/dialog-settings"
 
-interface IDESettingsProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface IDESettingsProps extends React.HTMLAttributes<HTMLDivElement> { }
 
 export function IDESettings({ children }: IDESettingsProps) {
   return (
-    <Dialog modal={false}>
+    <Dialog>
       <DialogTrigger
         className={cn(buttonVariants({ variant: "default", size: "icon" }))}
       >
         <Settings />
       </DialogTrigger>
-      <DialogContent className="overflow-y-auto border-none bg-grayscale-025 shadow-none">
+      <DialogContent aria-describedby={undefined}
+        className="overflow-y-auto border-none bg-grayscale-025 shadow-none">
+        <DialogTitle></DialogTitle>
         <DialogHeader>
           <div className="text-center text-xl font-semibold">Settings</div>
           {children}

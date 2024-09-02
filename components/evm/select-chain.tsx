@@ -67,13 +67,13 @@ export function SelectChain({ handleOnChange }: SelectChainProps) {
         <div>{value && getNetworkNameFromChainID(value)}</div>
         <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
       </PopoverTrigger>
-      <PopoverContent className="p-0">
+      <PopoverContent>
         <Command>
           <CommandInput placeholder="Search chain..." />
           <CommandEmpty>No chain found.</CommandEmpty>
           <ScrollArea>
             <CommandGroup>
-              <CommandList className="max-h-[256px] overflow-auto">
+              <CommandList className="max-h-[256px]">
                 {chainList.map((framework) => (
                   <CommandItem
                     key={framework.value}

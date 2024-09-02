@@ -63,42 +63,37 @@ export function SolidityVersions({ }: SolidityVersionsProps) {
         {value ? value : "Select framework..."}
         <ChevronsUpDown className="ml-2 size-4" />
       </PopoverTrigger>
-      <PopoverContent className="p-0">
+      <PopoverContent>
         <Command>
-          <CommandInput
-            placeholder="Search compiler version..."
-            className="h-9"
-          />
+          <CommandInput placeholder="Search compiler version..." className="h-9" />
           <CommandEmpty>No version found.</CommandEmpty>
-          <ScrollArea>
-            <CommandGroup>
-              <CommandList className="max-h-[256px] overflow-auto">
-                {Object.keys(solidityVersions?.releases || {}).map(
-                  (version: string, index: any) => (
-                    <CommandItem
-                      className="hover:cursor-pointer"
-                      key={index}
-                      value={version}
-                      onSelect={(currentValue) => {
-                        const v = extractBuild(
-                          solidityVersions.releases[currentValue]
-                        )
-                        setCompilerVersion(v)
-                        setValue(currentValue)
-                        setOpen(false)
-                      }}
-                    >
-                      {extractVersion(
-                        solidityVersions?.releases[version] || solcVersion
-                      )}
-                    </CommandItem>
-                  )
-                )}
-              </CommandList>
-            </CommandGroup>
-          </ScrollArea>
+          <CommandGroup>
+            <CommandList className="max-h-[256px]">
+              {Object.keys(solidityVersions?.releases || {}).map(
+                (version: string, index: any) => (
+                  <CommandItem
+                    className="hover:cursor-pointer"
+                    key={index}
+                    value={version}
+                    onSelect={(currentValue) => {
+                      const v = extractBuild(
+                        solidityVersions.releases[currentValue]
+                      )
+                      setCompilerVersion(v)
+                      setValue(currentValue)
+                      setOpen(false)
+                    }}
+                  >
+                    {extractVersion(
+                      solidityVersions?.releases[version] || solcVersion
+                    )}
+                  </CommandItem>
+                )
+              )}
+            </CommandList>
+          </CommandGroup>
         </Command>
       </PopoverContent>
-    </Popover>
+    </Popover >
   )
 }
