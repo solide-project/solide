@@ -12,10 +12,14 @@ import {
 
 export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
 
-interface EVMSelectedChainWarningProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+interface SelectedChainWarningProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  message?: string
+}
 
-export function EVMSelectedChainWarning({}: EVMSelectedChainWarningProps) {
+export function SelectedChainWarning({
+  message = "Couldn't found Ethereum injection. Please install Metamask or Collect Wallet"
+}: SelectedChainWarningProps) {
   return (
     <HoverCard openDelay={0}>
       <HoverCardTrigger>
@@ -24,8 +28,7 @@ export function EVMSelectedChainWarning({}: EVMSelectedChainWarningProps) {
         </Button>
       </HoverCardTrigger>
       <HoverCardContent>
-        Couldn&apos;t found Ethereum injection. Please install Metamask or
-        Collect Wallet
+        {message}
       </HoverCardContent>
     </HoverCard>
   )

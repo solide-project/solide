@@ -54,6 +54,7 @@ export class EVMSmartContract implements ISmartContract {
       abi: this.abi,
       functionName: method,
       args: args,
+      value: BigInt(value),
       account,
     })
 

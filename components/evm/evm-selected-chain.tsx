@@ -10,7 +10,7 @@ import {
 } from "@/lib/chains"
 import { Environment } from "@/lib/evm"
 import { SelectedChain } from "@/components/core/components/selected-chain"
-import { EVMSelectedChainWarning } from "@/components/core/components/selected-chain-warning"
+import { SelectedChainWarning } from "@/components/core/components/selected-chain-warning"
 
 import { useEVM } from "./evm-provider"
 
@@ -60,7 +60,7 @@ export function EVMSelectedChain({}: EVMSelectedChainProps) {
   }, [evm.environment])
 
   if (!hasEthereumInjection) {
-    return <EVMSelectedChainWarning />
+    return <SelectedChainWarning />
   }
 
   return (

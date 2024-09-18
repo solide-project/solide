@@ -144,6 +144,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       // This should be the transaction hash
+      console.log(msgValue)
       const result = await invoker(
         selectedContractAddress,
         method,
