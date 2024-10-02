@@ -33,10 +33,10 @@ Object.entries(packageData.devDependencies).forEach(([package, value]) => {
     deleteEmptyFolders(`../${name}`)
 });
 
-[
-    "@uniswap/v4-core",
-    "@uniswap/v4-periphery",
-].forEach((package) => {
-    console.log(package);
-    deleteEmptyFolders(`../${package}`)
-})
+// [
+//     "@uniswap/v4-core",
+//     "@uniswap/v4-periphery",
+// ].forEach((package) => {
+//     console.log(package);
+//     deleteEmptyFolders(`../${package}`)
+// })
