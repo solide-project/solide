@@ -146,46 +146,43 @@ const data: { [key: string]: string } = {
   [ChainID.POLYGON_AMOY]: "https://amoy.polygonscan.com",
   [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado.blockscout.com",
   [ChainID.COTI_DEVNET]: "https://explorer-devnet.coti.io",
+  [ChainID.COTI_TESTNET]: "https://testnet.cotiscan.io",
   [ChainID.LISK_MAINNET]: "https://blockscout.lisk.com",
   [ChainID.LISK_SEPOLIA]: "https://sepolia-blockscout.lisk.com",
   [ChainID.REDSTONE_MAINNET]: "https://explorer.redstone.xyz",
   [ChainID.REDSTONE_GARNET_TESTNET]: "https://explorer.garnetchain.com",
   [ChainID.OPEN_CAMPUS_CODEX]: "https://opencampus-codex.blockscout.com",
-  [ChainID.MOVEMENT_IMOLA_DEVNET]: "https://explorer.devnet.imola.movementlabs.xyz",
-  [ChainID.REACTIVE_KOPLI]: "https://kopli.reactscan.net"
+  [ChainID.UNICHAIN_SEPOLIA]: "https://sepolia.uniscan.xyz",
+  [ChainID.MOVEMENT_IMOLA]: "https://explorer.devnet.imola.movementnetwork.xyz",
 }
 
 export const getExplorer = (network: string): string => data[network] || ""
 
-export const getContractExplorer = (
-  network: string,
-  contract: string
-): string => {
+export const getContractExplorer = (network: string, contract: string): string => {
   const explorer = getExplorer(network)
-  if (!explorer) {
-    return ""
-  }
-
-  let path = ""
+  let addressPath = ""
 
   switch (network) {
     case ChainID.TRON_MAINNET:
     case ChainID.TRON_SHASTA_TESTNET:
     case ChainID.COTI_DEVNET:
-      path = `contract/${contract}`
+      addressPath = `contract/${contract}`
     case ChainID.PALM_MAINNET:
     case ChainID.PALM_TESTNET:
-      path = `contracts/${contract}`
+      addressPath = `contracts/${contract}`
       break
     case ChainID.SHARDEUM_SPHINX_1_X:
-      path = `account/${contract}`
+      addressPath = `account/${contract}`
+      break
+    case ChainID.MOVEMENT_IMOLA:
+      addressPath = `#/txn/${contract}`
       break
     default:
-      path = `address/${contract}`
+      addressPath = `address/${contract}`
       break
   }
 
-  return `${explorer}/${path}`
+  return `${explorer}/${addressPath}`
 }
 
 export const getTransactionExplorer = (network: string, tx: string): string => {

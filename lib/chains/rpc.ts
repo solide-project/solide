@@ -141,13 +141,14 @@ const data: { [key: string]: string } = {
     [ChainID.POLYGON_AMOY]: "https://rpc-amoy.polygon.technology",
     [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado-rpc.publicnode.com/",
     [ChainID.COTI_DEVNET]: "https://devnet.coti.io/rpc",
+    [ChainID.COTI_TESTNET]: "https://testnet.coti.io/rpc",
     [ChainID.LISK_MAINNET]: "https://rpc.api.lisk.com",
     [ChainID.LISK_SEPOLIA]: "https://rpc.sepolia-api.lisk.com",
     [ChainID.REDSTONE_MAINNET]: "https://rpc.redstonechain.com",
     [ChainID.REDSTONE_GARNET_TESTNET]: "wss://rpc.garnetchain.com",
-    [ChainID.OPEN_CAMPUS_CODEX]: "https://open-campus-codex-sepolia.drpc.org",
-    [ChainID.MOVEMENT_IMOLA_DEVNET]: "https://mevm.devnet.imola.movementlabs.xyz",
-    [ChainID.REACTIVE_KOPLI]: "https://kopli-rpc.rkt.ink",
+    [ChainID.OPEN_CAMPUS_CODEX]: "https://rpc.open-campus-codex.gelato.digital",
+    [ChainID.UNICHAIN_SEPOLIA]: "https://sepolia.unichain.org",
+    [ChainID.MOVEMENT_IMOLA]: "	https://mevm.devnet.imola.movementnetwork.xyz",
 }
 
 export const getRPC = (network: string): string =>

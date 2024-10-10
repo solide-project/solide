@@ -66,6 +66,8 @@ export const getAPIKey = (network: string): string => {
     case ChainID.KROMA_MAINNET:
     case ChainID.KROMA_SEPOLIA:
       return process.env.KROMA_API_KEY || ""
+    case ChainID.UNICHAIN_SEPOLIA:
+      return process.env.UNICHAIN_API_KEY || ""
     default:
       return ""
   }
