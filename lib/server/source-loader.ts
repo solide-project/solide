@@ -190,7 +190,15 @@ export async function getEntryDetails(output: any, entry: string) {
     })
 
     // If the entryContractName is not found, you might want to reject the promise
-    reject(new Error("Entry contract not found"))
+    // reject(new Error("Entry contract not found"))
+
+    // Now we just use the first instance of compiled
+    const key = Object.keys(output.contracts).pop() || ""
+    resolve({
+      data: output.contracts[key][entry],
+      targetCompilation: key,
+      target: key,
+    })
   })
 }
 

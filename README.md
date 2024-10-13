@@ -19,11 +19,9 @@ Solide tries distinguishes itself from similar online IDEs, notably the Remix ID
 
 - **EVM Programming**: See the EVM Programming documentation for more information.
 
-- **Aspect Programming**: See the Aspect Programming documentation for more information.
-
 ## Getting Started
 
-To experience Solide, visit our [Doc (Coming Soon)](#). You can also check out the Solide IDE and Knowledge Hub at [solide-dapp.vercel.app](https://solide-dapp.vercel.app/).
+To experience Solide, visit our [Doc](https://docs.solide0x.tech/). You can also check out the Solide IDE and Knowledge Hub at [solide-dapp.vercel.app](https://solide-dapp.vercel.app/).
 
 ## Examples 🏗️
 
@@ -82,6 +80,7 @@ WEMIXSCAN_API_KEY=
 BLASTSCAN_API_KEY=
 FRAXSCAN_API_KEY=
 ZKEVM_POLYSCAN_API_KEY=
+UNICHAIN_API_KEY=
 
 GITHUB_API_KEY=
   

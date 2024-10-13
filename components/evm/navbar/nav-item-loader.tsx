@@ -46,8 +46,8 @@ export function NavItemLoader({
     e.preventDefault()
 
     if (
-      searchResult.startsWith("https://github.com/") &&
-      searchResult.endsWith(".sol")
+      searchResult.startsWith("https://github.com/")
+      // && searchResult.endsWith(".sol")
     ) {
       push(`/?url=${searchResult}`)
     } else if (isAddress(searchResult)) {
