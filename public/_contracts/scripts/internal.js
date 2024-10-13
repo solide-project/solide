@@ -32,11 +32,3 @@ Object.entries(packageData.devDependencies).forEach(([package, value]) => {
     copyFolderSync(`./node_modules/${package}`, `../${name}`)
     deleteEmptyFolders(`../${name}`)
 });
-
-// [
-//     "@uniswap/v4-core",
-//     "@uniswap/v4-periphery",
-// ].forEach((package) => {
-//     console.log(package);
-//     deleteEmptyFolders(`../${package}`)
-// })

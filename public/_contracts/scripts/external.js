@@ -1,6 +1,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { deleteNonSolFiles, deleteEmptyFolders } = require('./files');
 
 // List of GitHub repositories to clone
 const repos = [
@@ -34,6 +35,9 @@ repos.forEach(repo => {
   if (repo.branch) {
     execSync(`git checkout ${repo.branch}`, { cwd: targetDir, stdio: 'inherit' });
   }
+
+  deleteNonSolFiles(targetDir)
+  deleteEmptyFolders(targetDir)
 });
 
 console.log('All repositories cloned!');

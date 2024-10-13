@@ -58,4 +58,16 @@ function isEmptyDirectory(directory) {
     return files.length === 0;
 }
 
-module.exports = { copyFolderSync, deleteEmptyFolders };
+function deleteNonSolFiles(dir) {
+    fs.readdirSync(dir).forEach(file => {
+        const filePath = path.join(dir, file);
+
+        if (fs.statSync(filePath).isDirectory()) {
+            deleteNonSolFiles(filePath);
+        } else if (path.extname(file) !== '.sol') {
+            fs.unlinkSync(filePath);
+        }
+    });
+}
+
+module.exports = { copyFolderSync, deleteEmptyFolders, deleteNonSolFiles };
