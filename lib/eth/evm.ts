@@ -49,14 +49,14 @@ export class EVMSmartContract implements ISmartContract {
       throw new Error("No account found")
     }
 
-    const gas = await publicClient.estimateContractGas({
-      address: this.contractAddress,
-      abi: this.abi,
-      functionName: method,
-      args: args,
-      value: BigInt(value),
-      account,
-    })
+    // const gas = await publicClient.estimateContractGas({
+    //   address: this.contractAddress,
+    //   abi: this.abi,
+    //   functionName: method,
+    //   args: args,
+    //   value: BigInt(value),
+    //   account,
+    // })
 
     const { request } = await publicClient.simulateContract({
       account,
@@ -65,20 +65,9 @@ export class EVMSmartContract implements ISmartContract {
       functionName: method,
       args: args,
       value: BigInt(value),
-      gas,
-      // gasPrice: BigInt("1000000000"),
+      // gas,
     })
 
-    // console.log(request, value, {
-    //   account,
-    //   address: this.contractAddress,
-    //   abi: this.abi,
-    //   functionName: method,
-    //   args: args,
-    //   value: BigInt(value),
-    //   gas: BigInt(gas),
-    //   gasPrice: BigInt("1000000000"),
-    // })
     const hash = await walletClient.writeContract(request)
 
     return hash

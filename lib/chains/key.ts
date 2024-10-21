@@ -68,6 +68,15 @@ export const getAPIKey = (network: string): string => {
       return process.env.KROMA_API_KEY || ""
     case ChainID.UNICHAIN_SEPOLIA:
       return process.env.UNICHAIN_API_KEY || ""
+    case ChainID.TAIKO_MAINNET:
+    case ChainID.TAIKO_KATLA_TESTNET:
+      return process.env.TAIKOSCAN_API_KEY || ""
+    case ChainID.XAI_GAMES_MAINNET:
+    case ChainID.XAI_ARB_TESTNET:
+      return process.env.XAISCAN_API_KEY || ""
+    case ChainID.APECHAIN_MAINNET:
+    case ChainID.APECHAIN_CURTIS_TESTNET:
+      return process.env.APESCAN_API_KEY || ""
     default:
       return ""
   }

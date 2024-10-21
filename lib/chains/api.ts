@@ -1,6 +1,6 @@
 import { ChainID } from "./chain-id"
 
-const data: { [key: string]: string } = {
+export const data: { [key: string]: string } = {
   [ChainID.ETHEREUM_MAINNET]: "https://api.etherscan.io",
   [ChainID.ETHEREUM_GOERLI]: "https://api-goerli.etherscan.io",
   [ChainID.ETHEREUM_SEPOLIA]: "https://api-sepolia.etherscan.io",
@@ -63,7 +63,7 @@ const data: { [key: string]: string } = {
   [ChainID.ASTAR_MAINNET]: "https://blockscout.com/astar",
   [ChainID.SHIDEN_MAINNET]: "https://blockscout.com/shiden",
   [ChainID.SHUBIYA_TESTNET]: "https://blockscout.com/shibuya",
-  [ChainID.ZETACHAIN_MAINNET]: "",
+  [ChainID.ZETACHAIN_MAINNET]: "https://zetachain.blockscout.com",
   [ChainID.ZETACHAIN_TESTNET]: "https://zetachain-athens-3.blockscout.com",
   [ChainID.FLARE_MAINNET]: "https://flare-explorer.flare.network",
   [ChainID.FLARE_COSTON]: "https://coston-explorer.flare.network",
@@ -122,7 +122,8 @@ const data: { [key: string]: string } = {
   [ChainID.ROOTSTOCK_TESTNET]: "https://rootstock-testnet.blockscout.com",
   [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://phoenix.lightlink.io",
   [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "https://pegasus.lightlink.io",
-  [ChainID.ETHERLINK_TESTNET]: "https://testnet-explorer.etherlink.com",
+  [ChainID.ETHERLINK_MAINNET]: "https://explorer.etherlink.com",
+  [ChainID.ETHERLINK_TESTNET]: "https://testnet.explorer.etherlink.com",
   [ChainID.VELAS_MAINNET]: "https://evmexplorer.velas.com",
   [ChainID.MODE_MAINNET]: "https://explorer.mode.network",
   [ChainID.MODE_SEPOLIA]: "https://sepolia.explorer.mode.network",
@@ -133,6 +134,8 @@ const data: { [key: string]: string } = {
   [ChainID.DOS_MAINNET]: "https://doscan.io",
   [ChainID.DOS_TESTNET]: "https://test.doscan.io",
   [ChainID.DEGEN_MAINNET]: "https://explorer.degen.tips",
+  [ChainID.TAIKO_MAINNET]: "	https://api.taikoscan.io/api",
+  [ChainID.TAIKO_HEKLA_TESTNET]: "https://api-hekla.taikoscan.io/api",
   [ChainID.TAIKO_KATLA_TESTNET]: "https://explorer.katla.taiko.xyz",
   [ChainID.SHIMMER_MAINNET]: "https://explorer.evm.shimmer.network",
   [ChainID.SHIMMER_TESTNET]: "https://explorer.evm.testnet.shimmer.network",
@@ -162,6 +165,11 @@ const data: { [key: string]: string } = {
   [ChainID.OPEN_CAMPUS_CODEX]: "https://opencampus-codex.blockscout.com",
   [ChainID.UNICHAIN_SEPOLIA]: "https://unichain-sepolia.blockscout.com",
   [ChainID.MOVEMENT_IMOLA]: "",
+  [ChainID.XAI_GAMES_MAINNET]: "https://api.xaiscan.io/api",
+  [ChainID.XAI_ARB_TESTNET]: "https://api-sepolia.xaiscan.io/api",
+  [ChainID.SONEIUM_TESTNET]: "https://explorer-testnet.soneium.org",
+  [ChainID.BLACKFORT_MAINNET]: "https://blackfort.blockscout.com",
+  [ChainID.BLACKFORT_TESTNET]: "https://blackfort-testnet.blockscout.com",
+  [ChainID.APECHAIN_MAINNET]: "https://apechain.calderaexplorer.xyz",
+  [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.explorer.caldera.xyz",
 }
-
-export const getAPI = (network: string): string => data[network] || ""

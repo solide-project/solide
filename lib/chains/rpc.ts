@@ -1,6 +1,6 @@
 import { ChainID } from "./chain-id"
 
-const data: { [key: string]: string } = {
+export const data: { [key: string]: string } = {
     [ChainID.ETHEREUM_MAINNET]: "https://eth.drpc.org",
     [ChainID.ETHEREUM_GOERLI]: "wss://goerli.gateway.tenderly.co",
     [ChainID.ETHEREUM_SEPOLIA]: "https://ethereum-sepolia-rpc.publicnode.com",
@@ -59,7 +59,7 @@ const data: { [key: string]: string } = {
     [ChainID.ASTAR_MAINNET]: "https://1rpc.io/astr",
     [ChainID.SHIDEN_MAINNET]: "https://shiden.api.onfinality.io/public",
     [ChainID.SHUBIYA_TESTNET]: "https://evm.shibuya.astar.network",
-    [ChainID.ZETACHAIN_MAINNET]: "",
+    [ChainID.ZETACHAIN_MAINNET]: "https://zetachain-evm.blockpi.network/v1/rpc/public",
     [ChainID.ZETACHAIN_TESTNET]: "https://zetachain-athens-evm.blockpi.network/v1/rpc/public",
     [ChainID.FLARE_MAINNET]: "https://flare-api.flare.network/ext/bc/C/rpc",
     [ChainID.FLARE_COSTON]: "https://coston-api.flare.network/ext/C/rpc",
@@ -108,6 +108,7 @@ const data: { [key: string]: string } = {
     [ChainID.ROOTSTOCK_TESTNET]: "https://public-node.testnet.rsk.co",
     [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "https://replicator.phoenix.lightlink.io/rpc/v1",
     [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "https://replicator.pegasus.lightlink.io/rpc/v1",
+    [ChainID.ETHERLINK_MAINNET]: "https://node.mainnet.etherlink.com",
     [ChainID.ETHERLINK_TESTNET]: "https://node.ghostnet.etherlink.com",
     [ChainID.SHARDEUM_SPHINX_1_X]: "https://sphinx.shardeum.org",
     [ChainID.VELAS_MAINNET]: "https://evmexplorer.velas.com/rpc",
@@ -120,6 +121,8 @@ const data: { [key: string]: string } = {
     [ChainID.DOS_MAINNET]: "https://main.doschain.com",
     [ChainID.DOS_TESTNET]: "https://test.doschain.com",
     [ChainID.DEGEN_MAINNET]: "https://rpc.degen.tips",
+    [ChainID.TAIKO_MAINNET]: "https://rpc.mainnet.taiko.xyz",
+    [ChainID.TAIKO_HEKLA_TESTNET]: "https://rpc.hekla.taiko.xyz/",
     [ChainID.TAIKO_KATLA_TESTNET]: "https://taiko-katla.drpc.org",
     [ChainID.SHIMMER_MAINNET]: "https://json-rpc.evm.shimmer.network",
     [ChainID.SHIMMER_TESTNET]: "https://json-rpc.evm.testnet.shimmer.network",
@@ -144,12 +147,16 @@ const data: { [key: string]: string } = {
     [ChainID.COTI_TESTNET]: "https://testnet.coti.io/rpc",
     [ChainID.LISK_MAINNET]: "https://rpc.api.lisk.com",
     [ChainID.LISK_SEPOLIA]: "https://rpc.sepolia-api.lisk.com",
-    [ChainID.REDSTONE_MAINNET]: "https://rpc.redstonechain.com",
-    [ChainID.REDSTONE_GARNET_TESTNET]: "wss://rpc.garnetchain.com",
+    [ChainID.REDSTONE_MAINNET]: "https://rpc.garnetchain.com",
+    [ChainID.REDSTONE_GARNET_TESTNET]: "https://rpc.garnetchain.com",
     [ChainID.OPEN_CAMPUS_CODEX]: "https://rpc.open-campus-codex.gelato.digital",
     [ChainID.UNICHAIN_SEPOLIA]: "https://sepolia.unichain.org",
     [ChainID.MOVEMENT_IMOLA]: "	https://mevm.devnet.imola.movementnetwork.xyz",
+    [ChainID.XAI_GAMES_MAINNET]: "https://xai-chain.net/rpc",
+    [ChainID.XAI_ARB_TESTNET]: "https://testnet-v2.xai-chain.net/rpc",
+    [ChainID.SONEIUM_TESTNET]: "https://rpc.minato.soneium.org",
+    [ChainID.BLACKFORT_MAINNET]: "https://mainnet.blackfort.network/rpc",
+    [ChainID.BLACKFORT_TESTNET]: "https://testnet.blackfort.network/rpc",
+    [ChainID.APECHAIN_MAINNET]: "https://curtis.rpc.caldera.xyz/http",
+    [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.rpc.caldera.xyz/http"
 }
-
-export const getRPC = (network: string): string =>
-    data[network] || ""

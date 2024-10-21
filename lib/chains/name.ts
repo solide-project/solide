@@ -1,6 +1,6 @@
 import { ChainID } from "./chain-id"
 
-const data: { [key: string]: string } = {
+export const data: { [key: string]: string } = {
   [ChainID.ETHEREUM_MAINNET]: "Etheruem Mainnet",
   [ChainID.ETHEREUM_GOERLI]: "Etheruem Goerli",
   [ChainID.ETHEREUM_SEPOLIA]: "Etheruem Seoplia",
@@ -111,6 +111,7 @@ const data: { [key: string]: string } = {
   [ChainID.ROOTSTOCK_TESTNET]: "Rootstock Testnet",
   [ChainID.LIGHTLINK_PHOENIX_MAINNET]: "Lightlink Phoenix Mainnet",
   [ChainID.LIGHTLINK_PEGASUS_TESTNET]: "Lightlink Pegasus Testnet",
+  [ChainID.ETHERLINK_MAINNET]: "Etherlink Mainnet",
   [ChainID.ETHERLINK_TESTNET]: "Etherlink Testnet",
   [ChainID.SHARDEUM_SPHINX_1_X]: "Shardeum Sphinx 1.x",
   [ChainID.VELAS_MAINNET]: "Velas Mainnet",
@@ -123,6 +124,8 @@ const data: { [key: string]: string } = {
   [ChainID.DOS_MAINNET]: "DOS Chain",
   [ChainID.DOS_TESTNET]: "DOS Testnet",
   [ChainID.DEGEN_MAINNET]: "Degen Chain",
+  [ChainID.TAIKO_MAINNET]: "Taiko Mainnet",
+  [ChainID.TAIKO_HEKLA_TESTNET]: "Taiko Testnet",
   [ChainID.TAIKO_KATLA_TESTNET]: "Taike Katla Testnet",
   [ChainID.SHIMMER_MAINNET]: "Shimmer Mainnet",
   [ChainID.SHIMMER_TESTNET]: "Shimmer Testnet",
@@ -152,7 +155,11 @@ const data: { [key: string]: string } = {
   [ChainID.OPEN_CAMPUS_CODEX]: "Open Campus Codex",
   [ChainID.UNICHAIN_SEPOLIA]: "Unichain Sepolia",
   [ChainID.MOVEMENT_IMOLA]: "Movement Imola",
+  [ChainID.XAI_GAMES_MAINNET]: "Xai Games Mainnet",
+  [ChainID.XAI_ARB_TESTNET]: "Xai Arb Sepolia",
+  [ChainID.SONEIUM_TESTNET]: "Soneium Minato Testnet",
+  [ChainID.BLACKFORT_MAINNET]: "BXN Mainnet",
+  [ChainID.BLACKFORT_TESTNET]: "BXN Testnet",
+  [ChainID.APECHAIN_MAINNET]: "Ape Mainnet",
+  [ChainID.APECHAIN_CURTIS_TESTNET]: "Ape Curtis",
 }
-
-export const getNetworkNameFromChainID = (network: string): string =>
-  data[network] || ""

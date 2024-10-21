@@ -11,7 +11,7 @@ import {
   toFunctionSelector,
 } from "viem"
 
-import { getTransactionExplorer } from "@/lib/chains/explorer"
+import { getTransactionExplorer } from "@/lib/chains"
 import { Sources } from "@/lib/core"
 import { Environment, toNative } from "@/lib/evm"
 import { isAddress as isEthOrTronAddress } from "@/lib/evm/ethers"
