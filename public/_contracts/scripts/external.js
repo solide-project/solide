@@ -8,6 +8,8 @@ const repos = [
   { repo: 'https://github.com/Uniswap/v4-core.git', name: "@uniswap/v4-core" },
   { repo: 'https://github.com/Uniswap/v4-core.git', name: "@uniswap/v4-core@pre", branch: "9293e5ab1deed87e03c176d8af94b1af19eb3900" },
   { repo: 'https://github.com/Uniswap/v4-periphery.git', name: "@uniswap/v4-periphery" },
+  { repo: 'https://github.com/BuildOnViction/vrc25.git', name: "@viction/vrc25" },
+  { repo: 'https://github.com/BuildOnViction/vrc725.git', name: "@viction/vrc725" },
 ];
 
 const nodeModulesDir = "../"
@@ -18,7 +20,6 @@ if (!fs.existsSync(nodeModulesDir)) {
 
 function deleteFolderRecursive(folderPath) {
   if (fs.existsSync(folderPath)) {
-    fs.rmSync(folderPath, { recursive: true, force: true });
     console.log(`Deleted existing directory: ${folderPath}`);
   }
 }
