@@ -236,6 +236,7 @@ const getIcon = (chainId: string): string => {
     case ChainID.REDSTONE_GARNET_TESTNET:
       return "redstone.svg"
     case ChainID.OPEN_CAMPUS_CODEX:
+    case ChainID.EDUCHAIN:
       return "opencampus.svg"
     case ChainID.UNICHAIN_SEPOLIA:
       return "unichain.svg"
@@ -252,6 +253,14 @@ const getIcon = (chainId: string): string => {
     case ChainID.APECHAIN_MAINNET:
     case ChainID.APECHAIN_CURTIS_TESTNET:
       return "ape.svg"
+    case ChainID.SHAPE_MAINNET:
+    case ChainID.SHAPE_SEPOLIA:
+      return "shape.svg"
+    case ChainID.INK_SEPOLIA:
+      return "ink.svg"
+    case ChainID.WORLD_MAINNET:
+    case ChainID.WORLD_SEPOLIA:
+      return "world.svg"
     default:
       return ""
   }

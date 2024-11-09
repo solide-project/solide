@@ -23,7 +23,7 @@ export const data: { [key: string]: string } = {
     [ChainID.OPTIMISM_SEPOLIA]: "https://sepolia.optimism.io",
     [ChainID.FANTOM_MAINNET]: "https://rpcapi.fantom.network",
     [ChainID.FANTOM_TESTNET]: "https://rpc.testnet.fantom.network",
-    [ChainID.BASE_MAINNET]: "https://1rpc.io/base",
+    [ChainID.BASE_MAINNET]: "https://base.llamarpc.com",
     [ChainID.BASE_SEPOLIA]: "https://base-sepolia-rpc.publicnode.com",
     [ChainID.BNB_MAINNET]: "https://bsc-dataseed1.binance.org",
     [ChainID.BNB_TESTNET]: "https://bsc-testnet-rpc.publicnode.com",
@@ -158,5 +158,11 @@ export const data: { [key: string]: string } = {
     [ChainID.BLACKFORT_MAINNET]: "https://mainnet.blackfort.network/rpc",
     [ChainID.BLACKFORT_TESTNET]: "https://testnet.blackfort.network/rpc",
     [ChainID.APECHAIN_MAINNET]: "https://curtis.rpc.caldera.xyz/http",
-    [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.rpc.caldera.xyz/http"
+    [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.rpc.caldera.xyz/http",
+    [ChainID.EDUCHAIN]: "https://rpc.edu-chain.raas.gelato.cloud",
+    [ChainID.SHAPE_MAINNET]: "https://shape-mainnet.g.alchemy.com/public",
+    [ChainID.SHAPE_SEPOLIA]: "https://shape-sepolia.g.alchemy.com/public",
+    [ChainID.INK_SEPOLIA]: "https://rpc-gel-sepolia.inkonchain.com",
+    [ChainID.WORLD_MAINNET]: "https://worldchain-mainnet.g.alchemy.com/public",
+    [ChainID.WORLD_SEPOLIA]: "https://worldchain-sepolia.g.alchemy.com/public",
 }

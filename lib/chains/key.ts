@@ -77,6 +77,9 @@ export const getAPIKey = (network: string): string => {
     case ChainID.APECHAIN_MAINNET:
     case ChainID.APECHAIN_CURTIS_TESTNET:
       return process.env.APESCAN_API_KEY || ""
+    case ChainID.WORLD_MAINNET:
+    case ChainID.WORLD_SEPOLIA:
+      return process.env.WORLDSCAN_API_KEY || ""
     default:
       return ""
   }

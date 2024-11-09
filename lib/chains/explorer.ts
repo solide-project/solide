@@ -160,5 +160,11 @@ export const data: { [key: string]: string } = {
   [ChainID.BLACKFORT_MAINNET]: "https://blackfort.blockscout.com",
   [ChainID.BLACKFORT_TESTNET]: "https://blackfort-testnet.blockscout.com",
   [ChainID.APECHAIN_MAINNET]: "https://apescan.io",
-  [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.apescan.io"
+  [ChainID.APECHAIN_CURTIS_TESTNET]: "https://curtis.apescan.io",
+  [ChainID.EDUCHAIN]: "https://educhain.blockscout.com",
+  [ChainID.SHAPE_MAINNET]: "https://shapescan.xyz",
+  [ChainID.SHAPE_SEPOLIA]: "https://explorer-sepolia.shape.network",
+  [ChainID.INK_SEPOLIA]: "https://explorer-sepolia.inkonchain.com",
+  [ChainID.WORLD_MAINNET]: "https://worldscan.org",
+  [ChainID.WORLD_SEPOLIA]: "https://sepolia.worldscan.org",
 }

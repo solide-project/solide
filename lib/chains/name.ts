@@ -162,4 +162,10 @@ export const data: { [key: string]: string } = {
   [ChainID.BLACKFORT_TESTNET]: "BXN Testnet",
   [ChainID.APECHAIN_MAINNET]: "Ape Mainnet",
   [ChainID.APECHAIN_CURTIS_TESTNET]: "Ape Curtis",
+  [ChainID.EDUCHAIN]: "Edu Chain",
+  [ChainID.SHAPE_MAINNET]: "Shape Mainnet",
+  [ChainID.SHAPE_SEPOLIA]: "Shape Sepolia",
+  [ChainID.INK_SEPOLIA]: "Ink Sepolia",
+  [ChainID.WORLD_MAINNET]: "World Chain",
+  [ChainID.WORLD_SEPOLIA]: "World Chain Sepolia",
 }
