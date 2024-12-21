@@ -256,11 +256,20 @@ const getIcon = (chainId: string): string => {
     case ChainID.SHAPE_MAINNET:
     case ChainID.SHAPE_SEPOLIA:
       return "shape.svg"
+    case ChainID.INK:
     case ChainID.INK_SEPOLIA:
       return "ink.svg"
     case ChainID.WORLD_MAINNET:
     case ChainID.WORLD_SEPOLIA:
       return "world.svg"
+    case ChainID.CHILIZ:
+    case ChainID.CHILIZ_SPICY_TESTNET:
+      return "chiliz.svg"
+    case ChainID.SONIC:
+    case ChainID.SONIC_TESTNET:
+      return "sonic.svg"
+    case ChainID.ABSTRACT_TESTNET:
+      return "abstract.svg"
     default:
       return ""
   }

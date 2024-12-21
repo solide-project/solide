@@ -6,6 +6,8 @@ export const getAPIKey = (network: string): string => {
     case ChainID.ETHEREUM_GOERLI:
     case ChainID.ETHEREUM_SEPOLIA:
     case ChainID.ETHEREUM_HOLESKY:
+    case ChainID.SONIC:
+    case ChainID.SONIC_TESTNET:
       return process.env.ETHERSCAN_API_KEY || ""
     case ChainID.ARBITRUM_ONE:
     case ChainID.ARBITRUM_GOERLI:

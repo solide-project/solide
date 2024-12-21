@@ -1,7 +1,12 @@
 import { ChainID } from "./chain-id"
+import { Explorer } from "./service"
 
-export const data: { [key: string]: string } = {
-  [ChainID.ETHEREUM_MAINNET]: "https://etherscan.io",
+export const data: { [key: string]: string | { [key: string]: string } } = {
+  [ChainID.ETHEREUM_MAINNET]: {
+    [Explorer.ETHERSCAN]: "https://etherscan.io",
+    [Explorer.BLOCKSCOUT]: "https://eth.blockscout.com",
+    [Explorer.ROUTESCAN]: "https://1.routescan.io",
+  },
   [ChainID.ETHEREUM_GOERLI]: "https://goerli.etherscan.io",
   [ChainID.ETHEREUM_SEPOLIA]: "https://sepolia.etherscan.io",
   [ChainID.ETHEREUM_HOLESKY]: "https://holesky.etherscan.io",
@@ -164,7 +169,19 @@ export const data: { [key: string]: string } = {
   [ChainID.EDUCHAIN]: "https://educhain.blockscout.com",
   [ChainID.SHAPE_MAINNET]: "https://shapescan.xyz",
   [ChainID.SHAPE_SEPOLIA]: "https://explorer-sepolia.shape.network",
-  [ChainID.INK_SEPOLIA]: "https://explorer-sepolia.inkonchain.com",
   [ChainID.WORLD_MAINNET]: "https://worldscan.org",
   [ChainID.WORLD_SEPOLIA]: "https://sepolia.worldscan.org",
+  [ChainID.CHILIZ]: {
+    [Explorer.BLOCKSCOUT]: "https://scan.chiliz.com",
+    [Explorer.ROUTESCAN]: "https://chiliscan.com",
+  },
+  [ChainID.CHILIZ_SPICY_TESTNET]: {
+    [Explorer.BLOCKSCOUT]: "http://spicy-explorer.chiliz.com",
+    [Explorer.ROUTESCAN]: "https://testnet.chiliscan.com",
+  },
+  [ChainID.SONIC]: "https://sonicscan.org",
+  [ChainID.SONIC_TESTNET]: "https://testnet.sonicscan.org",
+  [ChainID.INK]: "https://explorer.inkonchain.com",
+  [ChainID.INK_SEPOLIA]: "https://explorer-sepolia.inkonchain.com",
+  [ChainID.ABSTRACT_TESTNET]: "https://explorer.testnet.abs.xyz",
 }

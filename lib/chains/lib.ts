@@ -3,6 +3,7 @@ import { data as NAME } from "./name"
 import { data as API } from "./api"
 import { data as EXPLORER } from "./explorer"
 import { ChainID } from "./chain-id"
+import { Explorer } from "./service"
 
 export const getRPC = (network: string): string =>
     RPC[network] || ""
@@ -10,10 +11,33 @@ export const getRPC = (network: string): string =>
 export const getNetworkNameFromChainID = (network: string): string =>
     NAME[network] || ""
 
-export const getAPI = (network: string): string => API[network] || ""
+export const getAPI = (network: string, explorer?: Explorer): string => {
+    const networkData = API[network];
 
-export const getExplorer = (network: string): string => EXPLORER[network] || ""
+    if (typeof networkData === "object" && networkData !== null) {
+        if (explorer) {
+            return networkData[explorer.toString()] || "";
+        }
 
+        return Object.values(networkData)[0] || "";
+    }
+
+    return networkData || "";
+};
+
+export const getExplorer = (network: string, explorer?: Explorer): string => {
+    const networkData = EXPLORER[network];
+
+    if (typeof networkData === "object" && networkData !== null) {
+        if (explorer) {
+            return networkData[explorer.toString()] || "";
+        }
+
+        return Object.values(networkData)[0] || "";
+    }
+
+    return networkData || "";
+};
 export const getContractExplorer = (network: string, contract: string): string => {
     const explorer = getExplorer(network)
     let addressPath = ""
