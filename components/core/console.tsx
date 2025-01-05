@@ -48,7 +48,7 @@ export function ConsoleLogger({ className }: ConsoleLoggerProps) {
                 log.type
               )}`}
             >
-              <div>{log.text}</div>
+              <div className="break-all">{log.text}</div>
             </code>
             <div>{extractTimeFromISOString(log.timestamp)}</div>
           </div>

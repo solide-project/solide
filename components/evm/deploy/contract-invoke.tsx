@@ -237,6 +237,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     } catch (e: any) {
       console.error(e)
     } finally {
+      setContractAddress("")
       setIsDeploying(false)
     }
   }
