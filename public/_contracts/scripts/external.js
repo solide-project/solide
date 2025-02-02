@@ -20,7 +20,20 @@ if (!fs.existsSync(nodeModulesDir)) {
 
 function deleteFolderRecursive(folderPath) {
   if (fs.existsSync(folderPath)) {
-    console.log(`Deleted existing directory: ${folderPath}`);
+    const files = fs.readdirSync(folderPath);
+
+    files.forEach((file) => {
+      const currentPath = path.join(folderPath, file);
+      const stats = fs.statSync(currentPath);
+
+      if (stats.isDirectory()) {
+        deleteFolderRecursive(currentPath); // Recursive call
+      } else {
+        fs.unlinkSync(currentPath);
+      }
+    });
+
+    fs.rmdirSync(folderPath);
   }
 }
 

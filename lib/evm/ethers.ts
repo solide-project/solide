@@ -3,17 +3,7 @@
  */
 
 import { BrowserProvider, ContractFactory } from "ethers"
-import {
-  Abi,
-  createPublicClient,
-  createWalletClient,
-  custom,
-  encodeDeployData,
-} from "viem"
-import { mainnet } from "viem/chains"
-import { deployContract } from "viem/zksync"
 
-import { getNetworkDetails } from "../eth/chains"
 
 interface DeployResult {
   contract: string | undefined | null
