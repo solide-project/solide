@@ -177,7 +177,7 @@ export const data: { [key: string]: string } = {
   [ChainID.STACK]: "Stack",
   [ChainID.STACK_TESTNET]: "Stack Testnet",
   [ChainID.HEMI_TESTNET]: "Hemi Sepolia",
-  [ChainID.MINT]: "Hemi Mainnet",
+  [ChainID.MINT]: "Mint Mainnet",
   [ChainID.MINT_SEPOLIA]: "Mint Sepolia",
   [ChainID.TABI_TESTNET]: "Tabi Testnet",
   [ChainID.SUPERPOSITION]: "Superposition",
