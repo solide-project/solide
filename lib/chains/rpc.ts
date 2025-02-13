@@ -171,4 +171,12 @@ export const data: { [key: string]: string } = {
     [ChainID.INK]: "https://rpc-gel.inkonchain.com",
     [ChainID.INK_SEPOLIA]: "https://rpc-gel-sepolia.inkonchain.com",
     [ChainID.ABSTRACT_TESTNET]: "https://api.testnet.abs.xyz",
+    [ChainID.STACK]: "https://rpc.stack.so",
+    [ChainID.STACK_TESTNET]: "https://testnet.rpc.stack.so",
+    [ChainID.HEMI_TESTNET]: "https://testnet.rpc.hemi.network/rpc",
+    [ChainID.MINT]: "https://rpc.mintchain.io",
+    [ChainID.MINT_SEPOLIA]: "https://sepolia-testnet-rpc.mintchain.io",
+    [ChainID.TABI_TESTNET]: "https://rpc.testnet.tabichain.com",
+    [ChainID.SUPERPOSITION]: "https://rpc.superposition.so",
+    [ChainID.SUPERPOSITION_TESTNET]: "https://testnet-rpc.superposition.so",
 }

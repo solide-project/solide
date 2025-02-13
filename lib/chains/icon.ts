@@ -270,6 +270,19 @@ const getIcon = (chainId: string): string => {
       return "sonic.svg"
     case ChainID.ABSTRACT_TESTNET:
       return "abstract.svg"
+    case ChainID.HEMI_TESTNET:
+      return "hemi.svg"
+    case ChainID.MINT:
+    case ChainID.MINT_SEPOLIA:
+      return "mint.svg"
+    case ChainID.TABI_TESTNET:
+      return "tabi.svg"
+    case ChainID.SUPERPOSITION:
+    case ChainID.SUPERPOSITION_TESTNET:
+      return "superposition.svg"
+    case ChainID.STACK:
+    case ChainID.STACK_TESTNET:
+      return "stack.svg"
     default:
       return ""
   }
