@@ -156,6 +156,7 @@ const getIcon = (chainId: string): string => {
     case ChainID.CARBON_EVM_MAINNET:
     case ChainID.CARBON_EVM_TESTNET:
       return "carbon.svg"
+    case ChainID.ARTELA:
     case ChainID.ARTELA_TESTNET:
       return "artela.svg"
     case ChainID.BERACHAIN_TESTNET:
@@ -188,6 +189,7 @@ const getIcon = (chainId: string): string => {
     case ChainID.MODE_MAINNET:
     case ChainID.MODE_SEPOLIA:
       return "mode.svg"
+    case ChainID.MORPH:
     case ChainID.MORPH_TESTNET:
       return "morph.svg"
     case ChainID.BLAST_MAINNET:
@@ -283,6 +285,18 @@ const getIcon = (chainId: string): string => {
     case ChainID.STACK:
     case ChainID.STACK_TESTNET:
       return "stack.svg"
+    case ChainID.SWELLCHAIN:
+    case ChainID.SWELLCHAIN_TESTNET:
+      return "swell.svg"
+    case ChainID.PLUME:
+    case ChainID.PLUME_TESTNET:
+      return "plume.svg"
+    case ChainID.DARWINIA:
+    case ChainID.DARWINIA_CRAB:
+      return "darwinia.svg"
+    case ChainID.ANCIENT_8:
+    case ChainID.ANCIENT_8_TESTNET:
+      return "ancient8.svg"
     default:
       return ""
   }
