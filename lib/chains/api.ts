@@ -209,4 +209,6 @@ export const data: { [key: string]: string | { [key: string]: string } } = {
   [ChainID.DARWINIA_CRAB]: "https://explorer.darwinia.network",
   [ChainID.ANCIENT_8]: "https://scan.ancient8.gg",
   [ChainID.ANCIENT_8_TESTNET]: "https://scanv2-testnet.ancient8.gg",
+  [ChainID.AUTHEO_TESTNET]: "https://testnet-explorer.autheo.com",
+  [ChainID.EPHEMERY_TESTNET]: "https://explorer.ephemery.dev",
 }

@@ -192,4 +192,6 @@ export const data: { [key: string]: string } = {
   [ChainID.DARWINIA_CRAB]: "Darwinia Crab",
   [ChainID.ANCIENT_8]: "Ancient8",
   [ChainID.ANCIENT_8_TESTNET]: "Ancient8 Celestia Testnet",
+  [ChainID.AUTHEO_TESTNET]: "Autheo Testnet",
+  [ChainID.EPHEMERY_TESTNET]: "ephemery-testnet",
 }

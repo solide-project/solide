@@ -9,6 +9,7 @@ const getIcon = (chainId: string): string => {
     case ChainID.ETHEREUM_GOERLI:
     case ChainID.ETHEREUM_SEPOLIA:
     case ChainID.ETHEREUM_HOLESKY:
+    case ChainID.EPHEMERY_TESTNET:
       return "eth.svg"
     case ChainID.METIS_ANDROMEDA:
     case ChainID.METIS_SEPOLIA:
@@ -297,6 +298,8 @@ const getIcon = (chainId: string): string => {
     case ChainID.ANCIENT_8:
     case ChainID.ANCIENT_8_TESTNET:
       return "ancient8.svg"
+    case ChainID.AUTHEO_TESTNET:
+      return "autheo.svg"
     default:
       return ""
   }

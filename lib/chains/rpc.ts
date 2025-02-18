@@ -189,4 +189,6 @@ export const data: { [key: string]: string } = {
     [ChainID.DARWINIA_CRAB]: "https://crab-rpc.darwinia.network",
     [ChainID.ANCIENT_8]: "https://rpc.ancient8.gg",
     [ChainID.ANCIENT_8_TESTNET]: "https://rpcv2-testnet.ancient8.gg",
+    [ChainID.AUTHEO_TESTNET]: "https://testnet-rpc2.autheo.com",
+    [ChainID.EPHEMERY_TESTNET]: "https://otter.bordel.wtf/erigon",
 }
