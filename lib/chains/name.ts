@@ -194,4 +194,7 @@ export const data: { [key: string]: string } = {
   [ChainID.ANCIENT_8_TESTNET]: "Ancient8 Celestia Testnet",
   [ChainID.AUTHEO_TESTNET]: "Autheo Testnet",
   [ChainID.EPHEMERY_TESTNET]: "ephemery-testnet",
+  [ChainID.MONAD_TESTNET]: "Monad Testnet",
+  [ChainID.BOUNCEBIT]: "BounceBit",
+  [ChainID.BOUNCEBIT_TESTNET]: "BounceBit Testnet",
 }

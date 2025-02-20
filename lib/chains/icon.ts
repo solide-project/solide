@@ -300,6 +300,11 @@ const getIcon = (chainId: string): string => {
       return "ancient8.svg"
     case ChainID.AUTHEO_TESTNET:
       return "autheo.svg"
+    case ChainID.MONAD_TESTNET:
+      return "monad.svg"
+    case ChainID.BOUNCEBIT:
+    case ChainID.BOUNCEBIT_TESTNET:
+      return "bbs.svg"
     default:
       return ""
   }

@@ -191,4 +191,7 @@ export const data: { [key: string]: string } = {
     [ChainID.ANCIENT_8_TESTNET]: "https://rpcv2-testnet.ancient8.gg",
     [ChainID.AUTHEO_TESTNET]: "https://testnet-rpc2.autheo.com",
     [ChainID.EPHEMERY_TESTNET]: "https://otter.bordel.wtf/erigon",
+    [ChainID.MONAD_TESTNET]: "https://testnet-rpc.monad.xyz",
+    [ChainID.BOUNCEBIT]: "https://fullnode-mainnet.bouncebitapi.com",
+    [ChainID.BOUNCEBIT_TESTNET]: "https://fullnode-testnet.bouncebitapi.com",
 }

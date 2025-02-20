@@ -211,4 +211,7 @@ export const data: { [key: string]: string | { [key: string]: string } } = {
   [ChainID.ANCIENT_8_TESTNET]: "https://scanv2-testnet.ancient8.gg",
   [ChainID.AUTHEO_TESTNET]: "https://testnet-explorer.autheo.com",
   [ChainID.EPHEMERY_TESTNET]: "https://explorer.ephemery.dev",
+  [ChainID.MONAD_TESTNET]: "https://monad-api.blockvision.org/testnet",
+  [ChainID.BOUNCEBIT]: "",
+  [ChainID.BOUNCEBIT_TESTNET]: "",
 }
