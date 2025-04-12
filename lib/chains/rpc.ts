@@ -147,6 +147,7 @@ export const data: { [key: string]: string } = {
     [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado-rpc.publicnode.com/",
     [ChainID.COTI_DEVNET]: "https://devnet.coti.io/rpc",
     [ChainID.COTI_TESTNET]: "https://testnet.coti.io/rpc",
+    [ChainID.COTI_MAINNET]: "https://mainnet.coti.io/rpc",
     [ChainID.LISK_MAINNET]: "https://rpc.api.lisk.com",
     [ChainID.LISK_SEPOLIA]: "https://rpc.sepolia-api.lisk.com",
     [ChainID.REDSTONE_MAINNET]: "https://rpc.garnetchain.com",
@@ -194,4 +195,5 @@ export const data: { [key: string]: string } = {
     [ChainID.MONAD_TESTNET]: "https://testnet-rpc.monad.xyz",
     [ChainID.BOUNCEBIT]: "https://fullnode-mainnet.bouncebitapi.com",
     [ChainID.BOUNCEBIT_TESTNET]: "https://fullnode-testnet.bouncebitapi.com",
+    [ChainID.PHAROS_DEVNET]: "https://devnet.dplabs-internal.com",
 }

@@ -154,6 +154,7 @@ export const data: { [key: string]: string | { [key: string]: string } } = {
   [ChainID.GNOSIS_CHIADO]: "https://gnosis-chiado.blockscout.com",
   [ChainID.COTI_DEVNET]: "https://explorer-devnet.coti.io",
   [ChainID.COTI_TESTNET]: "https://testnet.cotiscan.io",
+  [ChainID.COTI_MAINNET]: "https://mainnet.cotiscan.io",
   [ChainID.LISK_MAINNET]: "https://blockscout.lisk.com",
   [ChainID.LISK_SEPOLIA]: "https://sepolia-blockscout.lisk.com",
   [ChainID.REDSTONE_MAINNET]: "https://explorer.redstone.xyz",
@@ -207,4 +208,5 @@ export const data: { [key: string]: string | { [key: string]: string } } = {
   [ChainID.MONAD_TESTNET]: "https://monad-testnet.socialscan.io",
   [ChainID.BOUNCEBIT]: "https://bbscan.io",
   [ChainID.BOUNCEBIT_TESTNET]: "https://testnet.bbscan.io",
+  [ChainID.PHAROS_DEVNET]: "https://pharosscan.xyz",
 }
