@@ -53,6 +53,7 @@
     "@jbx-protocol/juice-delegates-registry": "^1.0.3",
     "@jbx-protocol/juice-ownable": "github:jbx-protocol/juice-ownable",
     "@klaytn/contracts": "^1.0.6",
+    "@layerzerolabs/oapp-evm": "^0.3.1",
     "@lukso/lsp-smart-contracts": "^0.15.0",
     "@lukso/lsp0-contracts": "^0.15.0",
     "@lukso/lsp1-contracts": "^0.15.0",

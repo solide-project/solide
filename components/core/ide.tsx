@@ -21,6 +21,8 @@ import {
 } from "@/lib/core/monaco/solidity/solidity"
 import { useEditor } from "@/components/core/providers/editor-provider"
 import { useFileSystem } from "@/components/core/providers/file-provider"
+import { SolidePluginsMessage } from "@/lib/plugins/messages"
+import { useLogger } from "./providers/logger-provider"
 
 interface IDEProps extends React.HTMLAttributes<HTMLDivElement> {
   defaultLanguage?: string
@@ -29,6 +31,7 @@ interface IDEProps extends React.HTMLAttributes<HTMLDivElement> {
 export function IDE({ defaultLanguage = "sol" }: IDEProps) {
   const fs = useFileSystem()
   const ide = useEditor()
+  const logger = useLogger();
   const { theme } = useTheme()
 
   const [file, setSelectedFile] = useState<VFSFile>({} as VFSFile)
@@ -49,9 +52,24 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
 
     handleWindowResize() // Initialize size
     window.addEventListener("resize", handleWindowResize)
-    return () => {
-      window.removeEventListener("resize", handleWindowResize)
-    }
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, [])
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "http://localhost:5173") {
+        return;
+      }
+
+      const { target, data } = event.data;
+      if (target === SolidePluginsMessage.SOLIDE_CONSOLE_LOG.toString()) {
+        console.log("Received message from iframe:", data);
+        logger.info(data)
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, [])
 
   useEffect(() => {
@@ -63,7 +81,7 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
 
   const monaco = useMonaco()
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (monaco) {
         monaco.languages.register({ id: "sol" })
         monaco.languages.setMonarchTokensProvider(
@@ -118,11 +136,12 @@ export function IDE({ defaultLanguage = "sol" }: IDEProps) {
       if (selection && !selection.isEmpty()) {
         const selectedText = model.getValueInRange(selection)
         // console.log('Text is highlighted:', selectedText);
-        window.parent.postMessage(
-          { data: { selectedText }, target: "solide-highlight" } || "",
-          "https://dapp.solide0x.tech/" || "http://localhost:3001/"
-        )
-        // You can perform further actions here with the selected text
+
+        const message = {
+          type: SolidePluginsMessage.SOLIDE_CODE_HIGHTLIGHT.toString(),
+          data: selectedText
+        };
+        window.parent.postMessage(message, "https://dapp.solide0x.tech");
       }
     }
   }

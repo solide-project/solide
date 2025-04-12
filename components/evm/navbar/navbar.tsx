@@ -13,10 +13,10 @@ import { NavItemFile } from "@/components/core/navbar/nav-item-file"
 import { NavItemTheme } from "@/components/core/navbar/nav-item-theme"
 import { EVMSelectedChain } from "@/components/evm/evm-selected-chain"
 import { NavItemBytecode } from "@/components/evm/navbar/nav-item-bytecode"
-import { NavItemUtility } from "@/components/evm/navbar/nav-item-utility"
 import { EVMSettings } from "@/components/evm/settings/settings"
 
 import { NavItemLoader } from "./nav-item-loader"
+import { NavItemPlugin } from "./nav-item-plugin"
 
 interface EVMNavBarProps extends React.HTMLAttributes<HTMLDivElement> {
   url: string
@@ -39,8 +39,8 @@ export function EVMNavBar({ url, bytecodeId }: EVMNavBarProps) {
         <NavTooltipItem tooltip="Console">
           <NavItemConsole />
         </NavTooltipItem>
-        <NavTooltipItem tooltip="Utility">
-          <NavItemUtility />
+        <NavTooltipItem tooltip="Plugin">
+          <NavItemPlugin />
         </NavTooltipItem>
         <NavTooltipItem tooltip="Source">
           <NavItemContent url={url} />

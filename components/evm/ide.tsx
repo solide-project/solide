@@ -28,9 +28,10 @@ import {
 } from "@/components/core/providers/navbar-provider"
 import { BuildDeploy } from "@/components/evm/deploy/build-deploy"
 import { useEVM } from "@/components/evm/evm-provider"
-import { UTILITY_KEY } from "@/components/evm/navbar/nav-item-utility"
 import { EVMNavBar } from "@/components/evm/navbar/navbar"
 import { UtiltyTab } from "@/components/evm/utils/utility-tab"
+import { PLUGIN_KEY } from "./navbar/nav-item-plugin"
+import { PluginManager } from "../plugins/manager"
 
 export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
 
@@ -67,7 +68,7 @@ export function EvmIDE({
   const { setNavItemActive, isNavItemActive } = useNav()
 
   React.useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (version) {
         evm.setCompilerVersion(version)
       }
@@ -223,8 +224,8 @@ export function EvmIDE({
             {isNavItemActive(CODE_KEY) && (
               <BuildDeploy className="rounded-lg bg-grayscale-025" />
             )}
-            {isNavItemActive(UTILITY_KEY) && (
-              <UtiltyTab className="rounded-lg bg-grayscale-025" />
+            {isNavItemActive(PLUGIN_KEY) && (
+              <PluginManager className="rounded-lg bg-grayscale-025" />
             )}
           </div>
         </ResizablePanel>

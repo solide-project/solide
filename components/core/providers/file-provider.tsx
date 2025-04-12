@@ -29,10 +29,29 @@ export const FileSystemProvider = ({ children }: FileSystemProviderProps) => {
         content: entryFile[1].content.toString(),
         filePath: entryFile[0],
       } as VFSFile
+    } else {
+      const firstEntry = getFirstEntry(sources)
+      if (firstEntry) {
+        return {
+          content: firstEntry[1].content.toString(),
+          filePath: firstEntry[0],
+        } as VFSFile
+      }
     }
+
 
     return undefined
   }
+
+  function getFirstEntry(sources: Sources): [string, { content: string }] | undefined {
+    for (const key in sources) {
+      if (sources.hasOwnProperty(key)) {
+        return [key, sources[key]];
+      }
+    }
+    return undefined;
+  }
+
 
   const generateSources = (): Sources => {
     return vfs.pack()
@@ -60,17 +79,17 @@ export const FileContext = createContext({
   vfs: {
     vfs: {} as VFSNode,
     ls: (filePath: string) => [] as string[],
-    mkdir: (filePath: string) => {},
-    touch: (filePath: string, content?: string) => {},
+    mkdir: (filePath: string) => { },
+    touch: (filePath: string, content?: string) => { },
     cat: (filePath: string) => {
       return {} as any
     },
-    pack: (filePath?: string) => {},
-    rm: (filePath: string) => {},
-    mv: (oldPath: string, newPath: string) => {},
-    clear: () => {},
+    pack: (filePath?: string) => { },
+    rm: (filePath: string) => { },
+    mv: (oldPath: string, newPath: string) => { },
+    clear: () => { },
   },
-  init: (sources: { [key: string]: { content: string } }) => {},
+  init: (sources: { [key: string]: { content: string } }) => { },
   initAndFoundEntry: async (
     sources: { [key: string]: { content: string } },
     entry: string

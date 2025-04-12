@@ -53,6 +53,7 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
   const [target, setTarget] = useState<string>("")
   const [targetCompiltion, setTargetCompilation] = useState<string>("")
 
+  const [selectedContractAddress, setSelectedContractAddress] = useState("")
   const [selectedCompiledContract, setSelectedCompiledContract] = useState<any>(
     {} as any
   )
@@ -69,7 +70,7 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
   const [useSolidityDB, setUseSolidityDB] = useState<boolean>(false)
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (solidityVersions.latestRelease) {
         return
       }
@@ -112,6 +113,8 @@ export const EVMProvider = ({ children }: EVMProviderProps) => {
         setEnvironment,
         target,
         targetCompiltion,
+        selectedContractAddress,
+        setSelectedContractAddress,
         selectedCompiledContract,
         setSelectedContract,
         compilerVersion,
@@ -139,32 +142,34 @@ interface EVMProviderProps extends React.HTMLAttributes<HTMLDivElement> {
 export const EVMContext = createContext({
   solidityVersions: {} as SolidityReleases,
   errors: {} as CompileError,
-  setErrors: (errors: CompileError) => {},
+  setErrors: (errors: CompileError) => { },
   input: {} as any,
-  setInput: (input: any) => {},
+  setInput: (input: any) => { },
   output: {} as DecompileOutput,
-  setOutput: (output: DecompileOutput) => {},
+  setOutput: (output: DecompileOutput) => { },
   environment: Environment.METAMASK,
-  setEnvironment: (env: Environment) => {},
+  setEnvironment: (env: Environment) => { },
   target: "",
   targetCompiltion: "",
+  selectedContractAddress: "",
+  setSelectedContractAddress: (selectedContractAddress: any) => { },
   selectedCompiledContract: {} as any,
   setSelectedContract: (
     targetCompilation: string,
     target: string,
     info: any
-  ) => {},
+  ) => { },
   compilerVersion: solcVersion,
-  setCompilerVersion: (version: string) => {},
+  setCompilerVersion: (version: string) => { },
   evmVersions: null as EVMVersion,
-  setEVMVersions: (version: EVMVersion) => {},
+  setEVMVersions: (version: EVMVersion) => { },
   compilerOptimised: false,
-  setCompilerOptimised: (enabled: boolean) => {},
+  setCompilerOptimised: (enabled: boolean) => { },
   compilerRuns: 200,
-  setCompilerRuns: (runs: number) => {},
-  resetBuild: () => {},
+  setCompilerRuns: (runs: number) => { },
+  resetBuild: () => { },
   useSolidityDB: false,
-  setUseSolidityDB: (enabled: boolean) => {},
+  setUseSolidityDB: (enabled: boolean) => { },
 })
 
 export const useEVM = () => useContext(EVMContext)

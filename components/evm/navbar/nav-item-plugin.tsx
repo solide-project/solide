@@ -1,19 +1,19 @@
 "use client"
 
-import { UtilityPole } from "lucide-react"
+import { Plug2Icon, UtilityPole } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { useNav } from "@/components/core/providers/navbar-provider"
 
-interface NavItemUtilityProps extends React.HTMLAttributes<HTMLButtonElement> {}
+interface NavItemPluginProps extends React.HTMLAttributes<HTMLButtonElement> { }
 
-export const UTILITY_KEY = "utility"
+export const PLUGIN_KEY = "plugin"
 
-export function NavItemUtility({ ...props }: NavItemUtilityProps) {
+export function NavItemPlugin({ ...props }: NavItemPluginProps) {
   const { isNavItemActive, setNavItemActive } = useNav()
 
   const handleOnClick = async (event: any) => {
-    setNavItemActive(UTILITY_KEY)
+    setNavItemActive(PLUGIN_KEY)
     props.onClick && props.onClick(event)
   }
 
@@ -25,8 +25,8 @@ export function NavItemUtility({ ...props }: NavItemUtilityProps) {
       onClick={handleOnClick}
       {...props}
     >
-      <UtilityPole
-        className={isNavItemActive(UTILITY_KEY) ? "" : "text-grayscale-250"}
+      <Plug2Icon
+        className={isNavItemActive(PLUGIN_KEY) ? "" : "text-grayscale-250"}
       />
     </Button>
   )

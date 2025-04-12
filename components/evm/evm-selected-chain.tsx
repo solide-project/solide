@@ -13,9 +13,8 @@ import { SelectedChain } from "@/components/core/components/selected-chain"
 import { SelectedChainWarning } from "@/components/core/components/selected-chain-warning"
 
 import { useEVM } from "./evm-provider"
+import { hexToString } from "@/lib/eth/chains"
 
-export const hexToDecimal = (hex: string): number => parseInt(hex, 16)
-export const hexToString = (hex: string): string => hexToDecimal(hex).toString()
 export const getTronNetwork = (rpc: string) => {
   if (rpc.includes("shasta")) return ChainID.TRON_SHASTA_TESTNET
   if (rpc.includes("nile")) return ChainID.TRON_NILE_TESTNET
@@ -24,16 +23,29 @@ export const getTronNetwork = (rpc: string) => {
   return ChainID.TRON_MAINNET
 }
 
-interface EVMSelectedChainProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface EVMSelectedChainProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export function EVMSelectedChain({}: EVMSelectedChainProps) {
+export function EVMSelectedChain({ }: EVMSelectedChainProps) {
   const evm = useEVM()
   const [chainId, setChainId] = useState<string>("1")
   const [hasEthereumInjection, setHasEthereumInjection] =
     useState<boolean>(false)
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
+      const chainId = await window.ethereum.request({ method: "eth_chainId" })
+      setChainId(hexToString(chainId))
+
+      // console.log("chainId", chainId)
+      window.ethereum.on("chainChanged", handleChainChanged)
+      function handleChainChanged(chainId: any) {
+        setChainId(hexToString(chainId).toString())
+      }
+    })()
+  }, [])
+
+  useEffect(() => {
+    ; (async () => {
       if (!window || !window.ethereum) {
         return
       }
@@ -52,10 +64,10 @@ export function EVMSelectedChain({}: EVMSelectedChainProps) {
       setChainId(hexToString(chainId))
 
       // console.log("chainId", chainId)
-      window.ethereum.on("chainChanged", handleChainChanged)
-      function handleChainChanged(chainId: any) {
-        setChainId(hexToString(chainId).toString())
-      }
+      // window.ethereum.on("chainChanged", handleChainChanged)
+      // function handleChainChanged(chainId: any) {
+      //   setChainId(hexToString(chainId).toString())
+      // }
     })()
   }, [evm.environment])
 

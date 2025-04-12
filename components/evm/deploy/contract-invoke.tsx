@@ -8,6 +8,7 @@ import {
   createPublicClient,
   custom,
   getAddress,
+  Hex,
   toFunctionSelector,
 } from "viem"
 
@@ -32,6 +33,7 @@ import { useTronHook } from "@/components/evm/deploy/hook-tronweb"
 import { useWeb3Hook } from "@/components/evm/deploy/hook-web3"
 import { SelectedEnvironment } from "@/components/evm/deploy/selected-environment"
 import { useEVM } from "@/components/evm/evm-provider"
+import { ConnectWallet } from "../connector/connect-wallet"
 
 const CONSTRUCTOR_METHOD = "constructor"
 
@@ -144,7 +146,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       // This should be the transaction hash
-      console.log(msgValue)
+      console.log(msgValue, formatParameters(selectedAbiParameter!))
       const result = await invoker(
         selectedContractAddress,
         method,
@@ -275,6 +277,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
 
         if (result.contract) {
           setContractAddress(result.contract)
+          evm.setSelectedContractAddress(result.contract)
           logger.success(`Contract deployed at ${result.contract}`)
 
           setContractArguments({
@@ -307,9 +310,9 @@ export function ContractInvoke({ }: ContractInvokeProps) {
       }
 
       setLoadedContractEnvironment(evm.environment)
-      if (shouldUpload && evm.useSolidityDB && result && result.contract) {
-        await uploadToSolidityDB(result.contract)
-      }
+      // if (shouldUpload && evm.useSolidityDB && result && result.contract) {
+      //   await uploadToSolidityDB(result.contract)
+      // }
     } catch (error: any) {
       logger.error(handleError(error), true)
     }
@@ -448,6 +451,7 @@ export function ContractInvoke({ }: ContractInvokeProps) {
     <div>
       <div className="my-4">
         <SelectedEnvironment />
+        <ConnectWallet />
       </div>
 
       <div className="flex">
